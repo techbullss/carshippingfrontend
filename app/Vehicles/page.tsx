@@ -7,6 +7,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FaCar, FaRegHeart } from "react-icons/fa6";
 import { FaGasPump, FaTachometerAlt } from "react-icons/fa";
+import router from "next/router";
 
 
 type Car = {
@@ -150,6 +151,10 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
     </button>
   );
 
+  function handleCarClick(id: number): void {
+    router.push(`/CarDetails/${id}`);
+  }
+
   return (
     <div className="">
       <div className="sticky top-0 bg-white z-50 py-4 shadow-md">
@@ -199,6 +204,7 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
              }}
              whileHover={{ scale: 1.02 }}
               className="text-center mb-12 md:mb-16"
+              onClick={() => handleCarClick(car.id)}
             >
               {/* Image with favorite button */}
               <div className="relative">
