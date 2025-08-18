@@ -152,7 +152,7 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
   );
 
   function handleCarClick(id: number): void {
-    router.push(`/CarDetails/${id}`);
+    router.push(`/Cardetails/${id}`);
   }
 
   return (
