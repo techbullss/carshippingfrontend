@@ -251,10 +251,14 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
                             <span className="text-sm">{car.transmission}</span>
                           </div>
                         </div>
-        
-                       <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full text-sm">
+                        <div className="p-4">
+                          <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full text-sm">
                             KES {car.priceKes}
                           </span>
+
+                        </div>
+        
+                       
                       
                       </div>
       </Link>
