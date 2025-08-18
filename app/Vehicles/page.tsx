@@ -181,7 +181,7 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
 </div>
 
 {/* Vehicle Grid */}
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<div className="grid grid-cols-1 p-4 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {carData.map((car) => (
             <motion.div
               key={car.id}
