@@ -207,11 +207,12 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
               onClick={() => handleCarClick(car.id)}
             >
               {/* Image with favorite button */}
-              <div className="relative">
-                <img
-                  src={car.imageUrls?.[0] || "/car-placeholder.jpg"}
-                  alt={`${car.brand} ${car.model}`}
-                  className="w-full h-64 object-cover"
+              <Link href={`/Cardetails/${car.id}`} className="relative block cursor-pointer">
+                <div className="relative">
+                  <img
+                    src={car.imageUrls?.[0] || "/car-placeholder.jpg"}
+                    alt={`${car.brand} ${car.model}`}
+                    className="w-full h-64 object-cover"
                 />
                 <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full backdrop-blur-sm hover:bg-red-100 transition-colors">
                   <FaRegHeart className="text-red-500 text-xl" />
@@ -264,6 +265,7 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
     </div>
               
               </div>
+              </Link>
             </motion.div>
           ))}
         </div>
