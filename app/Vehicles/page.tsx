@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Edit, Delete } from '@mui/icons-material';
 
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
@@ -247,6 +248,14 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
                 </div>
 
                 {/* CTA Button */}
+                <div className="flex items-center space-x-2">
+      <button className="p-2 text-blue-500 hover:bg-blue-50 rounded-full">
+        <Edit fontSize="small" />
+      </button>
+      <button className="p-2 text-red-500 hover:bg-red-50 rounded-full">
+        <Delete fontSize="small" />
+      </button>
+    </div>
               
               </div>
             </motion.div>
