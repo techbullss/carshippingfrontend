@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { FaCar } from "react-icons/fa6";
+import { FaCar, FaRegHeart } from "react-icons/fa6";
 import { FaGasPump, FaTachometerAlt } from "react-icons/fa";
 
 
@@ -181,113 +181,77 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
 </div>
 
 {/* Vehicle Grid */}
-<div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-2">
-  {carData.map((car) => (
-    <div 
-      key={car.id}
-      className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
-    >
-      <Link href={`/Cardetails/${car.id}`} className="block">
-        {/* Image with badge */}
-       <div className="relative w-full h-full bg-gray-100 overflow-hidden group">
-  {car.imageUrls?.[0] ? (
-     <img
-      src={car.imageUrls[0]}
-      alt={`${car.brand} ${car.model}`}
-      className="w-full h-full object-fit object-center transition-transform duration-500 group-hover:scale-105"
-    />
-  ) : (
-    <div className="w-full h-full flex items-center justify-center text-gray-400">
-      <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1"
-          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2
-             l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6
-             20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2
-             0 00-2 2v12a2 2 0 002 2z"
-        />
-      </svg>
-    </div>
-  )}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {carData.map((car) => (
+            <motion.div
+              key={car.id}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: false, margin: "-20% 0px -20% 0px" }} // Triggers in both directions
+              variants={{
+                hidden: { opacity: 0, y: 50 },
+               visible: { opacity: 1, y: 0 }
+             }}
+             transition={{ 
+               duration: 3,
+               ease: [0.16, 1, 0.3, 1]
+             }}
+             whileHover={{ scale: 1.02 }}
+              className="text-center mb-12 md:mb-16"
+            >
+              {/* Image with favorite button */}
+              <div className="relative">
+                <img
+                  src={car.imageUrls?.[0] || "/car-placeholder.jpg"}
+                  alt={`${car.brand} ${car.model}`}
+                  className="w-full h-64 object-cover"
+                />
+                <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full backdrop-blur-sm hover:bg-red-100 transition-colors">
+                  <FaRegHeart className="text-red-500 text-xl" />
+                </button>
+                {car.conditionType && (
+                  <span className="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    {car.conditionType}
+                  </span>
+                )}
+              </div>
 
-  <div className="absolute top-3 left-3 flex flex-col space-y-2">
-    <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-      NEW
-    </span>
-    {car.highBreed && (
-      <span className="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-        HYBRID
-      </span>
-    )}
-  </div>
-</div>
+              {/* Car Details */}
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">
+                      {car.brand} {car.model}
+                    </h3>
+                    <p className="text-gray-500 text-sm">{car.yearOfManufacture} • {car.mileageKm} km</p>
+                  </div>
+                  <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full text-sm">
+                    KES {car.priceKes}
+                  </span>
+                </div>
 
-        {/* Vehicle Details */}
-        <div className="p-6">
-                        <div className="flex  items-start ">
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900">
-                              {car.brand} {car.model}
-                            </h3>
-                            <p className="text-gray-500 text-sm">{car.yearOfManufacture} • {car.mileageKm} km</p>
-                          </div>
-                          
-                        </div>
-        
-                        {/* Features */}
-                        <div className="grid grid-cols-3 gap-1 ">
-                          <div className="flex items-center text-gray-600">
-                            <FaCar className=" text-blue-500" />
-                            <span className="text-sm">{car.bodyType}</span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <FaGasPump className=" text-blue-500" />
-                            <span className="text-sm">{car.fuelType}</span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <FaTachometerAlt className=" text-blue-500" />
-                            <span className="text-sm">{car.transmission}</span>
-                          </div>
-                        </div>
-                        <div className="p-4">
-                          <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full text-sm">
-                            KES {car.priceKes}
-                          </span>
+                {/* Features */}
+                <div className="grid grid-cols-3 gap-2 my-">
+                  <div className="flex items-center text-gray-600">
+                    <FaCar className="mr-2 text-blue-500" />
+                    <span className="text-sm">{car.bodyType}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <FaGasPump className="mr-2 text-blue-500" />
+                    <span className="text-sm">{car.fuelType}</span>
+                  </div>
+                  <div className="flex items-center text-gray-600">
+                    <FaTachometerAlt className="mr-2 text-blue-500" />
+                    <span className="text-sm">{car.transmission}</span>
+                  </div>
+                </div>
 
-                        </div>
-        
-                       
-                      
-                      </div>
-      </Link>
-
-      {/* Admin Actions */}
-      <div className="px-5 pb-4 flex justify-end space-x-3">
-        <button 
-          onClick={() => {/* handle edit */}}
-          className="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded-full hover:bg-blue-50"
-          title="Edit"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </button>
-        
-        <button 
-          onClick={() => {/* handle delete */}}
-          className="text-red-600 hover:text-red-800 transition-colors p-1 rounded-full hover:bg-red-50"
-          title="Delete"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
+                {/* CTA Button */}
+              
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
 
     </div>
