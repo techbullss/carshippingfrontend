@@ -237,17 +237,17 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
                         </div>
         
                         {/* Features */}
-                        <div className="grid grid-cols-3 gap-2 my-">
+                        <div className="grid grid-cols-3 gap-1 ">
                           <div className="flex items-center text-gray-600">
-                            <FaCar className="mr-2 text-blue-500" />
+                            <FaCar className=" text-blue-500" />
                             <span className="text-sm">{car.bodyType}</span>
                           </div>
                           <div className="flex items-center text-gray-600">
-                            <FaGasPump className="mr-2 text-blue-500" />
+                            <FaGasPump className=" text-blue-500" />
                             <span className="text-sm">{car.fuelType}</span>
                           </div>
                           <div className="flex items-center text-gray-600">
-                            <FaTachometerAlt className="mr-2 text-blue-500" />
+                            <FaTachometerAlt className=" text-blue-500" />
                             <span className="text-sm">{car.transmission}</span>
                           </div>
                         </div>
