@@ -200,7 +200,7 @@ export default function AddCarForm() {
 
       images.forEach(file => formData.append("images", file));
 
-      const res = await fetch("http://localhost:8080/api/cars", {
+      const res = await fetch("https://carshippingbackend.onrender.com/api/cars", {
         method: "POST",
         body: formData,
       });
