@@ -60,7 +60,7 @@ const [currentImageIndex, setCurrentImageIndex] = useState(0);
         setLoading(true);
         
         // Fetch main vehicle details
-        const response = await fetch(`http://localhost:8080/api/cars/${id}`, {
+        const response = await fetch(`https://carshippingbackend.onrender.com/api/cars/${id}`, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -77,7 +77,7 @@ const [currentImageIndex, setCurrentImageIndex] = useState(0);
         // Fetch similar vehicles (uncomment when ready)
         
         const similarResponse = await fetch(
-          `http://localhost:8080/api/cars/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
+          `https://carshippingbackend.onrender.com/api/cars/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
           headers: {
             'Content-Type': 'application/json',
           },

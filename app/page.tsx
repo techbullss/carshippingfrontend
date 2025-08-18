@@ -26,7 +26,7 @@ export default function Home() {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/cars/latest");
+        const res = await fetch("https://carshippingbackend.onrender.com/api/cars/latest");
         const data = await res.json();
         setLatestArrivals(data);
       } catch (error) {

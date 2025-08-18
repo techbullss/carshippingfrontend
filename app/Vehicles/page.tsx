@@ -77,7 +77,7 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
   }
 
   try {
-    const res = await fetch(`http://localhost:8080/api/cars?${params.toString()}`);
+    const res = await fetch(`https://carshippingbackend.onrender.com/api/cars?${params.toString()}`);
     const data = await res.json();
 
     // Check if we got new data and filter out duplicates
