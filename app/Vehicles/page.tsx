@@ -226,7 +226,7 @@ const SpecIcon = ({ icon, value }: { icon: React.ReactNode; value: string }) => 
 
         {/* Vehicle Details */}
         <div className="p-6">
-                        <div className="flex justify-between items-start mb-3">
+                        <div className="flex  items-start ">
                           <div>
                             <h3 className="text-xl font-bold text-gray-900">
                               {car.brand} {car.model}
