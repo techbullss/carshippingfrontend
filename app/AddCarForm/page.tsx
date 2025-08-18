@@ -398,6 +398,34 @@ export default function AddCarForm() {
                 <option value="Limousine">Limousine</option>
               </select>
             </div>
+             <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Transmission</label>
+              <select 
+                name="transmission" 
+                value={form.transmission} 
+                onChange={handleChange} 
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              >
+                <option value="">Transmission</option>
+                <option value="Automatic">Automatic</option>
+                <option value="Manual">Manual</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Fuel Type</label>
+              <select 
+                name="fuelType" 
+                value={form.fuelType} 
+                onChange={handleChange} 
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              >
+                <option value="">fueltype</option>
+                <option value="Petrol">Petrol</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="Electric">Electric</option>
+              </select>
+            </div>
           </div>
         </div>
 
