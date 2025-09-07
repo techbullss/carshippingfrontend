@@ -83,13 +83,80 @@ export default function Header(){
             </div>
             <div className='flex flex-col'>
               <nav>
-                <ul className="flex space-x-4 p-4 bg-gray-100">
-                  <li><a href="/" className="text-gray-700 hover:text-blue-600">Home</a></li>
-                  <li><a href="/AboutUs" className="text-gray-700 hover:text-blue-600">About Us</a></li>
-                  <li><a href="/services" className="text-gray-700 hover:text-blue-600">Services</a></li>
-                  <li><a href="/contact" className="text-gray-700 hover:text-blue-600">Contact</a></li>
-                  <Link href="/Vehicles">Vehicles</Link>
-                </ul>
+               <ul className="flex space-x-4 p-4 bg-gray-100">
+      <li>
+        <Link 
+          href="/" 
+          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+        >
+          Home
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
+        </Link>
+      </li>
+      <li>
+        <Link 
+          href="/AboutUs" 
+          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+        >
+          About Us
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
+        </Link>
+      </li>
+      <li>
+        <Link 
+          href="/Services" 
+          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+        >
+          Services
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
+        </Link>
+      </li>
+      <li>
+        <Link 
+          href="/Vehicles" 
+          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+        >
+          Vehicles
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
+        </Link>
+      </li>
+      <li>
+        <Link 
+          href="/Motorcycle" 
+          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+        >
+          Motorcycles
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
+        </Link>
+      </li>
+      <li>
+        <Link 
+          href="/Container" 
+          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+        >
+          Containers
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
+        </Link>
+      </li>
+      <li>
+        <Link 
+          href="/ContactUs" 
+          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+        >
+          Contact
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
+        </Link>
+      </li>
+      <li>
+        <Link 
+          href="/Login" 
+          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+        >
+          Login
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
+        </Link>
+      </li>
+    </ul>
               </nav>
              <nav>
   <div className='relative bg-sky-500 text-white p-2 flex justify-between items-center'>

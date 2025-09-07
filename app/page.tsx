@@ -26,7 +26,7 @@ export default function Home() {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const res = await fetch("https://carshippingbackend.onrender.com/api/cars/latest");
+        const res = await fetch("http://159.112.191.118:8080/api/cars/latest");
         const data = await res.json();
         setLatestArrivals(data);
       } catch (error) {
@@ -46,136 +46,161 @@ export default function Home() {
   ];
   return (
    <div>
-    <section className="relative overflow-hidden">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-indigo-900/90 z-0"></div>
-      
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/bc.jpg" 
-          alt="Luxury car showroom"
-          fill
-          
-          priority
-        />
-      </div>
+   <section className="relative min-h-screen overflow-hidden flex items-center">
+  {/* Background with gradient overlay */}
+  <div className="absolute inset-0 z-0">
+    <Image
+      src="/bc.jpg" 
+      alt="Luxury car showroom"
+      fill
+      className="object-cover"
+      priority
+    />
+    <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-900/70 to-indigo-900/90"></div>
+  </div>
 
-      <div className="relative z-10  ">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 ">
-          {/* Left Column - Search & CTA */}
-          <motion.div
-              initial={{ opacity: 0, x: 50, scale: 0.95 }} // Start slightly scaled down and to the right
-  whileInView={{ 
-    opacity: 1, 
-    x: 0, 
-    scale: 1,
-    transition: {
-      type: "spring",
-      damping: 15,
-      stiffness: 100,
-      delay: 0.8
-    }
-  }}
-  viewport={{ 
-    once: false, // Animation triggers every time element comes into view
-    margin: "-100px", // Trigger animation when 100px from viewport edge
-    amount: 0.5 // Trigger when 30% of element is visible
-  }}
-  transition={{
-    duration: 5.8,
-    ease: [0.17, 0.67, 0.83, 0.67] // Custom easing curve
-  }}
-  className=" p-8"
-          >
-            
-            {/* Search Component */}
-            <div className="mb-0">
-              <CarSearchHero />
-            </div>
-
-            {/* Value Propositions */}
-           
-
-         
-          </motion.div>
-
-          {/* Right Column - Featured Vehicle */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false }}
-            className="relative p-4 "
-          >
-            <div className="bg-black/20   backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-white/20">
-              {/* Featured Vehicle Image */}
-              <div className="relative h-64 md:h-96">
-                <Image
-                  src="/benz.jpg" // Replace with your featured vehicle
-                  alt="Featured Luxury Vehicle"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              {/* Featured Vehicle Badge */}
-              <div className="absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                Featured Vehicle
-              </div>
-
-              {/* Vehicle Details */}
-              <div className="p-6 bg-gradient-to-b from-black/70 to-black/90 text-white">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-2xl font-bold">2023 Mercedes-Benz S-Class</h3>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                    KES 12,500,000
-                  </span>
-                </div>
-                <p className="text-gray-300 mb-4">Premium Luxury Sedan</p>
-                
-                <div className="grid grid-cols-3 gap-2 text-sm">
-                  <div className="bg-white/10 p-2 rounded-lg text-center">
-                    <div className="font-bold">5.0L</div>
-                    <div className="text-xs text-gray-300">Engine</div>
-                  </div>
-                  <div className="bg-white/10 p-2 rounded-lg text-center">
-                    <div className="font-bold">8,200 km</div>
-                    <div className="text-xs text-gray-300">Mileage</div>
-                  </div>
-                  <div className="bg-white/10 p-2 rounded-lg text-center">
-                    <div className="font-bold">Automatic</div>
-                    <div className="text-xs text-gray-300">Transmission</div>
-                  </div>
-                </div>
-
-                <button className="w-full mt-4 bg-white text-blue-900 font-bold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors">
-                  View Details
-                </button>
-              </div>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="flex flex-wrap justify-center gap-4 mt-6">
-              {[
-                { text: "30+ Years Experience", bg: "bg-emerald-600" },
-                { text: "Certified Pre-Owned", bg: "bg-blue-600" },
-                { text: "Free Inspection", bg: "bg-indigo-600" }
-              ].map((badge, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ y: -3 }}
-                  className={`${badge.bg} text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md`}
-                >
-                  {badge.text}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+  <div className="container mx-auto px-4 relative z-10 py-16">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+      {/* Left Column - Search & CTA */}
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ 
+          opacity: 1, 
+          x: 0,
+          transition: {
+            type: "spring",
+            damping: 15,
+            stiffness: 100,
+            delay: 0.2
+          }
+        }}
+        viewport={{ once: true, margin: "-100px" }}
+        className="space-y-8"
+      >
+        {/* Headline */}
+        <div className="text-white">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            Discover Your Dream <span className="text-blue-300">Premium Vehicle</span>
+          </h1>
+          <p className="text-lg md:text-xl text-blue-100 max-w-md">
+            Explore our curated collection of luxury vehicles and find the perfect match for your lifestyle.
+          </p>
         </div>
-      </div>
-    </section>
+
+        {/* Search Component */}
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+          <CarSearchHero />
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+            <div className="text-2xl font-bold text-white">500+</div>
+            <div className="text-blue-200 text-sm">Premium Vehicles</div>
+          </div>
+          <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+            <div className="text-2xl font-bold text-white">98%</div>
+            <div className="text-blue-200 text-sm">Customer Satisfaction</div>
+          </div>
+          <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+            <div className="text-2xl font-bold text-white">30+</div>
+            <div className="text-blue-200 text-sm">Years Experience</div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Right Column - Featured Vehicle */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ 
+          opacity: 1, 
+          scale: 1,
+          transition: {
+            type: "spring",
+            damping: 15,
+            stiffness: 100,
+            delay: 0.4
+          }
+        }}
+        viewport={{ once: true, margin: "-100px" }}
+        className="relative"
+      >
+        <div className="bg-black/20 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-white/20 transform transition-transform duration-700 hover:scale-[1.02]">
+          {/* Featured Vehicle Badge */}
+          <div className="absolute top-6 left-6 z-20 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+            </svg>
+            Featured Vehicle
+          </div>
+
+          {/* Featured Vehicle Image */}
+          <div className="relative h-72 md:h-96">
+            <Image
+              src="/benz.jpg"
+              alt="Featured Luxury Vehicle"
+              fill
+              className="object-cover transition-transform duration-700 hover:scale-105"
+            />
+            {/* Gradient overlay at bottom of image */}
+            <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/80 to-transparent"></div>
+          </div>
+
+          {/* Vehicle Details */}
+          <div className="p-6 bg-gradient-to-b from-black/70 to-black/90 text-white">
+            <div className="flex flex-col md:flex-row justify-between items-start mb-4 gap-2">
+              <div>
+                <h3 className="text-2xl font-bold">2023 Mercedes-Benz S-Class</h3>
+                <p className="text-gray-300">Premium Luxury Sedan</p>
+              </div>
+              <span className="bg-blue-600 text-white px-4 py-2 rounded-full text-lg font-bold whitespace-nowrap">
+                KES 12,500,000
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="bg-white/10 p-3 rounded-lg text-center backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mx-auto text-blue-300 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <div className="font-bold">5.0L</div>
+                <div className="text-xs text-gray-300">Engine</div>
+              </div>
+              <div className="bg-white/10 p-3 rounded-lg text-center backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mx-auto text-blue-300 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="font-bold">8,200 km</div>
+                <div className="text-xs text-gray-300">Mileage</div>
+              </div>
+              <div className="bg-white/10 p-3 rounded-lg text-center backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mx-auto text-blue-300 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <div className="font-bold">Automatic</div>
+                <div className="text-xs text-gray-300">Transmission</div>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button className="flex-1 bg-white text-blue-900 font-bold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center">
+                View Details
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+              <button className="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  </div>
+</section>
      <section className="py-8 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
@@ -214,28 +239,49 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Global Sourcing Card */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-            <div className="p-6">
-              <div className="flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full mb-6 mx-auto">
-                <GlobeAltIcon className="w-8 h-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Global Selection</h3>
-              <p className="text-gray-600 text-center">
-                Source the best cars from Japan, South Korea, Singapore, Thailand, China, the UK, and the UAE.
-              </p>
-              <div className="mt-6">
-                <div className="flex flex-wrap justify-center gap-2">
-                  {['Japan', 'Korea', 'Singapore', 'Thailand', 'China', 'UK', 'UAE'].map((country) => (
-                    <span key={country} className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded-full">
-                      {country}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {/* Global Sourcing Card with UK Focus */}
+<div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200/70 group">
+  <div className="p-6">
+  
+    {/* UK Brands Section */}
+    <div className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 p-4 rounded-xl border border-blue-200/50">
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 rounded-full border border-blue-500/30 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <span className="text-white font-medium text-sm">UK Manufacturing Excellence</span>
+        </div>
+      </div>
+      
+      {/* UK Brands Grid */}
+      <div className="grid grid-cols-2 gap-2">
+        {[
+          { name: 'Aston Martin', color: 'bg-green-500/10 text-green-700' },
+          { name: 'Bentley', color: 'bg-red-500/10 text-red-700' },
+          { name: 'Rolls-Royce', color: 'bg-gray-800/10 text-gray-800' },
+          { name: 'Land Rover', color: 'bg-green-500/10 text-green-700' },
+          { name: 'Jaguar', color: 'bg-blue-500/10 text-blue-700' },
+          { name: 'McLaren', color: 'bg-orange-500/10 text-orange-700' },
+          { name: 'Lotus', color: 'bg-yellow-500/10 text-yellow-700' },
+          { name: 'Mini', color: 'bg-red-500/10 text-red-700' }
+        ].map((brand) => (
+          <div 
+            key={brand.name} 
+            className={`px-3 py-2 ${brand.color} rounded-lg text-xs font-medium text-center transition-all duration-200 hover:scale-105 hover:shadow-sm`}
+          >
+            {brand.name}
           </div>
-
+        ))}
+      </div>
+      
+      {/* Footer Note */}
+      <p className="text-xs text-center text-gray-500 mt-3">
+        Premium British automotive engineering
+      </p>
+    </div>
+  </div>
+</div>
           {/* Quality Card */}
           <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100">
             <div className="p-6">
@@ -397,7 +443,9 @@ export default function Home() {
       </div>
     </section>
 <section>
-  <EuropeanCarsHero />
+      <div className="border-t border-gray-200 my-12">
+        <EuropeanCarsHero />
+      </div>
 </section>
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white px-4">
       <div className="max-w-7xl mx-auto">

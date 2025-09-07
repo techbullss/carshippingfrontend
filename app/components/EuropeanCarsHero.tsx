@@ -8,21 +8,21 @@ import { motion } from 'framer-motion';
 
 export default function EuropeanCarsHero() {
   const carImages = [
-    { src: "/cars.png", alt: "Mercedes-Benz luxury vehicles in our showroom" },
-    { src: "/bb.png", alt: "Latest BMW models available in Kenya" },
-    { src: "/benz.jpg", alt: "Premium Audi vehicles for Kenyan roads" },
-    { src: "/bmw.gif", alt: "UK-imported Range Rover in Nairobi" },
+    { src: "/cars.png", alt: "Luxury Mercedes-Benz vehicles at our Nairobi showroom" },
+    { src: "/bb.png", alt: "Brand-new BMW models ready for import" },
+    { src: "/benz.jpg", alt: "Exclusive Audi lineup available for Kenyan drivers" },
+    { src: "/bmw.gif", alt: "Range Rover sport edition imported from the UK" },
   ];
 
   return (
-    <div className="relative h-[80vh] min-h-[600px]  overflow-hidden">
+    <div className="relative h-[85vh] min-h-[620px] overflow-hidden">
       {/* Background Slideshow */}
       <Swiper
         modules={[Autoplay, EffectFade]}
         effect="fade"
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         loop={true}
-        speed={1000}
+        speed={1200}
         className="w-full h-full"
       >
         {carImages.map((car, index) => (
@@ -35,7 +35,8 @@ export default function EuropeanCarsHero() {
                 className="object-cover"
                 priority={index === 0}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-emerald-900/50"></div>
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70"></div>
             </div>
           </SwiperSlide>
         ))}
@@ -43,56 +44,55 @@ export default function EuropeanCarsHero() {
 
       {/* Content Overlay */}
       <div className="absolute inset-0 z-10 flex items-center justify-center">
-        <div className="max-w-7xl px-4 text-center">
+        <div className="max-w-6xl px-4 text-center">
+          
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-block bg-white text-blue-800 text-sm font-semibold px-4 py-2 rounded-full mb-6 shadow-lg"
+            transition={{ duration: 0.6 }}
+            className="inline-block bg-gradient-to-r from-amber-400 to-yellow-500 text-black text-sm font-semibold px-5 py-2 rounded-full mb-6 shadow-lg"
           >
-            Since 2015 • Trusted Importer
+            Premium Imports • Kenya’s #1 Since 2015
           </motion.div>
           
           {/* Headline */}
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg"
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-emerald-300">
-              European Auto Kenya
-            </span>
+            Drive <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Europe’s Finest</span> in Kenya
           </motion.h1>
           
           {/* Subheadline */}
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto mb-8 drop-shadow-md"
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="text-lg md:text-2xl text-white/90 max-w-3xl mx-auto mb-10 drop-shadow-lg"
           >
-            Your trusted partner for premium <strong className="text-white">German, British, and Italian</strong> vehicles in Kenya –  
-            offering <strong className="text-white">new, used, and import services</strong> with unmatched reliability.
+            Experience <strong className="text-white">luxury, performance, and trust</strong> with our handpicked selection  
+            of <strong className="text-white">German, British, and Italian vehicles</strong> — imported and delivered to your doorstep.
           </motion.p>
           
           {/* CTA Buttons */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="flex flex-col sm:flex-row justify-center gap-4"
+            transition={{ duration: 0.7, delay: 0.6 }}
+            className="flex flex-col sm:flex-row justify-center gap-6"
           >
-            <button className="bg-white text-blue-800 font-bold px-8 py-3 rounded-lg hover:bg-gray-100 transition shadow-lg hover:shadow-xl">
-              Browse Inventory
+            <button className="bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:opacity-90 transition">
+              Explore Our Stock
             </button>
-            <button className="bg-transparent border-2 border-white text-white font-bold px-8 py-3 rounded-lg hover:bg-white/10 transition">
-              Import Inquiry
+            <button className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition">
+              Start Your Import
             </button>
           </motion.div>
         </div>
       </div>
     </div>
   );
-};
+}
