@@ -26,7 +26,7 @@ export default function Home() {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const res = await fetch("http://159.112.191.118:8080/api/cars/latest");
+        const res = await fetch("https://carshipping.duckdns.org:8443/api/cars/latest");
         const data = await res.json();
         setLatestArrivals(data);
       } catch (error) {

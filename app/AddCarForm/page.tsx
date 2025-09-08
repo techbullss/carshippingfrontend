@@ -200,7 +200,7 @@ export default function AddCarForm() {
 
       images.forEach(file => formData.append("images", file));
 
-      const res = await fetch("http://159.112.191.118:8080/api/cars", {
+      const res = await fetch("https://carshipping.duckdns.org:8443/api/cars", {
         method: "POST",
         body: formData,
       });
