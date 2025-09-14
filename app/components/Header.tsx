@@ -36,7 +36,7 @@ export default function Header(){
                 </div>
                <div className="w-[590px] h-[190px] relative pt-2">
   <Image
-    src="/dd2.png"
+    src="/er.png"
     alt="Logo"
     fill
     className="object-cover"
