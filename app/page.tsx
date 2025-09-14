@@ -132,7 +132,7 @@ export default function Home() {
       viewport={{ once: true }}
       className="text-center mb-16"
     >
-      <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-5 py-1.5 rounded-full mb-6 shadow-sm border-b-8 border-yellow-500">
+      <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-5 py-1.5 rounded-full mb-2 shadow-sm border-b-6 border-yellow-500">
   🚘 Fresh Stock
 </span>
 
