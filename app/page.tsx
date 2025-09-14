@@ -109,7 +109,7 @@ export default function Home() {
 
       {/* Image / Hero Column */}
       <div
-        className="w-full h-80 md:h-[420px] rounded-2xl shadow-2xl bg-[url('/key.jpg')] 
+        className="w-full h-80 md:h-[420px] rounded-2xl shadow-2xl bg-[url('/key.jpg')] border-l-6 border-yellow-500
                    bg-cover bg-center relative overflow-hidden flex items-center justify-center"
       >
         
@@ -122,7 +122,7 @@ export default function Home() {
 </section>
 
 
-     <section className="bg-gradient-to-b from-gray-50 to-white py-16 px-4">
+     <section className="bg-gradient-to-b from-gray-50 to-white py-4 px-4">
   <div className="max-w-7xl mx-auto">
     {/* ✅ Section Header */}
     <motion.div
@@ -132,20 +132,11 @@ export default function Home() {
       viewport={{ once: true }}
       className="text-center mb-16"
     >
-      <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-5 py-1.5 rounded-full mb-4 shadow-sm">
-        🚘 Fresh Stock
-      </span>
+      <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-5 py-1.5 rounded-full mb-6 shadow-sm border-b-8 border-yellow-500">
+  🚘 Fresh Stock
+</span>
 
-      <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
-        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-emerald-600">
-          Latest Arrivals
-        </span>
-      </h2>
-
-      <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-        Hot off the boat from the UK — discover our newest selection of 
-        high-quality vehicles, ready for purchase and export to Kenya.
-      </p>
+    
     </motion.div>
 
     {/* ✅ Cars Grid */}
