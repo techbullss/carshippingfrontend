@@ -1,40 +1,13 @@
 import { FaCar, FaGlobe, FaShieldAlt, FaShippingFast, FaHandshake, FaStar } from "react-icons/fa";
 import Image from "next/image";
+import { CheckBadgeIcon, RocketLaunchIcon, ShieldCheckIcon } from "@heroicons/react/16/solid";
 
 const AboutUs = () => {
   return (
     <section className="bg-gradient-to-b from-gray-100 via-white to-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-12">
 
-        {/* Hero Section (Replaced EuropeanCarsHero) */}
-        <div className="relative bg-gradient-to-r from-blue-700 via-emerald-600 to-blue-800 text-white rounded-3xl shadow-xl overflow-hidden mb-20">
-          <div className="absolute inset-0 opacity-30">
-            <Image
-              src="/cars.png"
-              alt="Luxury European Cars"
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="relative z-10 px-8 py-20 text-center">
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 drop-shadow-lg">
-              Bringing <span className="text-amber-300">Europe’s Finest Cars</span> to Kenya
-            </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-10">
-              Discover premium <strong>German engineering</strong>, <strong>British luxury</strong>,  
-              and <strong>Italian performance</strong> — all delivered with world-class service  
-              and hassle-free import solutions.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <button className="px-8 py-4 rounded-xl font-bold shadow-md text-blue-900 bg-amber-400 hover:bg-amber-300 transition">
-                Explore Our Collection
-              </button>
-              <button className="px-8 py-4 rounded-xl font-bold shadow-md border-2 border-white text-white bg-transparent hover:bg-white/10 transition">
-                Start Your Import
-              </button>
-            </div>
-          </div>
-        </div>
+       
 
         {/* Mission & Values */}
         <div className="grid md:grid-cols-2 gap-10 mb-20">
@@ -70,33 +43,127 @@ const AboutUs = () => {
         </div>
 
         {/* Brands */}
-        <div className="mb-20 text-center">
-          <h2 className="text-3xl font-bold mb-10 text-gray-900">
-            Trusted Names, <span className="text-blue-600">Timeless Quality</span>
+         <section className="py-8 bg-gradient-to-b from-gray-50 to-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-emerald-600">
+              You name it, we have it!
+            </span>
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { name: "Mercedes-Benz", logo: "/mercedes.png" },
-              { name: "BMW", logo: "/bmwlogo.png" },
-              { name: "Audi", logo: "/audilogo.png" },
-              { name: "Volkswagen", logo: "/vw.png" },
-              { name: "Porsche", logo: "/porsche.png" },
-              { name: "Jaguar", logo: "/jaguar.png" },
-              { name: "Land Rover", logo: "/landrover.png" },
-              { name: "Volvo", logo: "/volvo.png" },
-            ].map((brand) => (
-              <div
-                key={brand.name}
-                className="p-6 bg-white rounded-xl shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 border border-gray-100"
-              >
-                <div className="relative w-20 h-20 mx-auto mb-4">
-                  <Image src={brand.logo} alt={brand.name} fill className="object-contain" />
-                </div>
-                <h3 className="font-semibold">{brand.name}</h3>
+         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+  We deliver authentic European performance - every vehicle comes with complete service 
+  history and meets strict TÜV-certified mechanical standards.
+</p>
+        </div>
+
+        {/* Image Banner */}
+       
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Global Sourcing Card with UK Focus */}
+<div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200/70 group">
+  <div className="p-6">
+  
+    {/* UK Brands Section */}
+    <div className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 p-4 rounded-xl border border-blue-200/50">
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 rounded-full border border-blue-500/30 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <span className="text-white font-medium text-sm">UK Manufacturing Excellence</span>
+        </div>
+      </div>
+      
+      {/* UK Brands Grid */}
+      <div className="grid grid-cols-2 gap-2">
+        {[
+          { name: 'Aston Martin', color: 'bg-green-500/10 text-green-700' },
+          { name: 'Bentley', color: 'bg-red-500/10 text-red-700' },
+          { name: 'Rolls-Royce', color: 'bg-gray-800/10 text-gray-800' },
+          { name: 'Land Rover', color: 'bg-green-500/10 text-green-700' },
+          { name: 'Jaguar', color: 'bg-blue-500/10 text-blue-700' },
+          { name: 'McLaren', color: 'bg-orange-500/10 text-orange-700' },
+          { name: 'Lotus', color: 'bg-yellow-500/10 text-yellow-700' },
+          { name: 'Mini', color: 'bg-red-500/10 text-red-700' }
+        ].map((brand) => (
+          <div 
+            key={brand.name} 
+            className={`px-3 py-2 ${brand.color} rounded-lg text-xs font-medium text-center transition-all duration-200 hover:scale-105 hover:shadow-sm`}
+          >
+            {brand.name}
+          </div>
+        ))}
+      </div>
+      
+      {/* Footer Note */}
+      <p className="text-xs text-center text-gray-500 mt-3">
+        Premium British automotive engineering
+      </p>
+    </div>
+  </div>
+</div>
+          {/* Quality Card */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+            <div className="p-6">
+              <div className="flex items-center justify-center w-16 h-16 bg-emerald-50 rounded-full mb-6 mx-auto">
+                <CheckBadgeIcon className="w-8 h-8 text-emerald-600" />
               </div>
-            ))}
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Uncompromising Quality</h3>
+              <p className="text-gray-600 text-center">
+                Thorough inspections before shipment ensure you receive vehicles in the best possible condition.
+              </p>
+              <div className="mt-6 flex justify-center">
+                <span className="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-800 rounded-full">
+                  <ShieldCheckIcon className="w-5 h-5 mr-2" />
+                  Quality Guaranteed
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Reliability Card */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+            <div className="p-6">
+              <div className="flex items-center justify-center w-16 h-16 bg-amber-50 rounded-full mb-6 mx-auto">
+                <ShieldCheckIcon className="w-8 h-8 text-amber-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">30 Years of Trust</h3>
+              <p className="text-gray-600 text-center">
+                Our decades of excellence in the used car industry ensure reliability you can count on.
+              </p>
+              <div className="mt-6">
+                <div className="flex justify-center items-center">
+                  <div className="text-4xl font-bold text-amber-600 mr-2">30+</div>
+                  <div className="text-gray-600">Years<br/>Experience</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Speed Card */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+            <div className="p-6">
+              <div className="flex items-center justify-center w-16 h-16 bg-purple-50 rounded-full mb-6 mx-auto">
+                <RocketLaunchIcon className="w-8 h-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Lightning Fast Delivery</h3>
+              <p className="text-gray-600 text-center">
+                Prompt worldwide shipment gets you behind the wheel of your dream car faster than you imagine.
+              </p>
+              <div className="mt-6 flex justify-center">
+                <span className="inline-flex items-center px-4 py-2 bg-purple-50 text-purple-800 rounded-full">
+                  <RocketLaunchIcon className="w-5 h-5 mr-2" />
+                  Fast Global Delivery
+                </span>
+              </div>
+            </div>
           </div>
         </div>
+
+        
+      </div>
+    </section>
 
         {/* Import Process */}
         <div className="mb-20">

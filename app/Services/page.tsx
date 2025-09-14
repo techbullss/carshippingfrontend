@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 
 const ServicesPage = () => {
-  const [activeTab, setActiveTab] = useState<'vehicles' | 'motorcycles' | 'containers'>('vehicles');
+  const [activeTab, setActiveTab] = useState<'vehicles' | 'motorcycles' | 'containers' | 'auxiliary'>('vehicles');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const services = {
@@ -42,7 +42,30 @@ const ServicesPage = () => {
         "Direct shipping to Mombasa port"
       ],
       types: ["20ft Standard", "40ft Standard", "40ft High Cube", "Refrigerated", "Open Top"]
-    }
+    },
+    auxiliary: {
+  title: "Vehicle & Motorcycle Spare Parts",
+  description:
+    "High-quality spare parts and auxiliary services to support the import of vehicles and motorbikes from the UK to Kenya.",
+  features: [
+    "Wide selection of genuine and aftermarket parts",
+    "Customs clearance assistance",
+    "Local transportation arrangements",
+    "Insurance options for your shipment",
+    "Pre-shipment inspections",
+    "Post-arrival support"
+  ],
+  types: [
+    "Vehicle Spare Parts",
+    "Motorcycle Spare Parts",
+    "Customs Clearance",
+    "Local Delivery",
+    "Insurance",
+    "Inspections",
+    "Consultation"
+  ]
+}
+
   };
 
   const processSteps = [
@@ -83,44 +106,24 @@ const ServicesPage = () => {
 
   return (
     <>
-      <Head>
-        <title>UK Vehicles for Export to Kenya | Purchase with Shipping Included</title>
-        <meta name="description" content="Buy quality UK vehicles, motorcycles, and containers with included shipping to Kenya. We handle everything from purchase to delivery." />
-      </Head>
-
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-20">
-        <div className="absolute inset-0 bg-black opacity-40"></div>
-        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">UK Vehicles & Containers for Export to Kenya</h1>
-            <p className="text-xl mb-8">We source quality items in the UK and handle everything from purchase to delivery at your door in Kenya</p>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="bg-white text-blue-900 font-bold py-3 px-8 rounded-lg hover:bg-blue-100 transition-colors shadow-lg transform hover:scale-105 transition-transform"
-            >
-              View Available Inventory
-            </button>
-          </div>
-        </div>
-      </section>
+     
+     
 
       {/* Services Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
+      <section className="py-2 bg-gray-50">
+        <div className="container mx-auto px-2">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Sourcing Services</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">We find quality products in the UK market and handle the complete export process to Kenya</p>
           </div>
 
           {/* Service Tabs */}
-          <div className="max-w-4xl mx-auto">
+          <div className="">
             <div className="flex flex-wrap justify-center mb-8 gap-2">
               {Object.keys(services).map((key) => (
                 <button
                   key={key}
-                  onClick={() => setActiveTab(key as 'vehicles' | 'motorcycles' | 'containers')}
+                  onClick={() => setActiveTab(key as 'vehicles' | 'motorcycles' | 'containers' | 'auxiliary')}
                   className={`px-6 py-3 font-medium rounded-lg transition-colors ${activeTab === key ? 'bg-blue-700 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 shadow-sm'}`}
                 >
                   {services[key as keyof typeof services].title}

@@ -36,7 +36,7 @@ export default function Header(){
                 </div>
                <div className="w-[590px] h-[190px] relative pt-2">
   <Image
-    src="/header.png"
+    src="/dd2.png"
     alt="Logo"
     fill
     className="object-cover"
@@ -122,7 +122,7 @@ export default function Header(){
       </li>
       <li>
         <Link 
-          href="/Motorcycle" 
+          href="/Motocycle" 
           className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
         >
           Motorcycles

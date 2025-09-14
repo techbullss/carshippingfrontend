@@ -16,22 +16,6 @@ interface Model {
   makeId: string;
 }
 
-const PRICE_RANGES = [
-  { value: "", label: "Any Price" },
-  { value: "0-500000", label: "Under KSh 500,000" },
-  { value: "500000-1000000", label: "KSh 500,000 - 1M" },
-  { value: "1000000-3000000", label: "KSh 1M - 3M" },
-  { value: "3000000-5000000", label: "KSh 3M - 5M" },
-  { value: "5000000-10000000", label: "KSh 5M - 10M" },
-  { value: "10000000", label: "Over KSh 10M" },
-];
-
-const CONDITION_TYPES = [
-  { value: "", label: "All Conditions" },
-  { value: "new", label: "Brand New" },
-  { value: "used", label: "Used" },
-];
-
 const BODY_TYPES = [
   { value: "", label: "All Body Types" },
   { value: "SUV", label: "SUV" },
@@ -51,14 +35,6 @@ const TRANSMISSION_TYPES = [
   { value: "Semi-Automatic", label: "Semi-Automatic" },
 ];
 
-const FUEL_TYPES = [
-  { value: "", label: "Any Fuel Type" },
-  { value: "Petrol", label: "Petrol" },
-  { value: "Diesel", label: "Diesel" },
-  { value: "Hybrid", label: "Hybrid" },
-  { value: "Electric", label: "Electric" },
-];
-
 export default function CarSearchHero() {
   const router = useRouter();
   const [makes, setMakes] = useState<Make[]>([]);
@@ -68,18 +44,14 @@ export default function CarSearchHero() {
   const [filters, setFilters] = useState({
     make: "",
     model: "",
-    priceRange: "",
-    conditionType: "",
     bodyType: "",
     transmission: "",
-    fuelType: "",
   });
 
-  // Fetch makes from API
   useEffect(() => {
     const fetchMakes = async () => {
       try {
-        const response = await fetch('/api/makes');
+        const response = await fetch("/api/makes");
         const data = await response.json();
         setMakes(data);
       } catch (error) {
@@ -88,17 +60,14 @@ export default function CarSearchHero() {
         setLoadingMakes(false);
       }
     };
-
     fetchMakes();
   }, []);
 
-  // Fetch models when make is selected
   useEffect(() => {
     if (!filters.make) {
       setModels([]);
       return;
     }
-
     const fetchModels = async () => {
       setLoadingModels(true);
       try {
@@ -111,7 +80,6 @@ export default function CarSearchHero() {
         setLoadingModels(false);
       }
     };
-
     fetchModels();
   }, [filters.make]);
 
@@ -119,22 +87,17 @@ export default function CarSearchHero() {
     setFilters(prev => ({
       ...prev,
       [name]: value,
-      ...(name === 'make' ? { model: "" } : {}) // Reset model when make changes
+      ...(name === "make" ? { model: "" } : {}),
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     const params = new URLSearchParams();
-    if (filters.make) params.append('make', filters.make);
-    if (filters.model) params.append('model', filters.model);
-    if (filters.priceRange) params.append('priceRange', filters.priceRange);
-    if (filters.conditionType) params.append('conditionType', filters.conditionType);
-    if (filters.bodyType) params.append('bodyType', filters.bodyType);
-    if (filters.transmission) params.append('transmission', filters.transmission);
-    if (filters.fuelType) params.append('fuelType', filters.fuelType);
-
+    if (filters.make) params.append("make", filters.make);
+    if (filters.model) params.append("model", filters.model);
+    if (filters.bodyType) params.append("bodyType", filters.bodyType);
+    if (filters.transmission) params.append("transmission", filters.transmission);
     router.push(`/vehicles?${params.toString()}`);
   };
 
@@ -142,11 +105,8 @@ export default function CarSearchHero() {
     setFilters({
       make: "",
       model: "",
-      priceRange: "",
-      conditionType: "",
       bodyType: "",
       transmission: "",
-      fuelType: "",
     });
   };
 
@@ -155,32 +115,12 @@ export default function CarSearchHero() {
       <form onSubmit={handleSubmit}>
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Find Your Perfect Vehicle</h1>
-          <p className="text-sm text-gray-600 mt-1">Search our inventory of premium European vehicles</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Search our inventory of premium European vehicles
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Condition Type */}
-          <div>
-            <label htmlFor="conditionType" className="block text-sm font-medium text-gray-700 mb-1">
-              Condition
-            </label>
-            <div className="relative">
-              <select
-                id="conditionType"
-                name="conditionType"
-                value={filters.conditionType}
-                onChange={(e) => handleFilterChange('conditionType', e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {CONDITION_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
           {/* Make Selector */}
           <div>
             <label htmlFor="make" className="block text-sm font-medium text-gray-700 mb-1">
@@ -196,7 +136,7 @@ export default function CarSearchHero() {
                   id="make"
                   name="make"
                   value={filters.make}
-                  onChange={(e) => handleFilterChange('make', e.target.value)}
+                  onChange={(e) => handleFilterChange("make", e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Any Make</option>
@@ -225,7 +165,7 @@ export default function CarSearchHero() {
                   id="model"
                   name="model"
                   value={filters.model}
-                  onChange={(e) => handleFilterChange('model', e.target.value)}
+                  onChange={(e) => handleFilterChange("model", e.target.value)}
                   disabled={!filters.make}
                   className={`w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                     !filters.make ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"
@@ -252,7 +192,7 @@ export default function CarSearchHero() {
                 id="bodyType"
                 name="bodyType"
                 value={filters.bodyType}
-                onChange={(e) => handleFilterChange('bodyType', e.target.value)}
+                onChange={(e) => handleFilterChange("bodyType", e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 {BODY_TYPES.map((type) => (
@@ -264,29 +204,7 @@ export default function CarSearchHero() {
             </div>
           </div>
 
-          {/* Price Range */}
-          <div>
-            <label htmlFor="priceRange" className="block text-sm font-medium text-gray-700 mb-1">
-              Price Range
-            </label>
-            <div className="relative">
-              <select
-                id="priceRange"
-                name="priceRange"
-                value={filters.priceRange}
-                onChange={(e) => handleFilterChange('priceRange', e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {PRICE_RANGES.map((range) => (
-                  <option key={range.value} value={range.value}>
-                    {range.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Transmission Type */}
+          {/* Transmission */}
           <div>
             <label htmlFor="transmission" className="block text-sm font-medium text-gray-700 mb-1">
               Transmission
@@ -296,32 +214,10 @@ export default function CarSearchHero() {
                 id="transmission"
                 name="transmission"
                 value={filters.transmission}
-                onChange={(e) => handleFilterChange('transmission', e.target.value)}
+                onChange={(e) => handleFilterChange("transmission", e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 {TRANSMISSION_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Fuel Type */}
-          <div>
-            <label htmlFor="fuelType" className="block text-sm font-medium text-gray-700 mb-1">
-              Fuel Type
-            </label>
-            <div className="relative">
-              <select
-                id="fuelType"
-                name="fuelType"
-                value={filters.fuelType}
-                onChange={(e) => handleFilterChange('fuelType', e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {FUEL_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
                     {type.label}
                   </option>
