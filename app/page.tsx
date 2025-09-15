@@ -23,16 +23,82 @@ type Car = {
 export default function Home() {
   const [latestArrivals, setLatestArrivals] = useState<Car[]>([]);
 
+ const [loading, setLoading] = useState(true); 
+
+   const [usingFallback, setUsingFallback] = useState(false);
+
+  // Sample fallback vehicles
+  const fallbackVehicles: Car[] = [
+    {
+      id: 1,
+      brand: "Toyota",
+      model: "Land Cruiser Prado",
+      imageUrls: ["/benz.jpg"],
+      priceKes: 4500000,
+      yearOfManufacture: "2022",
+      mileage: "15,000",
+      fuelType: "Diesel",
+      transmission: "Automatic",
+      bodyType: "SUV",
+      isNew: true
+    },
+    {
+      id: 2,
+      brand: "Mercedes-Benz",
+      model: "C-Class",
+      imageUrls: ["/bc.jpg"],
+      priceKes: 3800000,
+      yearOfManufacture: "2021",
+      mileage: "22,500",
+      fuelType: "Petrol",
+      transmission: "Automatic",
+      bodyType: "Sedan",
+      isNew: false
+    },
+    {
+      id: 3,
+      brand: "Subaru",
+      model: "Outback",
+      imageUrls: ["/best.png"],
+      priceKes: 2800000,
+      yearOfManufacture: "2020",
+      mileage: "35,000",
+      fuelType: "Petrol",
+      transmission: "Automatic",
+      bodyType: "Estate",
+      isNew: false
+    }
+  ];
+
   useEffect(() => {
     const fetchLatest = async () => {
       try {
         const res = await fetch("https://carshipping.duckdns.org:8443/api/cars/latest");
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const data = await res.json();
-        setLatestArrivals(data);
+        
+        if (data && data.length > 0) {
+          setLatestArrivals(data);
+          setUsingFallback(false);
+        } else {
+          // If API returns empty array, use fallback
+          setLatestArrivals(fallbackVehicles);
+          setUsingFallback(true);
+        }
       } catch (error) {
         console.error("Error fetching latest arrivals:", error);
+        // Use fallback vehicles on error
+        setLatestArrivals(fallbackVehicles);
+        setUsingFallback(true);
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchLatest();
   }, []);
 
@@ -122,9 +188,9 @@ export default function Home() {
 </section>
 
 
-     <section className="bg-gradient-to-b from-gray-50 to-white py-4 px-4">
+ <section className="bg-gradient-to-b from-gray-50 to-white py-4 px-4">
   <div className="max-w-7xl mx-auto">
-    {/* ✅ Section Header */}
+    {/* Section Header */}
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -133,113 +199,137 @@ export default function Home() {
       className="text-center mb-16"
     >
       <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-5 py-1.5 rounded-full mb-2 shadow-sm border-b-6 border-yellow-500">
-  🚘 Fresh Stock
-</span>
-
-    
+        🚘 Fresh Stock
+      </span>
+      {usingFallback && (
+        <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md max-w-md mx-auto">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                Showing sample vehicles. <span className="font-medium">Our full inventory will be back shortly!</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
 
-    {/* ✅ Cars Grid */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-      {latestArrivals.map((car) => (
-        <motion.div
-          key={car.id}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-15% 0px -15% 0px" }}
-          variants={{
-            hidden: { opacity: 0, y: 50 },
-            visible: { opacity: 1, y: 0 },
-          }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          whileHover={{ scale: 1.02 }}
-          className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
+    {/* ✅ Spinner while loading */}
+    {loading ? (
+      <div className="flex justify-center items-center py-20">
+        <div className="w-12 h-12 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+      </div>
+    ) : (
+      /* Cars Grid */
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        {latestArrivals.map((car) => (
+          <motion.div
+            key={car.id}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-15% 0px -15% 0px" }}
+            variants={{
+              hidden: { opacity: 0, y: 50 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ scale: 1.02 }}
+            className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
+          >
+            {/* Image with tags */}
+            <div className="relative">
+              <img
+                src={car.imageUrls?.[0] || "/car-placeholder.jpg"}
+                alt={`${car.brand} ${car.model}`}
+                className="w-full h-64 object-cover"
+              />
+
+              {/* Favorite button */}
+              <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full backdrop-blur-sm hover:bg-red-100 transition-colors">
+                <FaRegHeart className="text-red-500 text-xl" />
+              </button>
+
+              {/* NEW badge */}
+              {car.isNew && (
+                <span className="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                  NEW
+                </span>
+              )}
+            </div>
+
+            {/*  Car Details */}
+            <div className="p-6 space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {car.brand} {car.model}
+                  </h3>
+                  <p className="text-gray-500 text-sm">
+                    {car.yearOfManufacture} • {car.mileage} km
+                  </p>
+                </div>
+                <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full text-sm shadow-sm">
+                  KES {car.priceKes.toLocaleString()}
+                </span>
+              </div>
+
+              {/* Features */}
+              <div className="grid grid-cols-3 gap-3 text-gray-600 text-sm">
+                <div className="flex items-center">
+                  <FaCar className="mr-2 text-blue-500" /> {car.bodyType}
+                </div>
+                <div className="flex items-center">
+                  <FaGasPump className="mr-2 text-blue-500" /> {car.fuelType}
+                </div>
+                <div className="flex items-center">
+                  <FaTachometerAlt className="mr-2 text-blue-500" /> {car.transmission}
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              {!usingFallback && (
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <button
+                    onClick={() => window.location.href = `/cars/${car.id}`}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg 
+                               hover:bg-blue-700 transition-colors duration-300"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => window.location.href = `/quote?car=${car.id}`}
+                    className="flex-1 px-4 py-2 bg-emerald-500 text-white font-semibold rounded-lg 
+                               hover:bg-emerald-600 transition-colors duration-300"
+                  >
+                    Get Shipping Quote
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    )}
+
+    {/* Footer CTA */}
+    {!loading && (
+      <div className="text-center mt-14">
+        <button
+          onClick={() => window.location.href = "/vehicles"}
+          className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-md 
+                     hover:bg-blue-700 hover:shadow-lg transition-all duration-300"
         >
-          {/* ✅ Image with tags */}
-          <div className="relative">
-            <img
-              src={car.imageUrls?.[0] || "/car-placeholder.jpg"}
-              alt={`${car.brand} ${car.model}`}
-              className="w-full h-64 object-cover"
-            />
-
-            {/* Favorite button */}
-            <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full backdrop-blur-sm hover:bg-red-100 transition-colors">
-              <FaRegHeart className="text-red-500 text-xl" />
-            </button>
-
-            {/* NEW badge */}
-            {car.isNew && (
-              <span className="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                NEW
-              </span>
-            )}
-          </div>
-
-          {/* ✅ Car Details */}
-          <div className="p-6 space-y-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">
-                  {car.brand} {car.model}
-                </h3>
-                <p className="text-gray-500 text-sm">
-                  {car.yearOfManufacture} • {car.mileage} km
-                </p>
-              </div>
-              <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full text-sm shadow-sm">
-                KES {car.priceKes}
-              </span>
-            </div>
-
-            {/* Features */}
-            <div className="grid grid-cols-3 gap-3 text-gray-600 text-sm">
-              <div className="flex items-center">
-                <FaCar className="mr-2 text-blue-500" /> {car.bodyType}
-              </div>
-              <div className="flex items-center">
-                <FaGasPump className="mr-2 text-blue-500" /> {car.fuelType}
-              </div>
-              <div className="flex items-center">
-                <FaTachometerAlt className="mr-2 text-blue-500" /> {car.transmission}
-              </div>
-            </div>
-
-            {/* ✅ CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <button
-                onClick={() => window.location.href = `/cars/${car.id}`}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg 
-                           hover:bg-blue-700 transition-colors duration-300"
-              >
-                View Details
-              </button>
-              <button
-                onClick={() => window.location.href = `/quote?car=${car.id}`}
-                className="flex-1 px-4 py-2 bg-emerald-500 text-white font-semibold rounded-lg 
-                           hover:bg-emerald-600 transition-colors duration-300"
-              >
-                Get Shipping Quote
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-
-    {/* ✅ Footer CTA */}
-    <div className="text-center mt-14">
-      <button
-        onClick={() => window.location.href = "/vehicles"}
-        className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-md 
-                   hover:bg-blue-700 hover:shadow-lg transition-all duration-300"
-      >
-        Browse All Vehicles
-      </button>
-    </div>
+          Browse All Vehicles
+        </button>
+      </div>
+    )}
   </div>
 </section>
-
 <section>
       <div className="border-t border-gray-200 my-12">
         <EuropeanCarsHero />
@@ -260,7 +350,7 @@ export default function Home() {
           </span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700">
-              European Excellence 🌍
+              European Excellence 
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">

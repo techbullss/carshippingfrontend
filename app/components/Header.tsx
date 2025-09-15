@@ -4,9 +4,24 @@ import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { Phone, Smartphone, Mail } from "lucide-react";
 import Link from 'next/link';
+import { useState } from 'react';
 
+import { Menu, X } from "lucide-react";
 
 export default function Header(){ 
+   const [open, setOpen] = useState(false);
+
+  const links = [
+    { href: "/", label: "Home" },
+    { href: "/AboutUs", label: "About Us" },
+    { href: "/Services", label: "Services" },
+    { href: "/Vehicles", label: "Vehicles" },
+    { href: "/Motocycle", label: "Motorcycles" },
+    { href: "/Container", label: "Containers" },
+    { href: "/ContactUs", label: "Contact" },
+    { href: "/Login", label: "Login" },
+  ];
+
 
     return (
         <div className="flex-col h-100px w-full">
@@ -82,109 +97,73 @@ export default function Header(){
 
             </div>
             <div className='flex flex-col'>
-              <nav>
-               <ul className="flex space-x-4 p-4 bg-gray-100">
-      <li>
-        <Link 
-          href="/" 
-          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
-        >
-          Home
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li>
-        <Link 
-          href="/AboutUs" 
-          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
-        >
-          About Us
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li>
-        <Link 
-          href="/Services" 
-          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
-        >
-          Services
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li>
-        <Link 
-          href="/Vehicles" 
-          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
-        >
-          Vehicles
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li>
-        <Link 
-          href="/Motocycle" 
-          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
-        >
-          Motorcycles
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li>
-        <Link 
-          href="/Container" 
-          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
-        >
-          Containers
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li>
-        <Link 
-          href="/ContactUs" 
-          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
-        >
-          Contact
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-        </Link>
-      </li>
-      <li>
-        <Link 
-          href="/Login" 
-          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
-        >
-          Login
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-200 group-hover:w-full"></span>
-        </Link>
-      </li>
-    </ul>
-              </nav>
+      <nav className="bg-gradient-to-r from-red-600 via-blue-600 to-blue-800 shadow-lg">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between items-center h-16">
+          {/* Brand */}
+          <div className="flex items-center space-x-2">
+  {/* Icon Badge */}
+  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-red-600 to-blue-600 shadow-md">
+    <span className="text-yellow-300 text-2xl">🚘</span>
+  </div>
+
+  {/* Brand Name */}
+  <span className="text-2xl md:text-3xl   bg-clip-text  animate-gradient">
+  <span className="drop-shadow-sm">Car</span>
+  <span className="ml-1 italic">Sales</span>
+</span>
+</div>
+
+          {/* Desktop menu */}
+          <ul className="hidden md:flex space-x-8">
+            {links.map(({ href, label }) => (
+              <li key={href} className="relative group">
+                <Link
+                  href={href}
+                  className="text-yellow-200 font-medium hover:text-white transition-colors duration-300"
+                >
+                  {label}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-300 transition-all duration-300 group-hover:w-full"></span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden p-2 text-yellow-200 hover:text-white transition-colors"
+          >
+            {open ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {open && (
+        <div className="md:hidden bg-gradient-to-b from-red-600 via-blue-600 to-yellow-500 border-t border-yellow-300">
+          <ul className="flex flex-col space-y-3 p-4">
+            {links.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className="block text-yellow-100 hover:text-white font-medium transition-colors duration-300"
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </nav>
              <nav>
-  <div className='relative bg-sky-500 text-white p-2 flex justify-between items-center'>
+  <div className='hidden md:flex  bg-sky-500 text-white p-2 flex justify-between items-center'>
     {/* Left side content (if any) */}
     <span>Your Logo or Title</span>
     
-    {/* Search bar at far right - larger and white */}
-    <div className=" w-100 h-12"> {/* Increased width container */}
-      <input
-        type="text"
-        placeholder="Search..."
-        className="w-full py-2 px-4 pr-10 rounded-lg text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-sky-300"
-      />
-      <svg
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
-    </div>
+   
   </div>
 </nav>
 
