@@ -219,7 +219,7 @@ export default function Home() {
       )}
     </motion.div>
 
-    {/* ✅ Spinner while loading */}
+    {/*  Spinner while loading */}
     {loading ? (
       <div className="flex justify-center items-center py-20">
         <div className="w-12 h-12 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
@@ -335,7 +335,7 @@ export default function Home() {
         <EuropeanCarsHero />
       </div>
 </section>
-    <section className="py-16 bg-gradient-to-b from-gray-50 to-white px-4">
+    <section className=" bg-gradient-to-b from-gray-50 to-white px-4">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -348,14 +348,7 @@ export default function Home() {
           <span className="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-2 rounded-full mb-4">
             <FaCarSide className="mr-2" /> Premium Selection
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700">
-              European Excellence 
-            </span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover luxury and performance from Europe's finest automakers
-          </p>
+        
         </motion.div>
 
         {/* Brands Grid */}
