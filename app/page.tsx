@@ -388,7 +388,7 @@ export default function Home() {
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
           viewport={{ once: false}}
-          className="mt-16 bg-gradient-to-r from-blue-700 to-indigo-700 rounded-2xl p-8 text-center relative overflow-hidden"
+          className="mt-8 mb-8 bg-gradient-to-r from-blue-700 to-indigo-700 rounded-2xl p-8 text-center relative overflow-hidden"
         >
           <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full"></div>
           <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-white/10 rounded-full"></div>
