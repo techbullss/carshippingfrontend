@@ -49,26 +49,7 @@ export default function CarSearchHero() {
   });
 
  
-  useEffect(() => {
-    if (!filters.make) {
-      setModels([]);
-      return;
-    }
-    const fetchModels = async () => {
-      setLoadingModels(true);
-      try {
-        const response = await fetch(`/api/models?make=${filters.make}`);
-        const data = await response.json();
-        setModels(data);
-      } catch (error) {
-        console.error("Error fetching models:", error);
-      } finally {
-        setLoadingModels(false);
-      }
-    };
-    fetchModels();
-  }, [filters.make]);
-
+  
   const handleFilterChange = (name: string, value: string) => {
     setFilters(prev => ({
       ...prev,

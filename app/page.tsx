@@ -378,7 +378,7 @@ export default function Home() {
                 <Link
   href={{
     pathname: "/Vehicles",       // Your VehicleListPage route
-    query: { model: brand.name } // send model name
+    query: { brand: brand.name } // send model name
   }}
   className="flex items-center text-sm text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300"
 >
