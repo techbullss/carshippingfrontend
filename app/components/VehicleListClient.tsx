@@ -59,6 +59,7 @@ export default function VehicleListClient() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);               // <-- added
   const observer = useRef<IntersectionObserver | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -74,45 +75,47 @@ export default function VehicleListClient() {
     [searchParams]
   );
 
-  useEffect(() => {
-    let cancelled = false;
+useEffect(() => {
+  let cancelled = false;
+  const fetchCars = async () => {
+    if (loading || !hasMore) return;
+    setLoading(true);
+    setError(false);
+    try {
+      const params = new URLSearchParams();
+      params.append("page", page.toString());
+      params.append("size", "12");
+      params.append("sort", "priceKes,desc");
+      Object.entries(filters).forEach(([k, v]) => params.append(k, v as string));
 
-    const fetchCars = async () => {
-      if (loading || !hasMore) return;
-      setLoading(true);
-      try {
-        const params = new URLSearchParams();
-        params.append("page", page.toString());
-        params.append("size", "12");
-        params.append("sort", "priceKes,desc");
-        Object.entries(filters).forEach(([k, v]) => params.append(k, v as string));
+      const res = await fetch(
+        `https://carshipping.duckdns.org:8443/api/cars?${params.toString()}`
+      );
+      if (!res.ok) throw new Error("Network error");
+      const data = await res.json();
 
-        const res = await fetch(
-          `https://carshipping.duckdns.org:8443/api/cars?${params.toString()}`
-        );
-        if (!res.ok) throw new Error("Network error");
-        const data = await res.json();
+      if (cancelled) return;
 
-        if (cancelled) return;
-
-       setCars(prev => {
-  const combined = page === 0 ? data.content : [...prev, ...data.content];
-  return Array.from(
-    new Map(combined.map((c: Car) => [c.id, c])).values()
-  ) as Car[];
-});
-        setHasMore(page < data.totalPages - 1);
-      } catch (e) {
-        console.error("Fetch error:", e);
-      } finally {
-        if (!cancelled) setLoading(false);
+      setCars(prev => {
+        const combined = page === 0 ? data.content : [...prev, ...data.content];
+        return Array.from(
+          new Map(combined.map((c: Car) => [c.id, c])).values()
+        ) as Car[];
+      });
+      setHasMore(page < data.totalPages - 1);
+    } catch (e) {
+      console.error("Fetch error:", e);
+      if (!cancelled) {
+        setError(true);
       }
-    };
+    } finally {
+      if (!cancelled) setLoading(false); 
+    }
+  };
 
-    fetchCars();
-    return () => { cancelled = true; };
-  }, [page, filters, loading, hasMore]);
-
+  fetchCars();
+  return () => { cancelled = true; };
+}, [page, filters]);
   useEffect(() => {
     setCars([]);
     setPage(0);
@@ -172,6 +175,17 @@ export default function VehicleListClient() {
           </button>
         </div>
       </div>
+
+      {/* ---- Empty or error state ---- */}
+    {error ? (
+  <div className="p-8 text-center text-red-500">
+    ⚠️ Failed to load cars. Please try again later.
+  </div>
+) : (!loading && carData.length === 0) && (
+  <div className="p-8 text-center text-gray-500">
+    No cars available for the selected filters.
+  </div>
+)}
 
       <div className="grid grid-cols-1 p-4 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {carData.map((car, index) => (
@@ -250,6 +264,13 @@ export default function VehicleListClient() {
           </motion.div>
         ))}
       </div>
+
+      {/* ---- Spinner ---- */}
+      {loading && (
+        <div className="flex justify-center items-center py-8">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
     </div>
   );
 }
