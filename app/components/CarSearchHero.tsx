@@ -98,7 +98,7 @@ export default function CarSearchHero() {
     if (filters.model) params.append("model", filters.model);
     if (filters.bodyType) params.append("bodyType", filters.bodyType);
     if (filters.transmission) params.append("transmission", filters.transmission);
-    router.push(`/vehicles?${params.toString()}`);
+    router.push(`/Vehicles?${params.toString()}`);
   };
 
   const resetFilters = () => {

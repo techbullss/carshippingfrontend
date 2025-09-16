@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
 import {  FaRegHeart, FaCar, FaGasPump, FaTachometerAlt } from 'react-icons/fa';
 import EuropeanCarsHero from "./components/EuropeanCarsHero";
+import Link from "next/link";
 type Car = {
   isNew: any;
   yearOfManufacture: string;
@@ -198,11 +199,11 @@ export default function Home() {
       viewport={{ once: true }}
       className="text-center mb-16"
     >
-      <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-5 py-1.5 rounded-full mb-2 shadow-sm border-b-6 border-yellow-500">
+      <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-5 py-1.5 rounded-full mb-2 shadow-sm border-b-2 border-red-500">
         🚘 Fresh Stock
       </span>
       {usingFallback && (
-        <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md max-w-md mx-auto">
+        <div className=" bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md max-w-md mx-auto">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -239,7 +240,7 @@ export default function Home() {
             }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300"
+            className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl border-r-6 border-red-500 transition-all duration-300"
           >
             {/* Image with tags */}
             <div className="relative">
@@ -320,9 +321,9 @@ export default function Home() {
     {!loading && (
       <div className="text-center mt-14">
         <button
-          onClick={() => window.location.href = "/vehicles"}
-          className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-md 
-                     hover:bg-blue-700 hover:shadow-lg transition-all duration-300"
+          onClick={() => window.location.href = "/Vehicles"}
+          className="px-8 py-3  text-black border border-red-600  border-b-4 font-semibold rounded-full shadow-md 
+                     hover:bg-yellow-700 hover:shadow-lg transition-all duration-300"
         >
           Browse All Vehicles
         </button>
@@ -374,9 +375,15 @@ export default function Home() {
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-1">{brand.name}</h3>
                 
-                <button className="flex items-center text-sm text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  View Models <FaChevronRight className="ml-1 text-xs" />
-                </button>
+                <Link
+  href={{
+    pathname: "/Vehicles",       // Your VehicleListPage route
+    query: { model: brand.name } // send model name
+  }}
+  className="flex items-center text-sm text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+>
+  View Models <FaChevronRight className="ml-1 text-xs" />
+</Link>
               </div>
             </motion.div>
           ))}
@@ -398,11 +405,13 @@ export default function Home() {
               We source vehicles directly from Europe. Contact us for special requests.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
-                <FaSearch className="mr-2" /> Request Specific Model
+              <button className="bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
+               onClick={() => window.location.href = "/Vehicles"}>
+                <FaSearch className="mr-2" /> View what we have in Model
               </button>
-              <button className="bg-transparent border-2 border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors duration-300">
-                Contact Our European Specialists
+              <button className="bg-transparent border-2 border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors duration-300"
+               onClick={() => window.location.href = "/ContactUs"}>
+                Contact Us for more inquiries.
               </button>
             </div>
           </div>

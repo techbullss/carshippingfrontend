@@ -84,12 +84,11 @@ export default function EuropeanCarsHero() {
             transition={{ duration: 0.7, delay: 0.6 }}
             className="flex flex-col sm:flex-row justify-center gap-6"
           >
-            <button className="bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:opacity-90 transition">
+            <button className="bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:opacity-90 transition"
+              onClick={() => window.location.href = "/Vehicles"}>
               Explore Our Stock
             </button>
-            <button className="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-xl hover:bg-white/10 transition">
-              Start Your Import
-            </button>
+            
           </motion.div>
         </div>
       </div>
