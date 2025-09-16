@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import {  FaRegHeart, FaCar, FaGasPump, FaTachometerAlt } from 'react-icons/fa';
 import EuropeanCarsHero from "./components/EuropeanCarsHero";
 import Link from "next/link";
+import router from "next/router";
 type Car = {
   isNew: any;
   yearOfManufacture: string;
@@ -111,6 +112,9 @@ export default function Home() {
     { name: "Volvo", logo: "/volvologo.png" },
     { name: "Porsche", logo: "/porchelogo.png" },
   ];
+  function handleCarClick(id: number): void {
+    router.push(`/Cardetails/${id}`);
+  }
   return (
    <div>
   <section
@@ -164,7 +168,7 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
           <button
-            onClick={() => window.location.href = "/vehicles"}
+            onClick={() => window.location.href = "/Vehicles"}
             className="px-8 py-3 bg-yellow-400 text-blue-900 font-semibold rounded-full shadow-md hover:bg-yellow-300 transition-all duration-300"
           >
             Browse  Vehicles
@@ -199,7 +203,7 @@ export default function Home() {
       viewport={{ once: true }}
       className="text-center mb-16"
     >
-      <span className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-5 py-1.5 rounded-full mb-2 shadow-sm border-b-2 border-red-500">
+      <span className="inline-block bg-blue-100 text-white text-sm font-semibold px-5 py-1.5 rounded-full mb-2 shadow-sm border-b-2 bg-emerald-500 border-yellow-500">
         🚘 Fresh Stock
       </span>
       {usingFallback && (
@@ -240,7 +244,7 @@ export default function Home() {
             }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl border-r-6 border-red-500 transition-all duration-300"
+            className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl border-r-6 border-emerald-500 transition-all duration-300"
           >
             {/* Image with tags */}
             <div className="relative">
@@ -295,19 +299,13 @@ export default function Home() {
               {/* CTA Buttons */}
               {!usingFallback && (
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                 
                   <button
-                    onClick={() => window.location.href = `/cars/${car.id}`}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg 
-                               hover:bg-blue-700 transition-colors duration-300"
-                  >
-                    View Details
-                  </button>
-                  <button
-                    onClick={() => window.location.href = `/quote?car=${car.id}`}
+                    onClick={() => handleCarClick(car.id)}
                     className="flex-1 px-4 py-2 bg-emerald-500 text-white font-semibold rounded-lg 
                                hover:bg-emerald-600 transition-colors duration-300"
                   >
-                    Get Shipping Quote
+                    View Details
                   </button>
                 </div>
               )}
@@ -322,7 +320,7 @@ export default function Home() {
       <div className="text-center mt-14">
         <button
           onClick={() => window.location.href = "/Vehicles"}
-          className="px-8 py-3  text-black border border-red-600  border-b-4 font-semibold rounded-full shadow-md 
+          className="px-8 py-3  text-black border border-green-600  border-b-4 font-semibold rounded-full shadow-md 
                      hover:bg-yellow-700 hover:shadow-lg transition-all duration-300"
         >
           Browse All Vehicles

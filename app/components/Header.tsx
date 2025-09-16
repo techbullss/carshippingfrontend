@@ -5,12 +5,16 @@ import { FaXTwitter } from "react-icons/fa6";
 import { Phone, Smartphone, Mail } from "lucide-react";
 import Link from 'next/link';
 import { useState } from 'react';
-
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import AutoTraderTwoTier from './AutoTraderTwoTier';
 
 export default function Header(){ 
    const [open, setOpen] = useState(false);
-
+const pathname = usePathname();  // e.g. "/AboutUs"
+const segments = pathname
+  .split("/")
+  .filter(Boolean)
   const links = [
     { href: "/", label: "Home" },
     { href: "/AboutUs", label: "About Us" },
@@ -97,76 +101,7 @@ export default function Header(){
 
             </div>
             <div className='flex flex-col'>
-      <nav className="bg-gradient-to-r from-red-600 via-blue-600 to-blue-800 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Brand */}
-          <div className="flex items-center space-x-2">
-  {/* Icon Badge */}
-  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-red-600 to-blue-600 shadow-md">
-    <span className="text-yellow-300 text-2xl">🚘</span>
-  </div>
-
-  {/* Brand Name */}
-  <span className="text-2xl md:text-3xl   bg-clip-text  animate-gradient">
-  <span className="drop-shadow-sm">Car</span>
-  <span className="ml-1 italic">Sales</span>
-</span>
-</div>
-
-          {/* Desktop menu */}
-          <ul className="hidden md:flex space-x-8">
-            {links.map(({ href, label }) => (
-              <li key={href} className="relative group">
-                <Link
-                  href={href}
-                  className="text-yellow-200 font-medium hover:text-white transition-colors duration-300"
-                >
-                  {label}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-300 transition-all duration-300 group-hover:w-full"></span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setOpen(!open)}
-            className="md:hidden p-2 text-yellow-200 hover:text-white transition-colors"
-          >
-            {open ? <X size={28} /> : <Menu size={28} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      {open && (
-        <div className="md:hidden bg-gradient-to-b from-red-600 via-blue-600 to-yellow-500 border-t border-yellow-300">
-          <ul className="flex flex-col space-y-3 p-4">
-            {links.map(({ href, label }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className="block text-yellow-100 hover:text-white font-medium transition-colors duration-300"
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </nav>
-             <nav>
-  <div className='hidden md:flex  bg-sky-500 text-white p-2 flex justify-between items-center'>
-    {/* Left side content (if any) */}
-    <span>Your Logo or Title</span>
-    
-   
-  </div>
-</nav>
-
+              <AutoTraderTwoTier />
             </div>
         </div>
     );
