@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         style={{
-          backgroundImage: "url('/backbg.jpg')",
+          backgroundImage: "url('/ocean3.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -36,7 +36,7 @@ export default function RootLayout({
         }}
         className={`${geistSans.variable} ${geistMono.variable} relative w-full h-full min-h-screen antialiased`}
       >
-        <div className="mx-[6%] my-[2%] bg-gray-50">
+        <div className="mx-[6%] my-[2%] bg-gray-50 border-l-2 border-rounded rounded border-gray-100 shadow-lg">
           <Header />
           {children}
           <Footer />

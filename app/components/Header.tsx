@@ -28,11 +28,11 @@ const segments = pathname
 
 
     return (
-        <div className="flex-col h-100px w-full">
+        <div className="flex-col bg-white h-100px w-full">
             <div className=" flex flex-row  p-2 w-full  ">
                 <div className="flex flex-col h-full  ">
                     <div className='p-2'>
-                      <Image className=" " src="/logo.png" alt="Logo"  objectFit='cover' width={180} height={120} />
+                      <Image className=" " src="/log8.png" alt="Logo"  objectFit='cover' width={250} height={70} />
                    </div>
                     <div className=" text-[14px]  p-4">
                         Deeares of the best Eropeans vehicles
@@ -55,7 +55,7 @@ const segments = pathname
                 </div>
                <div className="w-[590px] h-[190px] relative pt-2">
   <Image
-    src="/er.png"
+    src="/header.jpeg"
     alt="Logo"
     fill
     className="object-cover"
