@@ -162,18 +162,70 @@ useEffect(() => {
     <div>
       <div className="sticky top-0 bg-white z-50 py-4 shadow-md">
         <div className="flex flex-wrap gap-4">
-          <FilterButton label="Model: Toyota" onClick={() => updateQuery("model", "Toyota")} />
-          <FilterButton label="Engine: V8" onClick={() => updateQuery("engine", "V8")} />
-          <FilterButton label="Price < 25k" onClick={() => updateQuery("price", 25000)} />
-          <FilterButton label="Body: SUV" onClick={() => updateQuery("bodyType", "SUV")} />
+  {/* Brand */}
+  <select
+    className="px-2 py-2"
+    onChange={(e) => updateQuery("brand", e.target.value)}
+    value={filters.brand ?? ""}
+  >
+    <option value="">All Brands</option>
+    <option value="Toyota">Toyota</option>
+    <option value="Mercedes-Benz">Mercedes-Benz</option>
+    <option value="BMW">BMW</option>
+    {/* add more or fetch list from backend */}
+  </select>
 
-          <button className="px-6 py-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition">
-            <Link href="/AddCarForm">Add New Car</Link>
-          </button>
-          <button className="px-6 py-3 rounded-full bg-gray-800 text-white hover:bg-gray-900 transition">
-            More Filters
-          </button>
-        </div>
+  {/* Model */}
+  <select
+    className="px-2 py-2 "
+    onChange={(e) => updateQuery("model", e.target.value)}
+    value={filters.model ?? ""}
+  >
+    <option value="">All Models</option>
+    <option value="Corolla">Corolla</option>
+    <option value="C-Class">C-Class</option>
+    <option value="X5">X5</option>
+  </select>
+
+  {/* Transmission */}
+  <select
+    className="px-2 py-2"
+    onChange={(e) => updateQuery("transmission", e.target.value)}
+    value={filters.transmission ?? ""}
+  >
+    <option value="">Any Transmission</option>
+    <option value="Automatic">Automatic</option>
+    <option value="Manual">Manual</option>
+  </select>
+
+  {/* Body Type */}
+  <select
+    className="px-4 py-2 "
+    onChange={(e) => updateQuery("bodyType", e.target.value)}
+    value={filters.bodyType ?? ""}
+  >
+    <option value="">All Body Types</option>
+    <option value="SUV">SUV</option>
+    <option value="Sedan">Sedan</option>
+    <option value="Hatchback">Hatchback</option>
+  </select>
+
+  {/* Condition */}
+  <select
+    className="px-2 py-2"
+    onChange={(e) => updateQuery("conditionType", e.target.value)}
+    value={filters.conditionType ?? ""}
+  >
+    <option value="">Any Condition</option>
+    <option value="Used">Used</option>
+    <option value="New">New</option>
+  </select>
+
+  {/* Existing buttons */}
+  <button className="px-6 py-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition">
+    <Link href="/AddCarForm">Add New Car</Link>
+  </button>
+</div>
       </div>
 
       {/* ---- Empty or error state ---- */}

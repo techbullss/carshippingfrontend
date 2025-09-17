@@ -30,7 +30,7 @@ export default function AutoTraderSingleNav() {
       { href: "/containers/renewg", label: "40ft Containers" },
     ],
     SellWithUs: [
-      { href: "", label: "Sell With Us" },
+      { href: "/Login", label: "Sell With Us" },
     ],
     ContactUs: [
       { href: "/Contactus", label: "Contact Us" },
@@ -44,7 +44,7 @@ export default function AutoTraderSingleNav() {
     { key: "Vans", href: "/vans" },
     { key: "Bikes", href: "/Motocycle" },
     { key: "Containers", href: "/Container" },
-    { key: "SellWithUs", href: "/sellwithus" },
+    { key: "SellWithUs", href: "/Login" },
     { key: "ContactUs", href: "/ContactUs" },
   ];
 

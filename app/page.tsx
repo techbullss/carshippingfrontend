@@ -118,8 +118,8 @@ export default function Home() {
   return (
    <div>
   <section
-  className=" flex items-center
-             bg-[url('/cars.jpg')] bg-cover bg-center bg-no-repeat"
+  className=" flex items-center 
+             bg-[url('/used1.jpg')] bg-cover bg-center bg-no-repeat"
 >
   <div className="container px-2 w-full h-full ">
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-center">
