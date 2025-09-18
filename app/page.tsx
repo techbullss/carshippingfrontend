@@ -130,68 +130,104 @@ export default function Home() {
     </div>
   </div>
 </section>
-<section className="relative bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 py-20">
+<section className="relative bg-gradient-to-b from-blue-50 to-green-50 py-16">
   <div className="container mx-auto px-6 lg:px-12 relative">
+    {/* FULL-WIDTH TITLE */}
+    <div className="w-full text-center mb-10">
+      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 tracking-tight">
+        Drive Your Dream Car from <span className="text-blue-600">UK to Kenya</span>
+      </h1>
+      <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-green-500 mx-auto rounded-full"></div>
+      <p className="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">
+        Seamless vehicle import solutions with trusted expertise
+      </p>
+    </div>
 
-    {/*  FULL-WIDTH TITLE */}
-    <h1 className="w-full text-center text-4xl md:text-3xl lg:text-3xl font-bold text-white mb-4 
-                   tracking-tight drop-shadow-xl">
-      Drive Your Dream Car from <span className="text-yellow-300">UK to Kenya</span>
-    </h1>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
       {/* Text / Selling Column */}
-      <div className="flex flex-col items-center md:items-start text-center md:text-left text-white space-y-6">
-        <p className="text-blue-100 max-w-lg leading-relaxed">
-          We connect Kenyan car buyers to the best deals in the UK—whether you’re 
+      <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
+        <p className="text-gray-800 max-w-lg leading-relaxed text-lg">
+          We connect Kenyan car buyers to the best deals in the UK—whether you are 
           purchasing a luxury ride, a family SUV, or a workhorse van.  
           From sourcing and inspection to shipping and final delivery in Kenya, 
-          <strong> we handle everything for you</strong> with speed, transparency, 
+          <strong className="text-blue-600"> we handle everything for you</strong> with speed, transparency, 
           and unbeatable pricing.
         </p>
 
-        <ul className="space-y-4 text-blue-50 text-base">
+        <ul className="space-y-4 text-gray-800">
           <li className="flex items-start gap-3">
-            🚗 <span><strong>Verified UK Listings</strong> – Browse a curated selection of quality vehicles ready for export.</span>
+            <div className="bg-blue-100 p-2 rounded-full mt-1">
+              <span className="text-blue-600 font-bold">🚗</span>
+            </div>
+            <span><strong className="text-green-700">Verified UK Listings</strong> – Browse a curated selection of quality vehicles ready for export.</span>
           </li>
           <li className="flex items-start gap-3">
-            📦 <span><strong>End-to-End Shipping</strong> – From purchase to port clearance, we manage every step for a smooth experience.</span>
+            <div className="bg-green-100 p-2 rounded-full mt-1">
+              <span className="text-green-600 font-bold">📦</span>
+            </div>
+            <span><strong className="text-green-700">End-to-End Shipping</strong> – From purchase to port clearance, we manage every step.</span>
           </li>
           <li className="flex items-start gap-3">
-            💳 <span><strong>Flexible Payment</strong> – Secure transactions and clear cost breakdowns with no hidden fees.</span>
+            <div className="bg-yellow-100 p-2 rounded-full mt-1">
+              <span className="text-yellow-600 font-bold">💳</span>
+            </div>
+            <span><strong className="text-green-700">Flexible Payment</strong> – Secure transactions with no hidden fees.</span>
           </li>
           <li className="flex items-start gap-3">
-            🤝 <span><strong>Kenya-Focused Support</strong> – Local team assistance for customs, taxes, and final delivery.</span>
+            <div className="bg-blue-100 p-2 rounded-full mt-1">
+              <span className="text-blue-600 font-bold">🤝</span>
+            </div>
+            <span><strong className="text-green-700">Kenya-Focused Support</strong> – Local team assistance for customs and delivery.</span>
           </li>
         </ul>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
           <button
             onClick={() => window.location.href = "/Vehicles"}
-            className="px-8 py-3 bg-yellow-400 text-blue-900 font-semibold rounded-full shadow-md hover:bg-yellow-300 transition-all duration-300"
+            className="px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 font-bold rounded-full shadow-lg hover:from-yellow-500 hover:to-yellow-600 transition-all duration-300 transform hover:scale-105"
           >
-            Browse  Vehicles
+            Browse Vehicles
           </button>
-
           
+          <button
+            onClick={() => window.location.href = "/ContactUs"}
+            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-green-600 text-white font-bold rounded-full shadow-lg hover:from-blue-600 hover:to-green-700 transition-all duration-300 border border-blue-300"
+          >
+            Get Free Quote
+          </button>
         </div>
       </div>
 
       {/* Image / Hero Column */}
-      <div
-        className="w-full h-80 md:h-[420px] rounded-2xl shadow-2xl bg-[url('/key.jpg')] border-l-6 border-yellow-500
-                   bg-cover bg-center relative overflow-hidden flex items-center justify-center"
-      >
+      <div className="relative">
+        <div className="w-full h-80 md:h-[420px] rounded-2xl shadow-2xl bg-[url('/key.jpg')] bg-cover bg-center relative overflow-hidden flex items-center justify-center transform hover:scale-105 transition-transform duration-700">
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/70 via-transparent to-transparent"></div>
+          
+          {/* Decorative elements */}
+          <div className="absolute top-4 right-4 w-16 h-16 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-4 left-4 w-12 h-12 bg-green-500 rounded-full opacity-20 animate-bounce"></div>
+          
+          <span className="absolute bottom-6 left-6 text-white text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 px-6 py-3 rounded-full shadow-lg">
+            UK Cars • Bikes • Parts
+          </span>
+        </div>
         
-        <span className="absolute bottom-6 left-6 text-white text-lg font-medium bg-blue-700/70 px-4 py-2 rounded-full shadow-lg">
-          UK Cars • Bikes • Parts
-        </span>
+        {/* Floating stats */}
+        <div className="absolute -bottom-5 -right-5 bg-white rounded-xl shadow-xl p-4 border border-blue-200">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">500+</div>
+            <div className="text-sm text-gray-600">Vehicles Shipped</div>
+          </div>
+        </div>
       </div>
     </div>
+
+    {/* Floating decorative elements */}
+    <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-10 animate-pulse"></div>
+    <div className="absolute bottom-20 right-20 w-16 h-16 bg-green-400 rounded-full opacity-10 animate-bounce delay-1000"></div>
   </div>
 </section>
-
 
  <section className="bg-gradient-to-b from-gray-50 to-white py-4 px-4">
   <div className="max-w-7xl mx-auto">

@@ -1,23 +1,17 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 export default function AutoTraderSingleNav() {
-  const pathname = usePathname();
-
-  // All menus
+  // ✅ Data structure
   const menus = {
-    Cars: [
+    Vehicles: [
       { href: "/Vehicles", label: "Import" },
       { href: "/cars/new", label: "Local" },
       { href: "/cars/reviews", label: "Reviews" },
       { href: "/cars/finance", label: "Finance" },
-    ],
-    Vans: [
-      { href: "/vans/used", label: "Used Vans" },
-      { href: "/vans/new", label: "New Vans" },
     ],
     Bikes: [
       { href: "/bikes/used", label: "Used Bikes" },
@@ -29,80 +23,64 @@ export default function AutoTraderSingleNav() {
       { href: "/containers/renewk", label: "20ft Containers" },
       { href: "/containers/renewg", label: "40ft Containers" },
     ],
-    SellWithUs: [
-      { href: "/Login", label: "Sell With Us" },
-    ],
-    ContactUs: [
-      { href: "/Contactus", label: "Contact Us" },
-    ]
-    
+    SellWithUs: [{ href: "/Login", label: "Sell With Us" }],
+    ContactUs: [{ href: "/Contactus", label: "Contact Us" }],
   } as const;
 
   type MainKey = keyof typeof menus;
-  const mainLinks: { key: MainKey; href: string }[] = [
-    { key: "Cars", href: "/" },
-    { key: "Vans", href: "/vans" },
-    { key: "Bikes", href: "/Motocycle" },
-    { key: "Containers", href: "/Container" },
-    { key: "SellWithUs", href: "/Login" },
-    { key: "ContactUs", href: "/ContactUs" },
-  ];
+  const mainLinks = Object.keys(menus) as MainKey[];
 
-  const [activeMain, setActiveMain] = useState<MainKey>("Cars");
+  // ✅ track which dropdown is open
+  const [openKey, setOpenKey] = useState<MainKey | null>(null);
 
   return (
     <nav className="bg-white shadow-md border-b border-gray-200">
-      <div className="max-w-7xl mx-auto flex flex-col px-4">
+      <div className="max-w-7xl mx-auto px-4 flex items-center justify-evenly">
+        {/* 🔹 Logo */}
+        <Link href="/" className="flex items-center space-x-2 py-3">
+          <Image src="/logs.png" alt="Logo" width={120} height={40} />
+        </Link>
 
-        {/* 🔹 TOP ROW – Main categories */}
-        <div className="flex space-x-6 text-xs font-medium text-gray-600 py-1">
-          {mainLinks.map(({ key, href }) => (
-            <Link
+        {/* 🔹 Main Menu */}
+        <ul className="flex space-x-6 text-sm font-semibold">
+          {mainLinks.map((key) => (
+            <li
               key={key}
-              href={href}
-              onClick={() => setActiveMain(key)}
-              className={`pb-0.5 border-b-2 transition-colors duration-200 ${
-                activeMain === key
-                  ? "border-green-600 text-blue-700 font-semibold"
-                  : "border-transparent hover:text-blue-700 hover:border-green-400"
-              }`}
+              className="relative group"
+              onMouseEnter={() => setOpenKey(key)}
+              onMouseLeave={() => setOpenKey(null)}
             >
-              {key}
-            </Link>
-          ))}
-        </div>
-
-        {/* 🔹 BOTTOM ROW – Logo + Sub-menu */}
-        <div className="flex items-center pb-2">
-          {/* Logo */}
-          <Link href="/" className="flex items-center px-10 space-x-2">
-            <Image
-              src="/logs.png"        // place in /public
-              alt="FcarShipping Logo"
-              width={120}
-              height={40}
-              priority
-            />
-          </Link>
-
-          {/* Sub menu */}
-          <div className="flex flex-wrap px-6 gap-x-6 text-sm md:text-base font-bold text-gray-700">
-            {menus[activeMain].map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`pb-0 border-b-2 transition-colors duration-200 ${
-                  pathname === href
-                    ? "border-blue-600 text-blue-700 font-semibold"
-                    : "border-transparent hover:text-blue-700 hover:border-blue-400"
-                }`}
+              <button
+                className="flex items-center space-x-1 px-3 py-2 rounded-md
+                           text-blue-700 hover:text-green-700 hover:bg-yellow-100
+                           transition-colors decolration-2 decoration-green-600"
               >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
+                <span>{key}</span>
+                
+              </button>
 
+              {/* Dropdown submenu */}
+              {openKey === key && (
+                <div
+                  className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-white 
+                             border border-gray-200 z-50"
+                >
+                  {menus[key].map(({ href, label }) => (
+                    <Link
+                      key={href}
+                      href={href}
+                      className="block px-4 py-2 text-sm text-blue-700
+                                 hover:bg-green-50 hover:text-green-700
+                                 transition-colors"
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
     </nav>
   );
