@@ -75,35 +75,23 @@ const segments = pathname
 
     return (
         <div className="flex-col bg-gradient-to-b from-white to-blue-50 shadow-lg w-full">
-            {/* Top info bar */}
-            <div className="bg-green-700 text-white py-1 px-4 text-sm flex justify-between items-center">
-                <div>Deeares of the best European vehicles</div>
-                <div className="flex items-center gap-4">
-                    <span className="flex items-center">
-                        <Phone size={14} className="mr-1" /> 01495 320540
-                    </span>
-                    <span className="hidden md:flex items-center">
-                        <Smartphone size={14} className="mr-1" /> 07513 898320
-                    </span>
-                </div>
-            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-4 w-full p-4 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr_1fr] gap-4 w-full p-1 items-center">
     {/* Left Column - Logo and Social Media */}
     <div className="flex flex-col items-center md:items-start">
-    <div className='mb-4'>
+    <div className='mb-2'>
         <Image className="rounded-lg shadow-md" src="/log8.png" alt="Logo" width={250} height={70} />
     </div>
     
     {/* Fancy Text Option 1: Animated gradient text */}
-    <div className="my-3 text-center md:text-left">
+    <div className="my-1 text-center md:text-left">
         <span className="text-lg font-bold bg-gradient-to-r from-blue-600 via-green-600 to-yellow-500 bg-clip-text text-transparent animate-gradient">
             Premium European Vehicles
         </span>
     </div>
     
     {/* Fancy Text Option 2: With decorative elements */}
-    <div className="my-3 flex items-center justify-center md:justify-start">
+    <div className="my-1 flex items-center justify-center md:justify-start">
         <div className="w-4 h-0.5 bg-blue-600 mr-2"></div>
         <span className="text-sm font-semibold text-green-700 italic">
             Excellence in Automotive Shipping
@@ -115,7 +103,7 @@ const segments = pathname
     
     
     {/* Fancy Text Option 4: Animated typing effect */}
-    <div className="my-3">
+    <div className="my-1">
         <div className="text-sm font-mono text-green-700 border-r-2 border-green-600 pr-1 inline-block animate-typing">
             Your Trusted Auto Partner
         </div>
@@ -138,9 +126,9 @@ const segments = pathname
 </div>
     
     {/* Middle Column - Image (wider column) */}
-    <div className="w-full h-48 md:h-64 relative rounded-xl overflow-hidden shadow-lg">
+    <div className="w-full h-48 md:h-50 relative rounded-xl overflow-hidden shadow-lg">
         <Image
-            src="/header.jpeg"
+            src="/mwas.jpeg"
             alt="Header image"
             fill
             className="object-cover"
@@ -149,7 +137,7 @@ const segments = pathname
     
     {/* Right Column - Contact Info */}
     <div className="w-full">
-        <div className="bg-gradient-to-br from-blue-100 to-green-50 px-4 py-4 rounded-xl shadow-md space-y-3 border border-blue-200">
+        <div className="bg-gradient-to-br from-blue-100 to-green-50 px-4 py-2 rounded-xl shadow-md space-y-3 border border-blue-200">
             {/* Telephone */}
             <div className="flex items-center space-x-3">
                 <div className="bg-blue-600 p-2 rounded-full">
