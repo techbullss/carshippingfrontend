@@ -3,111 +3,30 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, Dr
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-
+import { CommercialVehicle } from '@/app/CommercialVehicle';
 import React from 'react';
 import { FaRegHeart } from 'react-icons/fa';
-interface SignupRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  gender: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  password: string;
-  preferredCommunication: string[];
-  newsletter: boolean;
-  shippingFrequency: string;
-  vehicleType: string;
-  estimatedShippingDate: string;
-  sourceCountry: string;
-  destinationCountry: string;
-}
-export interface User {
-  id: number;
-  email: string;
-  name: string;
-  role: string [];
-}
-export type Vehicle = {
-  id: number;
-  brand: string;
-  model: string;
-  yearOfManufacture: string;
-  conditionType: string;
-  bodyType: string;
-  color: string;
-  engineType: string;
-  engineCapacityCc: string;
-  fuelType: string;
-  transmission: string;
-  seats: string;
-  doors: string;
-  mileageKm: string;
-  priceKes: string;
-  description: string;
-  location: string;
-  ownerType: string;
-  features: string[]; // parsed from comma-separated string
-  customSpecs: { key: string; value: string }[]; // parsed from JSON string
-  imageUrls: string[];
-};
 
-const VehicleDetails = () => {
+const CommercialVehicleDetails = () => {
   const params = useParams();
   const id = params?.id as string;
-  const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+  const [commercialVehicle, setVehicle] = useState<CommercialVehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [similarVehicles, setSimilarVehicles] = useState<Vehicle[]>([]);
+  const [similarVehicles, setSimilarVehicles] = useState<CommercialVehicle[]>([]);
   const [activeTab, setActiveTab] = useState('overview');
   const [openSpec, setOpenSpec] = useState(false);
   const [openFeat, setOpenFeat] = useState(false);
 const [currentImageIndex, setCurrentImageIndex] = useState(0);
 const [isOpen, setIsOpen] = useState(false);
 const [openDrawer, setOpenDrawer] = useState<null | "history" | "safety">(null);
-const [user, setUser] = useState<User | null>(null);
-const [userDetails, setUserDetails] = useState<SignupRequest | null>(null);
+
+
  const preview =
-    (vehicle?.description ?? "").length > 70
-      ? vehicle?.description?.slice(0, 70) + "..."
-      : vehicle?.description ?? "";
-      useEffect(() => {
-        const fetchUser = async () => {
-          try {
-            const response = await fetch(`http://localhost:8080/api/auth/validate`, {
-              credentials: 'include',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-             
-            });
-            if (!response.ok) throw new Error('Failed to fetch user');
-            const data = await response.json();
-           
-            if (data) {
-               setUser(data);
-               const usertemail = data.email;
-               const response2 = await fetch(`http://localhost:8080/api/users/email/${usertemail}`, {
-                 credentials: 'include',
-                 headers: {
-                   'Content-Type': 'application/json',
-                 },
-               });
-               if (!response2.ok) throw new Error('Failed to fetch user details');
-               const userDetails = await response2.json();
-               
-            }
-          } catch (error) {
-            console.error('Error fetching user:', error);
-          }
-        };
-        fetchUser();
-      }, []);
+    (commercialVehicle?.description ?? "").length > 70
+      ? commercialVehicle?.description?.slice(0, 70) + "..."
+      : commercialVehicle?.description ?? "";
+
       useEffect(() => {
     if (!id) return;
 
@@ -116,8 +35,8 @@ const [userDetails, setUserDetails] = useState<SignupRequest | null>(null);
         setLoading(true);
         
         // Fetch main vehicle details
-        const response = await fetch(`http://localhost:8080/api/cars/${id}`, {
-          
+        const response = await fetch(`http://localhost:8080/api/vehicles/${id}`, {
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -129,13 +48,17 @@ const [userDetails, setUserDetails] = useState<SignupRequest | null>(null);
         }
 
         const data = await response.json();
-        const normalizeVehicle = (raw: any): Vehicle => {
+const normalizeVehicle = (raw: any): CommercialVehicle => {
   return {
     ...raw,
-    features: raw.features
+    features: Array.isArray(raw.features)
+      ? raw.features
+      : typeof raw.features === 'string'
       ? raw.features.split(",").map((f: string) => f.trim())
       : [],
-    customSpecs: raw.customSpecs
+    customSpecs: Array.isArray(raw.customSpecs)
+      ? raw.customSpecs
+      : typeof raw.customSpecs === 'string'
       ? JSON.parse(raw.customSpecs)
       : [],
   };
@@ -182,7 +105,7 @@ setVehicle(normalizedVehicle);
     </div>
   );
   
-  if (!vehicle) return (
+  if (!commercialVehicle) return (
     <div className="p-4 max-w-4xl mx-auto">
       No vehicle found
     </div>
@@ -245,9 +168,9 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
       
       {/* Breadcrumb Navigation */}
       <nav className="flex text-sm text-gray-600 mb-6">
-        <a href="/Vehicles" className="hover:text-blue-500 text-md">Back To Listing</a>
+        <a href="/vehicles" className="hover:text-blue-500">Back To Listing</a>
         <span className="mx-2" aria-hidden="true">→</span>
-        <span className="text-gray-800">{vehicle.model}</span>
+        <span className="text-gray-800">{commercialVehicle.model}</span>
       </nav>
       
       {/* Main Vehicle Section */}
@@ -257,25 +180,25 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
   <div className="relative">
     {/* Main Image with Navigation */}
     <div className="bg-gray-100 rounded-lg overflow-hidden relative">
-      {vehicle.imageUrls?.length > 0 ? (
+      {(commercialVehicle.imageUrls?.length || 0) > 0 ? (
         <>
           {/* Image Counter */}
           <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm z-10">
-            {`${currentImageIndex + 1}/${vehicle.imageUrls.length}`}
+            {`${currentImageIndex + 1}/${commercialVehicle.imageUrls?.length ?? 0}`}
           </div>
           
           {/* Main Image */}
-          <img 
-            src={vehicle.imageUrls[currentImageIndex]} 
-            alt={`${vehicle.brand} ${vehicle.model}`}
+          <img
+            src={(commercialVehicle.imageUrls ?? [])[currentImageIndex]}
+            alt={`${commercialVehicle.brand} ${commercialVehicle.model}`}
             className="w-full h-auto object-cover"
           />
           
           {/* Navigation Arrows */}
-          {vehicle.imageUrls.length > 1 && (
+          {(commercialVehicle.imageUrls ?? []).length > 1 && (
             <>
               <button 
-                onClick={() => setCurrentImageIndex(prev => (prev === 0 ? vehicle.imageUrls.length - 1 : prev - 1))}
+                onClick={() => setCurrentImageIndex(prev => (prev === 0 ? (commercialVehicle?.imageUrls ?? []).length - 1 : prev - 1))}
                 className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -283,7 +206,7 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
                 </svg>
               </button>
               <button 
-                onClick={() => setCurrentImageIndex(prev => (prev === vehicle.imageUrls.length - 1 ? 0 : prev + 1))}
+                onClick={() => setCurrentImageIndex(prev => (prev === (commercialVehicle?.imageUrls ?? []).length - 1 ? 0 : prev + 1))}
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -301,9 +224,9 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
     </div>
 
     {/* Thumbnail Gallery */}
-    {vehicle.imageUrls?.length > 1 && (
+    {(commercialVehicle?.imageUrls ?? []).length > 1 && (
       <div className="flex space-x-2 mt-3 overflow-x-auto py-2">
-        {vehicle.imageUrls.map((img, index) => (
+        {(commercialVehicle?.imageUrls ?? []).map((img, index) => (
           <button
             key={index}
             onClick={() => setCurrentImageIndex(index)}
@@ -326,14 +249,14 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
   {/* Title & Price */}
   <div>
     <h1 className="text-xl font-bold mb-1">
-      {vehicle.brand} {vehicle.model}{" "}
-      {vehicle.bodyType && (
-        <span className="text-gray-600">{vehicle.bodyType}</span>
+      {commercialVehicle.brand} {commercialVehicle.model}{" "}
+      {commercialVehicle.bodyType && (
+        <span className="text-gray-600">{commercialVehicle.bodyType}</span>
       )}
     </h1>
     <div className="flex items-center justify-between">
       <span className="text-lg font-bold text-blue-700">
-        KSh {vehicle.priceKes.toLocaleString()}
+        KSh {commercialVehicle.priceKes?.toLocaleString() ?? 'N/A'}
       </span>
       {/* Like button */}
       <button className="p-2 rounded-full border hover:bg-gray-100 transition">
@@ -345,16 +268,16 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
   {/* Key Details (compact inline style) */}
   <div className="flex flex-wrap gap-2 text-gray-700">
   <span className="bg-gray-200 px-3 py-1 rounded-full text-sm">
-    {vehicle.mileageKm} km
+    {commercialVehicle.mileageKm} km
   </span>
   <span className="bg-gray-200 px-3 py-1 rounded-full text-sm">
-    {vehicle.yearOfManufacture}
+    {commercialVehicle.yearOfManufacture}
   </span>
   <span className="bg-gray-200 px-3 py-1 rounded-full text-sm">
-    {vehicle.fuelType}
+    {commercialVehicle.fuelType}
   </span>
   <span className="bg-gray-200 px-3 py-1 rounded-full text-sm">
-    {vehicle.transmission}
+    {commercialVehicle.transmission}
   </span>
 </div>
 
@@ -390,8 +313,8 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
       <p>(01925) 916826</p>
     </div>
 
-    {vehicle.location && (
-      <p className="text-gray-600 text-xs">📍 {vehicle.location}</p>
+    {commercialVehicle.location && (
+      <p className="text-gray-600 text-xs">📍 {commercialVehicle.location}</p>
     )}
 
     <div className="flex gap-2">
@@ -421,22 +344,22 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
     <div className="divide-y divide-gray-200 border-r pr-6 border-gray-200 border-dashed border-b sm:border-b-0 pb-6 sm:pb-0">
       <div className="flex justify-between items-center py-2">
         <span className="font-medium">Mileage</span>
-        <span>{vehicle.mileageKm ? `${vehicle.mileageKm} km` : "N/A"}</span>
+        <span>{commercialVehicle.mileageKm ? `${commercialVehicle.mileageKm} km` : "N/A"}</span>
       </div>
 
       <div className="flex justify-between items-center py-2">
         <span className="font-medium">Make</span>
-        <span>{vehicle.brand || "N/A"}</span>
+        <span>{commercialVehicle.brand || "N/A"}</span>
       </div>
 
       <div className="flex justify-between items-center py-2">
         <span className="font-medium">Fuel type</span>
-        <span>{vehicle.fuelType || "N/A"}</span>
+        <span>{commercialVehicle.fuelType || "N/A"}</span>
       </div>
 
       <div className="flex justify-between items-center py-2">
         <span className="font-medium">Body type</span>
-        <span>{vehicle.bodyType || "N/A"}</span>
+        <span>{commercialVehicle.bodyType || "N/A"}</span>
       </div>
     </div>
 
@@ -444,22 +367,22 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
     <div className="divide-y divide-gray-200">
       <div className="flex justify-between items-center py-2">
         <span className="font-medium">Engine</span>
-        <span>{vehicle.engineCapacityCc ? `${vehicle.engineCapacityCc} cc` : "N/A"}</span>
+        <span>{commercialVehicle.engineCapacityCc ? `${commercialVehicle.engineCapacityCc} cc` : "N/A"}</span>
       </div>
 
       <div className="flex justify-between items-center py-2">
         <span className="font-medium">Gearbox</span>
-        <span>{vehicle.transmission || "N/A"}</span>
+        <span>{commercialVehicle.transmission || "N/A"}</span>
       </div>
 
       <div className="flex justify-between items-center py-2">
         <span className="font-medium">Doors</span>
-        <span>{vehicle.doors ? `${vehicle.doors} doors` : "N/A"}</span>
+        <span>{commercialVehicle.doors ? `${commercialVehicle.doors} doors` : "N/A"}</span>
       </div>
 
       <div className="flex justify-between items-center py-2">
         <span className="font-medium">Colour</span>
-        <span>{vehicle.color || "N/A"}</span>
+        <span>{commercialVehicle.color || "N/A"}</span>
       </div>
     </div>
   </div>
@@ -477,7 +400,7 @@ onClick={() => setOpenSpec(true)}>
       {/* Preview */}
       <h2 className="text-lg font-semibold mb-2">Description</h2>
       <p className="mb-2">{preview}</p>
-      {vehicle?.description?.length > 20 && (
+      {commercialVehicle?.description?.length || 0 > 20 && (
         <button
           onClick={() => setOpenSpec(true)}
           className="px-4 py-2 rounded-full border border-green-600 text-green-600 hover:bg-green-50 transition"
@@ -506,7 +429,7 @@ onClick={() => setOpenSpec(true)}>
                 &times;
               </button>
             </div>
-            <p className="whitespace-pre-line">{vehicle?.description}</p>
+            <p className="whitespace-pre-line">{commercialVehicle?.description}</p>
           </div>
         </>
       )}
@@ -661,31 +584,31 @@ onClick={() => setOpenSpec(true)}>
           <dl className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 text-sm">
             <div>
               <dt className="font-medium">Engine Type</dt>
-              <dd>{vehicle.engineType || "Not specified"}</dd>
+              <dd>{commercialVehicle.engineType || "Not specified"}</dd>
             </div>
             <div>
               <dt className="font-medium">Displacement</dt>
-              <dd>{vehicle.engineCapacityCc ? `${vehicle.engineCapacityCc} cc` : "Not specified"}</dd>
+              <dd>{commercialVehicle.engineCapacityCc ? `${commercialVehicle.engineCapacityCc} cc` : "Not specified"}</dd>
             </div>
             <div>
               <dt className="font-medium">Condition</dt>
-              <dd>{vehicle.conditionType || "Not specified"}</dd>
+              <dd>{commercialVehicle.conditionType || "Not specified"}</dd>
             </div>
             <div>
               <dt className="font-medium">Body Type</dt>
-              <dd>{vehicle.bodyType || "Not specified"}</dd>
+              <dd>{commercialVehicle.bodyType || "Not specified"}</dd>
             </div>
             <div>
               <dt className="font-medium">Seats</dt>
-              <dd>{vehicle.seats || "Not specified"}</dd>
+              <dd>{commercialVehicle.seats || "Not specified"}</dd>
             </div>
             <div>
               <dt className="font-medium">Transmission</dt>
-              <dd>{vehicle.transmission || "Not specified"}</dd>
+              <dd>{commercialVehicle.transmission || "Not specified"}</dd>
             </div>
             <div>
               <dt className="font-medium">Location</dt>
-              <dd>{vehicle.location || "Not specified"}</dd>
+              <dd>{commercialVehicle.location || "Not specified"}</dd>
             </div>
           </dl>
         </div>
@@ -694,8 +617,8 @@ onClick={() => setOpenSpec(true)}>
         <div>
           <h3 className="text-base font-semibold mb-2">Features</h3>
           <ul className="list-disc pl-5 space-y-1 text-sm">
-            {vehicle.features?.length ? (
-              vehicle.features.map((feature, i) => (
+            {Array.isArray(commercialVehicle.features) && commercialVehicle.features.length > 0 ? (
+              commercialVehicle.features.map((feature: string, i: number) => (
                 <li key={i}>{feature}</li>
               ))
             ) : (
@@ -708,8 +631,8 @@ onClick={() => setOpenSpec(true)}>
         <div>
           <h3 className="text-base font-semibold mb-2">Custom Specs</h3>
           <ul className="space-y-1 text-sm">
-            {vehicle.customSpecs?.length ? (
-              vehicle.customSpecs.map((spec, i) => (
+            {Array.isArray(commercialVehicle.customSpecs) && commercialVehicle.customSpecs.length > 0 ? (
+              commercialVehicle.customSpecs.map((spec: { key: string, value: string }, i: number) => (
                 <li key={i} className="flex justify-between border-b border-gray-200 py-1">
                   <span className="font-medium">{spec.key}</span>
                   <span>{spec.value}</span>
@@ -738,4 +661,4 @@ onClick={() => setOpenSpec(true)}>
   );
 };
 
-export default VehicleDetails;
+export default CommercialVehicleDetails;

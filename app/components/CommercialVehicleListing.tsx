@@ -6,31 +6,11 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FaCar, FaRegHeart, FaGasPump, FaTachometerAlt, FaFilter } from "react-icons/fa";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { CommercialVehicle} from "@/app/CommercialVehicle";
 
-type Car = {
-  id: number;
-  brand: string;
-  model: string;
-  yearOfManufacture: string;
-  conditionType: string;
-  bodyType: string;
-  color: string;
-  engineType: string;
-  engineCapacityCc: string;
-  fuelType: string;
-  transmission: string;
-  seats: string;
-  doors: string;
-  mileageKm: string;
-  priceKes: string;
-  description: string;
-  location: string;
-  highBreed: boolean;
-  imageUrls: string[];
-};
 
-export default function VehicleListClient() {
-  const [carData, setCars] = useState<Car[]>([]);
+export default function CommercialVehicleListing() {
+  const [carData, setCars] = useState<CommercialVehicle[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
   const [models, setModels] = useState<string[]>([]);
   const [bodyTypes, setBodyTypes] = useState<string[]>([]);
@@ -81,80 +61,71 @@ export default function VehicleListClient() {
     let cancelled = false;
     
     const fetchCars = async () => {
-  if (loading || (!hasMore && page > 0)) return;
+      if (loading || (!hasMore && page > 0)) return;
+      
+      setLoading(true);
+      setError(false);
+      
+      try {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("size", "12");
+        params.append("sort", "priceKes,desc");
+        
+        // Add filters with proper parameter names that match your backend
+        if (filters.brand) params.append("brand", filters.brand);
+        if (filters.model) params.append("model", filters.model);
+        if (filters.transmission) params.append("transmission", filters.transmission);
+        if (filters.conditionType) params.append("conditionType", filters.conditionType);
+        if (filters.bodyType) params.append("bodyType", filters.bodyType);
+        if (filters.fuelType) params.append("fuelType", filters.fuelType);
+        if (filters.year) params.append("yearofmanufacture", filters.year);
+        if (filters.minPrice) params.append("minPrice", filters.minPrice);
+        if (filters.maxPrice) params.append("maxPrice", filters.maxPrice);
+        if (filters.minMileage) params.append("minMileage", filters.minMileage);
+        if (filters.maxMileage) params.append("maxMileage", filters.maxMileage);
 
-  setLoading(true);
-  setError(false);
+        console.log("Fetching with params:", params.toString()); // Debug log
 
-  try {
-    const params = new URLSearchParams();
-    params.append("page", page.toString());
-    params.append("size", "12");
-    params.append("sort", "priceKes,desc");
+        const res = await fetch(`https://carshipping.duckdns.org:8443/api/vehicles?${params.toString()}`, {
+          credentials: "include",
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        
+        if (!res.ok) throw new Error("Network error");
 
-    // ✅ use correct backend parameter names
-    if (filters.brand) params.append("brand", filters.brand);
-    if (filters.model) params.append("model", filters.model);
-    if (filters.transmission) params.append("transmission", filters.transmission);
-    if (filters.conditionType) params.append("conditionType", filters.conditionType);
-    if (filters.bodyType) params.append("bodyType", filters.bodyType);
-    if (filters.fuelType) params.append("fuelType", filters.fuelType);
-    if (filters.location) params.append("location", filters.location);
-    if (filters.ownerType) params.append("ownerType", filters.ownerType);
+        const data = await res.json();
+        if (cancelled) return;
 
-    // ✅ numeric filters (use _gte and _lte)
-    if (filters.minPrice) params.append("price_gte", filters.minPrice);
-    if (filters.maxPrice) params.append("price_lte", filters.maxPrice);
-    if (filters.minYear) params.append("year_gte", filters.minYear);
-    if (filters.maxYear) params.append("year_lte", filters.maxYear);
-    if (filters.minMileage) params.append("mileage_gte", filters.minMileage);
-    if (filters.maxMileage) params.append("mileage_lte", filters.maxMileage);
-    if (filters.minEngineCc) params.append("engine_cc_gte", filters.minEngineCc);
-    if (filters.maxEngineCc) params.append("engine_cc_lte", filters.maxEngineCc);
+        const newCars = data.content ?? [];
+        
+        if (page === 0) {
+          setCars(newCars);
+          // Extract unique values for filters
+          const uniqueBrands = Array.from(new Set(newCars.map((v: CommercialVehicle) => v.brand).filter(Boolean)));
+          const uniqueModels = Array.from(new Set(newCars.map((v: CommercialVehicle) => v.model).filter(Boolean)));
+          const uniqueBodyTypes = Array.from(new Set(newCars.map((v: CommercialVehicle) => v.bodyType).filter(Boolean)));
+          const uniqueFuelTypes = Array.from(new Set(newCars.map((v: CommercialVehicle) => v.fuelType).filter(Boolean)));
 
-    //  keyword search (used by backend)
-    if (filters.search) params.append("search", filters.search);
-
-    console.log("Fetching with params:", params.toString());
-
-    const res = await fetch(`https://carshipping.duckdns.org:8443/api/cars?${params.toString()}`, {
-      credentials: "include",
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (!res.ok) throw new Error("Network error");
-
-    const data = await res.json();
-    if (cancelled) return;
-
-    const newCars = data.content ?? [];
-
-    if (page === 0) {
-      setCars(newCars);
-
-      // Extract unique filter values
-      const extractUnique = (arr: (string | undefined | null)[]) =>
-  Array.from(new Set(arr.filter((v): v is string => Boolean(v))));
-
-setBrands(extractUnique(newCars.map((v: { brand: any; }) => v.brand)));
-setModels(extractUnique(newCars.map((v: { model: any; }) => v.model)));
-setBodyTypes(extractUnique(newCars.map((v: { bodyType: any; }) => v.bodyType)));
-setFuelTypes(extractUnique(newCars.map((v: { fuelType: any; }) => v.fuelType)));
-    } else {
-      setCars((prev) => [...prev, ...newCars]);
-    }
-
-    setHasMore(page < data.totalPages - 1);
-    setFiltersApplied(false);
-  } catch (e) {
-    console.error("Fetch error:", e);
-    if (!cancelled) setError(true);
-  } finally {
-    if (!cancelled) setLoading(false);
-  }
-};
-
+          setBrands(uniqueBrands as string[]);
+          setModels(uniqueModels as string[]);
+          setBodyTypes(uniqueBodyTypes as string[]);
+          setFuelTypes(uniqueFuelTypes as string[]);
+        } else {
+          setCars((prev) => [...prev, ...newCars]);
+        }
+        
+        setHasMore(page < data.totalPages - 1);
+        setFiltersApplied(false);
+        
+      } catch (e) {
+        console.error("Fetch error:", e);
+        if (!cancelled) setError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
 
     fetchCars();
     return () => {
@@ -179,7 +150,7 @@ setFuelTypes(extractUnique(newCars.map((v: { fuelType: any; }) => v.fuelType)));
   );
 
   function handleCarClick(id: number): void {
-    router.push(`/Cardetails/${id}`);
+    router.push(`/CommercialVehicleDetails/${id}`);
   }
 
   // Check if any filters are active
@@ -192,7 +163,7 @@ setFuelTypes(extractUnique(newCars.map((v: { fuelType: any; }) => v.fuelType)));
   return (
     <div>
       {/* ======= FILTER BAR ======= */}
-      <div className="sticky top-0 bg-white z-5 py-4 shadow-md">
+      <div className="sticky top-0 bg-white z-50 py-4 shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Clear Filters Button */}
           {hasActiveFilters && (

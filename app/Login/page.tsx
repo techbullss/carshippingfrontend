@@ -14,32 +14,47 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-    
-    // Simulate login process
-    try {
-      // In a real application, you would make an API call here
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simple validation
-      if (!email || !password) {
-        throw new Error('Please fill in all fields');
-      }
-      
-      // Simulate successful login
-      console.log('Login attempted with:', { email, password, rememberMe });
-      
-      // Redirect to dashboard
-      router.push('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during login');
-    } finally {
-      setIsLoading(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError('');
+
+  try {
+    if (!email || !password) {
+      throw new Error('Please fill in all fields');
     }
-  };
+
+    const response = await fetch("https://carshipping.duckdns.org:8443/api/auth/login", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', 
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(errorData || 'Invalid email or password');
+    }
+
+    const data = await response.json();
+    console.log('✅ Login success:', data);
+
+    // Optionally store user info in localStorage or context
+    localStorage.setItem('user', JSON.stringify(data));
+
+    // Redirect based on role (optional)
+    
+   
+      router.push('/dashboard');
+    
+
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'An error occurred during login');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <>
