@@ -163,7 +163,7 @@ export default function CommercialVehicleListing() {
   return (
     <div>
       {/* ======= FILTER BAR ======= */}
-      <div className="sticky top-0 bg-white z-50 py-4 shadow-md">
+      <div className="sticky top-0 bg-white z-5 py-4 shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Clear Filters Button */}
           {hasActiveFilters && (

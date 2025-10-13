@@ -52,16 +52,7 @@ export default function Header() {
         { href: "/Motocycle/New", label: "Locally Available" },
       ],
     },
-    {
-      href: "/Containers",
-      label: "Containers",
-      submenu: [
-        { href: "/Container/New", label: "New Containers" },
-        { href: "/Container/Old", label: "Old Containers" },
-        { href: "/Container/20ft", label: "20ft Containers" },
-        { href: "/Container/40ft", label: "40ft Containers" },
-      ],
-    },
+    
     { href: "/AuxiallyShipping", label: "Auxiliary shipping" },
     { href: "/SellWithUs", label: "Sell With Us" },
     { href: "/AboutUs", label: "About Us" },
@@ -71,7 +62,7 @@ export default function Header() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/auth/validate", {
+        const response = await fetch("https://carshipping.duckdns.org:8443/api/auth/validate", {
           method: "GET",
           credentials: "include", // send cookie with request
         });
@@ -99,7 +90,7 @@ export default function Header() {
   // ✅ Logout through backend
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8080/api/auth/logout", {
+      await fetch("https://carshipping.duckdns.org:8443/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });

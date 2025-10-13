@@ -35,7 +35,7 @@ const [openDrawer, setOpenDrawer] = useState<null | "history" | "safety">(null);
         setLoading(true);
         
         // Fetch main vehicle details
-        const response = await fetch(`http://localhost:8080/api/vehicles/${id}`, {
+        const response = await fetch(`https://carshipping.duckdns.org:8443/api/vehicles/${id}`, {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ setVehicle(normalizedVehicle);
         // Fetch similar vehicles (uncomment when ready)
         
         const similarResponse = await fetch(
-          `http://localhost:8080/api/cars/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
+          `https://carshipping.duckdns.org:8443/api/cars/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
          credentials: 'include',
             headers: {
             'Content-Type': 'application/json',

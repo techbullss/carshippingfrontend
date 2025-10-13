@@ -552,98 +552,7 @@ const RegisterPage = () => {
                 {/* Step 4: Preferences */}
                 {currentStep === 4 && (
                   <div className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Preferred Communication Methods
-                      </label>
-                      <div className="space-y-2">
-                        {['Email', 'SMS', 'Phone', 'WhatsApp'].map((method) => (
-                          <div key={method} className="flex items-center">
-                            <input
-                              type="checkbox"
-                              id={`comm-${method}`}
-                              value={method.toLowerCase()}
-                              checked={formData.preferredCommunication.includes(method.toLowerCase())}
-                              onChange={handleCheckboxGroupChange}
-                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor={`comm-${method}`} className="ml-2 block text-sm text-gray-900">
-                              {method}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div>
-                        <label htmlFor="shippingFrequency" className="block text-sm font-medium text-gray-700">
-                          Expected Shipping Frequency
-                        </label>
-                        <select
-                          id="shippingFrequency"
-                          name="shippingFrequency"
-                          value={formData.shippingFrequency}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        >
-                          <option value="">Select Frequency</option>
-                          <option value="one-time">One-time</option>
-                          <option value="occasional">Occasional (1-2 times per year)</option>
-                          <option value="regular">Regular (3+ times per year)</option>
-                          <option value="frequent">Frequent (Monthly)</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label htmlFor="vehicleType" className="block text-sm font-medium text-gray-700">
-                          Primary Vehicle Type
-                        </label>
-                        <select
-                          id="vehicleType"
-                          name="vehicleType"
-                          value={formData.vehicleType}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        >
-                          <option value="">Select Vehicle Type</option>
-                          <option value="car">Car</option>
-                          <option value="suv">SUV</option>
-                          <option value="truck">Truck</option>
-                          <option value="motorcycle">Motorcycle</option>
-                          <option value="commercial">Commercial Vehicle</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label htmlFor="estimatedShippingDate" className="block text-sm font-medium text-gray-700">
-                        Estimated First Shipping Date
-                      </label>
-                      <input
-                        type="date"
-                        id="estimatedShippingDate"
-                        name="estimatedShippingDate"
-                        value={formData.estimatedShippingDate}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      />
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="newsletter"
-                          name="newsletter"
-                          checked={formData.newsletter}
-                          onChange={handleInputChange}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <label htmlFor="newsletter" className="ml-2 block text-sm text-gray-900">
-                          Subscribe to our newsletter for shipping updates and promotions
-                        </label>
-                      </div>
-
+                    
                       <div className="flex items-start">
                         <input
                           type="checkbox"
@@ -666,7 +575,7 @@ const RegisterPage = () => {
                           *
                         </label>
                       </div>
-                    </div>
+                   
                   </div>
                 )}
 
