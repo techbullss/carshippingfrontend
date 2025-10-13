@@ -48,7 +48,40 @@ export default function CarSearchHero() {
     transmission: "",
   });
 
- 
+ // Fetch makes
+useEffect(() => {
+  const fetchMakes = async () => {
+    try {
+      const res = await fetch("https://carshippingbackend-production.up.railway.app/api/cars/makes");
+      const data = await res.json();
+      setMakes(data);
+      setLoadingMakes(false);
+    } catch (err) {
+      console.error("Error fetching makes", err);
+      setLoadingMakes(false);
+    }
+  };
+  fetchMakes();
+}, []);
+
+// Fetch models when make changes
+useEffect(() => {
+  if (!filters.make) return;
+  setLoadingModels(true);
+  const fetchModels = async () => {
+    try {
+      const res = await fetch(`https://carshippingbackend-production.up.railway.app/api/cars/models?make=${filters.make}`);
+      const data = await res.json();
+      setModels(data);
+    } catch (err) {
+      console.error("Error fetching models", err);
+    } finally {
+      setLoadingModels(false);
+    }
+  };
+  fetchModels();
+}, [filters.make]);
+
   
   const handleFilterChange = (name: string, value: string) => {
     setFilters(prev => ({
