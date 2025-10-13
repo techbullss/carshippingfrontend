@@ -192,7 +192,7 @@ setFuelTypes(extractUnique(newCars.map((v: { fuelType: any; }) => v.fuelType)));
   return (
     <div>
       {/* ======= FILTER BAR ======= */}
-      <div className="sticky top-0 bg-white z-5 py-4 shadow-md">
+      <div className="sticky top-0 bg-white z-5  shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Clear Filters Button */}
           {hasActiveFilters && (
@@ -205,7 +205,7 @@ setFuelTypes(extractUnique(newCars.map((v: { fuelType: any; }) => v.fuelType)));
           )}
 
           {/* Brand Filter Buttons */}
-          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 flex-1">
+          <div className="flex overflow-x-auto gap-2 p-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 flex-1">
             <button
               onClick={() => updateQuery("brand", "")}
               className={`px-4 py-2 text-sm font-medium rounded-full border whitespace-nowrap transition 
