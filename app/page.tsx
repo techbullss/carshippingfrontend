@@ -75,7 +75,11 @@ export default function Home() {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const res = await fetch("https://carshipping.duckdns.org:8443/api/cars/latest");
+        const res = await fetch("https://carshipping.duckdns.org:8443/api/cars/latest",{
+          method: 'GET',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
         
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
