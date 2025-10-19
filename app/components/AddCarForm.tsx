@@ -229,8 +229,8 @@ useEffect(() => {
       images.forEach(file => formData.append("images", file));
 console.log("Submitting car data:", formData);
       const url = carToEdit
-        ? `https://carshipping.duckdns.org:8443/api/cars/${carToEdit.id}`
-        : "https://carshipping.duckdns.org:8443/api/cars";
+        ? `https://api.f-carshipping.com/api/cars/${carToEdit.id}`
+        : "https://api.f-carshipping.com/api/cars";
       const method = carToEdit ? "PUT" : "POST";
 
       const res = await fetch(url, { method, body: formData, credentials: 'include' ,headers: { 'Accept': 'application/json' } });

@@ -53,7 +53,7 @@ const [openDrawer, setOpenDrawer] = useState<null | "history" | "safety">(null);
       setLoading(true);
 
       // Fetch main motorcycle details
-      const response = await fetch(`https://carshipping.duckdns.org:8443/api/motorcycles/${id}`, {
+      const response = await fetch(`https://api.f-carshipping.com/api/motorcycles/${id}`, {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         method: "GET",
@@ -89,7 +89,7 @@ const [openDrawer, setOpenDrawer] = useState<null | "history" | "safety">(null);
 
       // Fetch similar motorcycles
       const similarResponse = await fetch(
-        `https://carshipping.duckdns.org:8443/api/motorcycles/similar?brand=${data.brand}&type=${data.type}&exclude=${id}`,
+        `https://api.f-carshipping.com/api/motorcycles/similar?brand=${data.brand}&type=${data.type}&exclude=${id}`,
         {
           credentials: "include",
           headers: { "Content-Type": "application/json" },

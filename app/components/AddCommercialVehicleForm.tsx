@@ -196,8 +196,8 @@ export default function AddCommercialVehicleForm({
       images.forEach((f) => formData.append("images", f));
 
       const url = vehicleToEdit
-        ? `https://carshipping.duckdns.org:8443/api/vehicles/${vehicleToEdit.id}`
-        : "https://carshipping.duckdns.org:8443/api/vehicles";
+        ? `https://api.f-carshipping.com/api/vehicles/${vehicleToEdit.id}`
+        : "https://api.f-carshipping.com/api/vehicles";
 
       const method = vehicleToEdit ? "PUT" : "POST";
 

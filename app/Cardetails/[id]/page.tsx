@@ -79,7 +79,7 @@ const [userDetails, setUserDetails] = useState<SignupRequest | null>(null);
       useEffect(() => {
         const fetchUser = async () => {
           try {
-            const response = await fetch(`https://carshipping.duckdns.org:8443/api/auth/validate`, {
+            const response = await fetch(`https://api.f-carshipping.com/api/auth/validate`, {
               credentials: 'include',
               headers: {
                 'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ const [userDetails, setUserDetails] = useState<SignupRequest | null>(null);
             if (data) {
                setUser(data);
                const usertemail = data.email;
-               const response2 = await fetch(`https://carshipping.duckdns.org:8443/api/users/email/${usertemail}`, {
+               const response2 = await fetch(`https://api.f-carshipping.com/api/users/email/${usertemail}`, {
                  credentials: 'include',
                  headers: {
                    'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ const [userDetails, setUserDetails] = useState<SignupRequest | null>(null);
         setLoading(true);
         
         // Fetch main vehicle details
-        const response = await fetch(`https://carshipping.duckdns.org:8443/api/cars/${id}`, {
+        const response = await fetch(`https://api.f-carshipping.com/api/cars/${id}`, {
           
           headers: {
             'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ setVehicle(normalizedVehicle);
         // Fetch similar vehicles (uncomment when ready)
         
         const similarResponse = await fetch(
-          `https://carshipping.duckdns.org:8443/api/cars/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
+          `https://api.f-carshipping.com/api/cars/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
          credentials: 'include',
             headers: {
             'Content-Type': 'application/json',

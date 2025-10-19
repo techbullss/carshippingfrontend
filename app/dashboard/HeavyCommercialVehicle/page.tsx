@@ -28,7 +28,7 @@ export default function CommercialVehicleList() {
     setLoading(true);
     setError("");
     try {
-      let query = `https://carshipping.duckdns.org:8443/api/vehicles?page=${page}&size=10`;
+      let query = `https://api.f-carshipping.com/api/vehicles?page=${page}&size=10`;
       if (search) query += `&search=${encodeURIComponent(search)}`;
       if (filterType) query += `&type=${encodeURIComponent(filterType)}`;
 
@@ -52,7 +52,7 @@ export default function CommercialVehicleList() {
   const handleDelete = async (vehicle: CommercialVehicle) => {
     if (!confirm("Are you sure you want to delete this vehicle?")) return;
     try {
-      const res = await fetch(`https://carshipping.duckdns.org:8443/api/vehicles/${vehicle.id}`, {
+      const res = await fetch(`https://api.f-carshipping.com/api/vehicles/${vehicle.id}`, {
         method: "DELETE",
         credentials: 'include'
       });

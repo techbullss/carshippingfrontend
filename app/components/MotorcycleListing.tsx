@@ -74,7 +74,7 @@ const MotorcycleListing = () => {
       params.append("size", "9");
 
       const res = await fetch(
-        `https://carshipping.duckdns.org:8443/api/motorcycles/filter?${params.toString()}`,
+        `https://api.f-carshipping.com/api/motorcycles/filter?${params.toString()}`,
         {
           method: "GET",
           credentials: "include",

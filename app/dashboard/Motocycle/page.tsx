@@ -27,7 +27,7 @@ export default function MotorcyclePage() {
       if (filterType) params.push(`type=${encodeURIComponent(filterType)}`);
       if (filterStatus) params.push(`status=${encodeURIComponent(filterStatus)}`);
       const q = params.length ? `?${params.join("&")}` : "";
-      const res = await fetch(`https://carshipping.duckdns.org:8443/api/motorcycles${q}`, { credentials: 'include' , method: 'GET',headers: { 'Content-Type': 'application/json' } });
+      const res = await fetch(`https://api.f-carshipping.com/api/motorcycles${q}`, { credentials: 'include' , method: 'GET',headers: { 'Content-Type': 'application/json' } });
       const data = await res.json();
       setMotorcycles(Array.isArray(data.content) ? data.content : []);
     } catch (e) {
@@ -44,7 +44,7 @@ export default function MotorcyclePage() {
 
   const handleDelete = async (m: any) => {
     if (!confirm("Delete this motorcycle?")) return;
-    await fetch(`https://carshipping.duckdns.org:8443/api/motorcycles/${m.id}`, { method: "DELETE", credentials: 'include' });
+    await fetch(`https://api.f-carshipping.com/api/motorcycles/${m.id}`, { method: "DELETE", credentials: 'include' });
     fetchList();
   };
 

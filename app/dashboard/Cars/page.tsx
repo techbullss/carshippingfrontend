@@ -37,7 +37,7 @@ const fetchCars = async () => {
       ...(seller ? { seller } : {}),
     });
     
-    const res = await fetch(`https://carshipping.duckdns.org:8443/api/cars?${params}`, { 
+    const res = await fetch(`https://api.f-carshipping.com/api/cars/dashboard?${params}`, { 
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ const fetchCars = async () => {
     
     if (res.status === 403) {
       // Check if it's an authentication issue
-      const authCheck = await fetch('https://carshipping.duckdns.org:8443/api/auth/validate', {
+      const authCheck = await fetch('https://api.f-carshipping.com/api/auth/validate', {
         credentials: 'include'
       });
       
@@ -101,7 +101,7 @@ const fetchCars = async () => {
   const deleteCar = async (id: number) => {
     if (!confirm("Delete this car?")) return;
     try {
-      await fetch(`https://carshipping.duckdns.org:8443/api/cars/${id}`, { method: "DELETE", credentials: 'include' });
+      await fetch(`https://api.f-carshipping.com/api/cars/${id}`, { method: "DELETE", credentials: 'include' });
       fetchCars();
     } catch {
       alert("Failed to delete car");

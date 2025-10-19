@@ -58,11 +58,11 @@ export default function Header() {
     { href: "/AboutUs", label: "About Us" },
   ];
 
-  // ✅ Use backend cookie to validate login status
+  // Use backend cookie to validate login status
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("https://carshipping.duckdns.org:8443/api/auth/validate", {
+        const response = await fetch("https://api.f-carshipping.com/api/auth/validate", {
           method: "GET",
           credentials: "include", // send cookie with request
         });
@@ -87,10 +87,10 @@ export default function Header() {
     setOpenSubmenu(openSubmenu === index ? null : index);
   };
 
-  // ✅ Logout through backend
+  //  Logout through backend
   const handleLogout = async () => {
     try {
-      await fetch("https://carshipping.duckdns.org:8443/api/auth/logout", {
+      await fetch("https://api.f-carshipping.com/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });

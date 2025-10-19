@@ -87,7 +87,7 @@ export default function CommercialVehicleListing() {
 
         console.log("Fetching with params:", params.toString()); // Debug log
 
-        const res = await fetch(`https://carshipping.duckdns.org:8443/api/vehicles?${params.toString()}`, {
+        const res = await fetch(`https://api.f-carshipping.com/api/vehicles?${params.toString()}`, {
           credentials: "include",
           method: "GET",
           headers: { "Content-Type": "application/json" },

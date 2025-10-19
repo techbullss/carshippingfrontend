@@ -12,7 +12,7 @@ export default function LogoutPage() {
   useEffect(() => {
     const handleLogout = async () => {
       try {
-        const res = await fetch("https://carshipping.duckdns.org:8443/api/auth/logout", {
+        const res = await fetch("https://api.f-carshipping.com/api/auth/logout", {
           method: "POST",
           credentials: "include", // send cookies
         });

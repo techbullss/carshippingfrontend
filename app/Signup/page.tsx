@@ -69,7 +69,7 @@ interface AuthResponse {
   lastName: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://carshipping.duckdns.org:8443/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.f-carshipping.com/api';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState<FormData>({

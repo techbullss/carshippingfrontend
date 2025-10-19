@@ -193,8 +193,8 @@ export default function AddMotorcycleForm({
       images.forEach((f) => fd.append("images", f));
 
       const url = motorcycleToEdit
-        ? `https://carshipping.duckdns.org:8443/api/motorcycles/${motorcycleToEdit.id}`
-        : "https://carshipping.duckdns.org:8443/api/motorcycles";
+        ? `https://api.f-carshipping.com/api/motorcycles/${motorcycleToEdit.id}`
+        : "https://api.f-carshipping.com/api/motorcycles";
       const method = motorcycleToEdit ? "PUT" : "POST";
 
       const res = await fetch(url, {

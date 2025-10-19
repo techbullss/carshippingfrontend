@@ -24,7 +24,7 @@ const LoginPage = () => {
       throw new Error('Please fill in all fields');
     }
 
-    const response = await fetch("https://carshipping.duckdns.org:8443/api/auth/login", {
+    const response = await fetch("https://api.f-carshipping.com/api/auth/login", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include', 

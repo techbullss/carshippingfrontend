@@ -52,7 +52,7 @@ export default function CarSearchHero() {
 useEffect(() => {
   const fetchMakes = async () => {
     try {
-      const res = await fetch("https://carshipping.duckdns.org:8443/api/cars/makes");
+      const res = await fetch("https://api.f-carshipping.com/api/cars/makes");
       const data = await res.json();
       setMakes(data);
       setLoadingMakes(false);
@@ -70,7 +70,7 @@ useEffect(() => {
   setLoadingModels(true);
   const fetchModels = async () => {
     try {
-      const res = await fetch(`https://carshippingbackend-production.up.railway.app/api/cars/models?make=${filters.make}`);
+      const res = await fetch(`https://api.f-carshipping.com/api/cars/models?make=${filters.make}`);
       const data = await res.json();
       setModels(data);
     } catch (err) {

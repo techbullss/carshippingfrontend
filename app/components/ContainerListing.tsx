@@ -24,7 +24,7 @@ export default function ContainersListing() {
   const [totalPages, setTotalPages] = useState(0);
 
   const fetchContainers = async () => {
-    let query = `http://localhost:8080/api/containers?page=${page}&size=${size}`;
+    let query = `https://api.f-carshipping.com/api/containers?page=${page}&size=${size}`;
     const params: string[] = [];
     if (search) params.push(`search=${encodeURIComponent(search)}`);
     if (filterType) params.push(`type=${encodeURIComponent(filterType)}`);
@@ -44,7 +44,7 @@ export default function ContainersListing() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this container?")) return;
-    await fetch(`https://carshipping.duckdns.org:8443/api/containers/${id}`, {
+    await fetch(`https://api.f-carshipping.com/api/containers/${id}`, {
       method: "DELETE",
     });
     fetchContainers();
