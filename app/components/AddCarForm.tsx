@@ -45,7 +45,7 @@ const [form, setForm] = useState({
 console.log("Initial form Seller:", form.seller, "roles:", form.roles);
 const fetchUser = async (): Promise<User | null> => {
   try {
-    const res = await fetch("https://carshipping.duckdns.org:8443/api/auth/validate", {
+    const res = await fetch("https://api.f-carshipping.com/api/auth/validate", {
       credentials: "include",
     });
 
