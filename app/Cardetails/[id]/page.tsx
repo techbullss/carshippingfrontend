@@ -479,7 +479,7 @@ onClick={() => setOpenSpec(true)}>
       <p className="mb-2">{preview}</p>
       {vehicle?.description?.length > 20 && (
         <button
-          onClick={() => setOpenSpec(true)}
+          onClick={() => setIsOpen(true)}
           className="px-4 py-2 rounded-full border border-green-600 text-green-600 hover:bg-green-50 transition"
         >
           Read more
