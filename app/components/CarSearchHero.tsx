@@ -97,7 +97,7 @@ useEffect(() => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (filters.make) params.append("make", filters.make.split(' (')[0]);
+    if (filters.make) params.append("brand", filters.make.split(' (')[0]);
     if (filters.model) params.append("model", filters.model);
     if (filters.bodyType) params.append("bodyType", filters.bodyType);
     if (filters.transmission) params.append("transmission", filters.transmission);

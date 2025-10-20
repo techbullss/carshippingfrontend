@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import {  FaRegHeart, FaCar, FaGasPump, FaTachometerAlt } from 'react-icons/fa';
 import EuropeanCarsHero from "./components/EuropeanCarsHero";
 import Link from "next/link";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 type Car = {
   isNew: any;
   yearOfManufacture: string;
@@ -23,6 +23,7 @@ type Car = {
   priceKes: number;
 };
 export default function Home() {
+   const router = useRouter(); 
   const [latestArrivals, setLatestArrivals] = useState<Car[]>([]);
 
  const [loading, setLoading] = useState(true); 
@@ -116,6 +117,8 @@ export default function Home() {
     { name: "Volvo", logo: "/volvologo.png" },
     { name: "Porsche", logo: "/porchelogo.png" },
   ];
+  
+
   function handleCarClick(id: number): void {
     router.push(`/Cardetails/${id}`);
   }
@@ -193,12 +196,7 @@ export default function Home() {
             Browse Vehicles
           </button>
           
-          <button
-            onClick={() => window.location.href = "/ContactUs"}
-            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-green-600 text-white font-bold rounded-full shadow-lg hover:from-blue-600 hover:to-green-700 transition-all duration-300 border border-blue-300"
-          >
-            Get Free Quote
-          </button>
+         
         </div>
       </div>
 
