@@ -330,8 +330,8 @@ setFuelTypes(extractUnique(newCars.map((v: { fuelType: any; }) => v.fuelType)));
                 <div>
   <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
   <select
-    value={filters.year_gte ?? ""} 
-    onChange={(e) => updateQuery("year_gte", e.target.value)} 
+    value={filters.yearOfManufacture ?? ""} 
+    onChange={(e) => updateQuery("yearOfManufacture", e.target.value)}
     className="w-full border p-2 rounded-md text-sm"
   >
     <option value="">Any Year</option>
