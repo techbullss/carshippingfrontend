@@ -75,7 +75,7 @@ export default function Home() {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const res = await fetch("https://carshipping.duckdns.org:8443/api/cars/latest",{
+        const res = await fetch("https://api.f-carshipping.com/api/cars/latest",{
           method: 'GET',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' }

@@ -65,12 +65,15 @@ useEffect(() => {
 }, []);
 
 // Fetch models when make changes
+// Fetch models when make changes
 useEffect(() => {
   if (!filters.make) return;
   setLoadingModels(true);
   const fetchModels = async () => {
     try {
-      const res = await fetch(`https://api.f-carshipping.com/api/cars/models?make=${filters.make}`);
+      // Extract just the make name without any additional text in parentheses
+      const cleanMake = filters.make.split(' (')[0];
+      const res = await fetch(`https://api.f-carshipping.com/api/cars/models?make=${encodeURIComponent(cleanMake)}`);
       const data = await res.json();
       setModels(data);
     } catch (err) {
@@ -94,7 +97,7 @@ useEffect(() => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (filters.make) params.append("make", filters.make);
+    if (filters.make) params.append("make", filters.make.split(' (')[0]);
     if (filters.model) params.append("model", filters.model);
     if (filters.bodyType) params.append("bodyType", filters.bodyType);
     if (filters.transmission) params.append("transmission", filters.transmission);
