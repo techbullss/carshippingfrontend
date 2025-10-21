@@ -30,7 +30,11 @@ export default function UserManagement() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("https://api.f-carshipping.com/api/admin/users");
+      const response = await fetch("https://api.f-carshipping.com/api/admin/users",{
+        method: "GET",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
       if (!response.ok) throw new Error("Failed to fetch users");
       const data = await response.json();
       setUsers(data);
@@ -50,6 +54,7 @@ export default function UserManagement() {
     try {
       const response = await fetch(`https://api.f-carshipping.com/api/admin/users/${updatedUser.id}`, {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedUser),
       });
@@ -75,7 +80,9 @@ export default function UserManagement() {
 
     try {
       const response = await fetch(`https://api.f-carshipping.com/api/admin/users/${userToDelete.id}`, {
+        credentials: "include",
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
       });
 
       if (!response.ok) throw new Error("Failed to delete user");
@@ -92,6 +99,7 @@ export default function UserManagement() {
     try {
       const response = await fetch(`https://api.f-carshipping.com/api/admin/users/${userId}/roles`, {
         method: "PATCH",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role }),
       });
