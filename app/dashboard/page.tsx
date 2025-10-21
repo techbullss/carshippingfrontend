@@ -205,28 +205,28 @@ export default function DashboardHome() {
             value={stats.totalCars}
             icon={Car}
             color="hover:border-blue-200"
-            onClick={() => router.push('/dashboard/cars')}
+            onClick={() => router.push('/dashboard/Cars')}
           />
           <StatCard
             title="Commercial Vehicles"
             value={stats.totalCommercialVehicles}
             icon={Truck}
             color="hover:border-green-200"
-            onClick={() => router.push('/dashboard/commercial-vehicles')}
+            onClick={() => router.push('/dashboard/HeavyCommercialVehicle')}
           />
           <StatCard
             title="Motorcycles"
             value={stats.totalMotorcycles}
             icon={Bike}
             color="hover:border-purple-200"
-            onClick={() => router.push('/dashboard/motorcycles')}
+            onClick={() => router.push('/dashboard/Motocycle')}
           />
           <StatCard
             title="Total Users"
             value={stats.totalUsers}
             icon={Users}
             color="hover:border-orange-200"
-            onClick={() => router.push('/dashboard/users')}
+            onClick={() => router.push('/dashboard/Users')}
           />
         </div>
 
@@ -240,7 +240,7 @@ export default function DashboardHome() {
                 Recent Cars
               </h3>
               <button 
-                onClick={() => router.push('/dashboard/cars')}
+                onClick={() => router.push('/dashboard/Cars')}
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
               >
                 View All
@@ -265,7 +265,7 @@ export default function DashboardHome() {
                 Recent Commercial Vehicles
               </h3>
               <button 
-                onClick={() => router.push('/dashboard/commercial-vehicles')}
+                onClick={() => router.push('/dashboard/HeavyCommercialVehicle')}
                 className="text-sm text-green-600 hover:text-green-700 font-medium"
               >
                 View All
@@ -290,7 +290,7 @@ export default function DashboardHome() {
                 Recent Motorcycles
               </h3>
               <button 
-                onClick={() => router.push('/dashboard/motorcycles')}
+                onClick={() => router.push('/dashboard/Motocycle')}
                 className="text-sm text-purple-600 hover:text-purple-700 font-medium"
               >
                 View All
@@ -320,21 +320,21 @@ export default function DashboardHome() {
               <span className="text-sm font-medium">Add New Car</span>
             </button>
             <button
-              onClick={() => router.push('/dashboard/commercial-vehicles?add=new')}
+              onClick={() => router.push('/dashboard/HeavyCommercialVehicle?add=new')}
               className="p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors text-center"
             >
               <Truck className="w-8 h-8 text-green-600 mx-auto mb-2" />
               <span className="text-sm font-medium">Add Commercial Vehicle</span>
             </button>
             <button
-              onClick={() => router.push('/dashboard/motorcycles?add=new')}
+              onClick={() => router.push('/dashboard/Motocycle?add=new')}
               className="p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-colors text-center"
             >
               <Bike className="w-8 h-8 text-purple-600 mx-auto mb-2" />
               <span className="text-sm font-medium">Add Motorcycle</span>
             </button>
             <button
-              onClick={() => router.push('/dashboard/users')}
+              onClick={() => router.push('/dashboard/Users')}
               className="p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors text-center"
             >
               <Users className="w-8 h-8 text-orange-600 mx-auto mb-2" />
