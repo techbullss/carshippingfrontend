@@ -101,6 +101,7 @@ export default function VehicleListClient() {
     if (filters.fuelType) params.append("fuelType", filters.fuelType);
     if (filters.location) params.append("location", filters.location);
     if (filters.ownerType) params.append("ownerType", filters.ownerType);
+    if (filters.yearOfManufacture) params.append("yearOfManufacture", filters.yearOfManufacture);
 
     // ✅ numeric filters (use _gte and _lte)
     if (filters.minPrice) params.append("price_gte", filters.minPrice);
