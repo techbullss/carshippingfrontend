@@ -23,6 +23,7 @@ const navItems = [
   { name: "Container Sales", href: "/dashboard/Containers", icon: faBoxOpen },
   { name: "Motorcycles", href: "/dashboard/Motocycle", icon: faMotorcycle },
   { name: "Users", href: "/dashboard/Users", icon: faUsers },
+  { name: "Profile", href: "/dashboard/UserProfile", icon: faUserTie },
   
   { name: "Logout", href: "/dashboard/Logout", icon: faRightFromBracket },
 ];

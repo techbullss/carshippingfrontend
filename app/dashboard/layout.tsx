@@ -1,3 +1,4 @@
+"use client";
 import Sidebar from "../components/Sidebar";
 import { useAuth } from "../Context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
