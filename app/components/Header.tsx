@@ -71,7 +71,7 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
     const checkAuthStatus = async () => {
       try {
         const res = await fetch("https://api.f-carshipping.com/api/auth/validate", {
-          method: "POST",
+          method: "GET",
           credentials: "include",
         });
         if (res.ok) {
