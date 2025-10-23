@@ -41,6 +41,7 @@ export default function UserProfile() {
      const response = await fetch(`https://api.f-carshipping.com/api/users/${user.id}/profile-picture`, {
   method: "POST",
   credentials: "include",
+headers: { 'Accept': 'application/json' } ,
   body: formData,
 });
 
