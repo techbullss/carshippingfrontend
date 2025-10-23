@@ -67,19 +67,26 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
   };
 
   //  Logout through backend
-  const handleLogout = async () => {
-    try {
-    const res=  await fetch("https://api.f-carshipping.com/api/auth/validate", {
-        method: "POST",
-        credentials: "include",
-      });
-    if (res.ok) {
-      setIsLoggedIn(true);} else {
-      setIsLoggedIn(false);}
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const res = await fetch("https://api.f-carshipping.com/api/auth/validate", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (res.ok) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("Auth check failed:", error);
+      }
+    };
+    checkAuthStatus();
+  }, []);
+
+ 
 
  
 
