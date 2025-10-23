@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import AutoTraderTwoTier from "./AutoTraderTwoTier";
-import { useAuth } from "../Context/AuthContext";
+
 
 interface SubmenuItem {
   href: string;
@@ -23,9 +23,9 @@ interface MenuItem {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
-  //const [isLoggedIn, setIsLoggedIn] = useState(false);
- // const [loading, setLoading] = useState(true);
-   const { isLoggedIn, loading, checkAuth } = useAuth();
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+ const [loading, setLoading] = useState(true);
+  
   const pathname = usePathname();
 
   const links: MenuItem[] = [
@@ -73,19 +73,13 @@ export default function Header() {
         method: "POST",
         credentials: "include",
       });
-      await checkAuth();
+      setIsLoggedIn(false);
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="bg-gray-100 text-gray-800 p-4 text-center">
-        Checking session...
-      </div>
-    );
-  }
+ 
 
   return (
     <div className="flex-col bg-gradient-to-b from-white to-blue-50 shadow-lg w-full">

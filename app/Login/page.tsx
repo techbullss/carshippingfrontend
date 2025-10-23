@@ -17,7 +17,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  const { setIsLoggedIn } = useAuth();
+  setIsLoading(true);
   setError('');
 
   try {
@@ -38,7 +38,7 @@ const LoginPage = () => {
     }
 
     const data = await response.json();
-    setIsLoggedIn(true);
+    
     router.push('/dashboard');
 
   } catch (err) {
