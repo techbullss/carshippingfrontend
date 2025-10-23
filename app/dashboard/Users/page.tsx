@@ -95,25 +95,35 @@ export default function UserManagement() {
     }
   };
 
-  const toggleRole = async (userId: number, role: string) => {
-    try {
-      const response = await fetch(`https://api.f-carshipping.com/api/admin/users/roles/${userId}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role }),
-      });
+const toggleRole = async (userId: number, role: string) => {
+  // Determine whether we are adding or removing
+  const user = users.find((u) => u.id === userId);
+  const hasRole = user?.roles.includes(role);
+  const action = hasRole ? "remove" : "add";
 
-      if (!response.ok) throw new Error("Failed to update role");
+  try {
+    const response = await fetch(`https://api.f-carshipping.com/api/admin/users/roles/${userId}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, action }),
+    });
 
-      const updatedUser = await response.json();
-      setUsers(users.map(user => 
-        user.id === userId ? updatedUser : user
-      ));
-    } catch (err) {
-      setError("Failed to update role");
+    if (!response.ok) {
+      throw new Error(`Failed to ${action} role`);
     }
-  };
+
+    const updatedUser = await response.json();
+
+    // Update local state (assuming you have users in state)
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? updatedUser : u))
+    );
+  } catch (error) {
+    console.error("Error updating role:", error);
+  }
+};
+
 
   if (loading) return <div className="text-center py-8">Loading users...</div>;
 
