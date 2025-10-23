@@ -69,11 +69,13 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
   //  Logout through backend
   const handleLogout = async () => {
     try {
-      await fetch("https://api.f-carshipping.com/api/auth/logout", {
+    const res=  await fetch("https://api.f-carshipping.com/api/auth/validate", {
         method: "POST",
         credentials: "include",
       });
-      setIsLoggedIn(false);
+    if (res.ok) {
+      setIsLoggedIn(true);} else {
+      setIsLoggedIn(false);}
     } catch (error) {
       console.error("Logout failed:", error);
     }

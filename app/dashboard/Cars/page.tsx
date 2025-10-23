@@ -38,6 +38,7 @@ const fetchCars = async () => {
     });
     
     const res = await fetch(`https://api.f-carshipping.com/api/cars/dashboard?${params}`, { 
+      method: 'GET',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
