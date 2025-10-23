@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import AutoTraderTwoTier from "./AutoTraderTwoTier";
+import { useAuth } from "../Context/AuthContext";
 
 interface SubmenuItem {
   href: string;
@@ -22,8 +23,9 @@ interface MenuItem {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
+  //const [isLoggedIn, setIsLoggedIn] = useState(false);
+ // const [loading, setLoading] = useState(true);
+   const { isLoggedIn, loading, checkAuth } = useAuth();
   const pathname = usePathname();
 
   const links: MenuItem[] = [
@@ -59,30 +61,7 @@ export default function Header() {
   ];
 
   // Use backend cookie to validate login status
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("https://api.f-carshipping.com/api/auth/validate", {
-          method: "GET",
-          credentials: "include", // send cookie with request
-        });
-
-        if (response.ok) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        setIsLoggedIn(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
+ 
   const handleSubmenuToggle = (index: number) => {
     setOpenSubmenu(openSubmenu === index ? null : index);
   };
@@ -94,7 +73,7 @@ export default function Header() {
         method: "POST",
         credentials: "include",
       });
-      setIsLoggedIn(false);
+      await checkAuth();
     } catch (error) {
       console.error("Logout failed:", error);
     }

@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useCurrentUser } from "../Hookes/useCurrentUser";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: faGaugeHigh },
@@ -27,13 +28,21 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const { user, loading } = useCurrentUser();
+  
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <div>Not logged in</div>;
+  
   const pathname = usePathname();
 
   return (
     <aside className="w-56 bg-white shadow-lg h-screen flex flex-col">
       <div className="p-4 border-b">
-        <p className="text-xl font-bold text-indigo-600 tracking-tight">AutoManager</p>
+        <p className="text-xl font-bold text-indigo-600 tracking-tight">F-carshipping</p>
       </div>
+      <div>
+      Welcome, {user.firstName} {user.lastName}
+    </div>
 
       <nav className="mt-6 flex-1 space-y-1">
         {navItems.map((item) => {

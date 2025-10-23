@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../Context/AuthContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  setIsLoading(true);
+  const { setIsLoggedIn } = useAuth();
   setError('');
 
   try {
@@ -37,16 +38,8 @@ const LoginPage = () => {
     }
 
     const data = await response.json();
-    console.log('✅ Login success:', data);
-
-    // Optionally store user info in localStorage or context
-    localStorage.setItem('user', JSON.stringify(data));
-
-    // Redirect based on role (optional)
-    
-   
-      router.push('/dashboard');
-    
+    setIsLoggedIn(true);
+    router.push('/dashboard');
 
   } catch (err) {
     setError(err instanceof Error ? err.message : 'An error occurred during login');
