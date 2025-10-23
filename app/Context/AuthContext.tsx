@@ -19,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await fetch("https://api.f-carshipping.com/api/auth/validate", {
         method: "GET",
         credentials: "include",
+        headers: { "Content-Type": "application/json" }
       });
 
       if (response.ok) {

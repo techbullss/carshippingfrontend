@@ -37,13 +37,13 @@ export default function RootLayout({
         }}
         className={`${geistSans.variable} ${geistMono.variable} relative w-full h-full min-h-screen antialiased`}
       >
-        <AuthProvider>
+     
           <div className="mx-[6%] my-[1%] bg-gray-50 border-l-2 border-rounded rounded border-t-2 border-t-green-500 border-gray-100 shadow-lg">
             <Header />
             {children}
             <Footer />
           </div>
-        </AuthProvider>
+        
       </body>
     </html>
 
