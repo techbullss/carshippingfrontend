@@ -97,7 +97,7 @@ export default function UserManagement() {
 
   const toggleRole = async (userId: number, role: string) => {
     try {
-      const response = await fetch(`https://api.f-carshipping.com/api/admin/users/${userId}/roles`, {
+      const response = await fetch(`https://api.f-carshipping.com/api/admin/users/roles/${userId}`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
