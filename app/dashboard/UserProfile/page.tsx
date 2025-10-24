@@ -38,10 +38,10 @@ export default function UserProfile() {
       const formData = new FormData();
       formData.append("profilePicture", file);
 
-     const response = await fetch(`https://api.f-carshipping.com/api/users/${user.id}/profile-picture`, {
+    const response = await fetch(`https://api.f-carshipping.com/api/users/profile-picture`, {
   method: "POST",
-  credentials: "include",
-headers: { 'Accept': 'application/json' } ,
+  credentials: "include", // JWT or session cookie
+  headers: { 'Accept': 'application/json' },
   body: formData,
 });
 

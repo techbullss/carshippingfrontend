@@ -39,7 +39,7 @@ const LoginPage = () => {
 
     const data = await response.json();
     
-    router.push('/dashboard');
+    window.location.href = '/dashboard';
 
   } catch (err) {
     setError(err instanceof Error ? err.message : 'An error occurred during login');

@@ -20,7 +20,7 @@ export default function LogoutPage() {
         if (!res.ok) throw new Error("Logout failed");
 
         toast.success("Logged out successfully");
-        router.push("/Login"); // redirect to login
+        window.location.href = '/Login'; // redirect to login
       } catch (err) {
         console.error(err);
         toast.error("Failed to logout. Please try again.");
