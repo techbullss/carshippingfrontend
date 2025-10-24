@@ -24,17 +24,14 @@ export default function CarsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editCar, setEditCar] = useState<Car | null>(null);
   const [detailCar, setDetailCar] = useState<Car | null>(null);
-
+ 
+    const { user } = useCurrentUser();
+    const email = user?.email || '';
+    const role = user?.roles?.[0] || ''; // assuming roles = ["ADMIN"]
 const fetchCars = async () => {
   try {
     setLoading(true);
     setError('');
-
-    // Get user info from local storage or session (after validation)
-    useCurrentUser();
-    const { user } = useCurrentUser();
-    const email = user?.email || '';
-    const role = user?.roles?.[0] || ''; // assuming roles = ["ADMIN"]
  console.log('Fetching cars with:', { email, role });
     const params = new URLSearchParams({
       page: page.toString(),
@@ -84,7 +81,11 @@ const fetchCars = async () => {
     setLoading(false);
   }
 };
-
+ useEffect(() => {
+    if (email && role) {
+      fetchCars();
+    }
+  }, [email, role, page, size, search, brand, seller]);
 
   const deleteCar = async (id: number) => {
     if (!confirm("Delete this car?")) return;
