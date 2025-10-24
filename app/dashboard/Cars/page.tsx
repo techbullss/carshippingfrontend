@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Car } from "@/app/car";
 import router from "next/router";
 import AddCarForm from "@/app/components/AddCarForm";
+import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
 
 export default function CarsPage() {
   const [cars, setCars] = useState<Car[]>([]);
@@ -30,7 +31,8 @@ const fetchCars = async () => {
     setError('');
 
     // Get user info from local storage or session (after validation)
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    useCurrentUser();
+    const { user } = useCurrentUser();
     const email = user?.email || '';
     const role = user?.roles?.[0] || ''; // assuming roles = ["ADMIN"]
 
