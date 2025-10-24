@@ -32,7 +32,7 @@ const fetchCars = async () => {
   try {
     setLoading(true);
     setError('');
- console.log('Fetching cars with:', { email, role });
+ 
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
@@ -123,16 +123,7 @@ const fetchCars = async () => {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 bg-gray-50 p-4 rounded-xl border shadow-sm">
-        <input
-          type="text"
-          placeholder="Search brand/model/seller…"
-          value={search}
-          onChange={(e) => {
-            setPage(0);
-            setSearch(e.target.value);
-          }}
-          className="border p-2 rounded w-full sm:w-64"
-        />
+        
         <input
           type="text"
           placeholder="Filter by brand"

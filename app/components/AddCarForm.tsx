@@ -221,13 +221,14 @@ useEffect(() => {
         priceKes: Number(form.priceKes),
         features: selectedFeatures.join(", "),
         seller: user?.email || form.seller,
+          roles: user?.roles[0] || form.roles[0],
         customSpecs: JSON.stringify(customSpecsList),
         imageUrls: existingImages
             };
 
       formData.append("car", new Blob([JSON.stringify(carData)], { type: "application/json" }));
       images.forEach(file => formData.append("images", file));
-console.log("Submitting car data:", formData);
+
       const url = carToEdit
         ? `https://api.f-carshipping.com/api/cars/${carToEdit.id}`
         : "https://api.f-carshipping.com/api/cars";
