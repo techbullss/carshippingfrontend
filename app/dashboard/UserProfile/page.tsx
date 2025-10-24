@@ -89,7 +89,7 @@ export default function UserProfile() {
     }
 
     try {
-      const response = await fetch(`https://api.f-carshipping.com/api/users/${user.id}/password`, {
+      const response = await fetch(`https://api.f-carshipping.com/api/users/password`, {
         method: "PUT",
         credentials: "include",
         headers: {
