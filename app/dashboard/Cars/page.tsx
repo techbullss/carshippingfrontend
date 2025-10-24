@@ -28,7 +28,12 @@ const fetchCars = async () => {
   try {
     setLoading(true);
     setError('');
-    
+
+    // Get user info from local storage or session (after validation)
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const email = user?.email || '';
+    const role = user?.roles?.[0] || ''; // assuming roles = ["ADMIN"]
+
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
@@ -36,35 +41,17 @@ const fetchCars = async () => {
       ...(brand ? { brand } : {}),
       ...(seller ? { seller } : {}),
     });
-    
-    const res = await fetch(`https://api.f-carshipping.com/api/cars/dashboard?${params}`, { 
-      method: 'GET',
+
+    const res = await fetch(`https://api.f-carshipping.com/api/cars/dashboard?${params}`, {
+      method: 'POST', // change to POST to send JSON body
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
+      body: JSON.stringify({ email, role }), // send user info
     });
-    
+
     console.log('Cars API response status:', res.status);
-    
-    if (res.status === 403) {
-      // Check if it's an authentication issue
-      const authCheck = await fetch('https://api.f-carshipping.com/api/auth/validate', {
-        credentials: 'include'
-      });
-      
-      if (!authCheck.ok) {
-        throw new Error('SESSION_EXPIRED');
-      }
-      if (authCheck.ok) {
-        // If authenticated but still 403, it's an authorization issue
-        authCheck.json().then(data => {
-          if (data.role !== 'ADMIN') {
-            throw new Error('ACCESS_DENIED');
-          }
-        });
-      }
-    }
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -75,14 +62,14 @@ const fetchCars = async () => {
       });
       throw new Error(`HTTP ${res.status}: ${errorText}`);
     }
-    
+
     const data = await res.json();
     setCars(data.content || []);
     setTotalPages(data.totalPages || 0);
-    
+
   } catch (err: any) {
     console.error('Error fetching cars:', err);
-    
+
     if (err.message === 'SESSION_EXPIRED') {
       setError('Your session has expired. Please log in again.');
       setTimeout(() => router.push('/Login'), 2000);
@@ -95,9 +82,7 @@ const fetchCars = async () => {
     setLoading(false);
   }
 };
-  useEffect(() => {
-    fetchCars();
-  }, [page, size, search, brand, seller]);
+
 
   const deleteCar = async (id: number) => {
     if (!confirm("Delete this car?")) return;
