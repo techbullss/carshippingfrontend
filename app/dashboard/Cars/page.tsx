@@ -35,7 +35,7 @@ const fetchCars = async () => {
     const { user } = useCurrentUser();
     const email = user?.email || '';
     const role = user?.roles?.[0] || ''; // assuming roles = ["ADMIN"]
-
+ console.log('Fetching cars with user:', { email, role });
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
