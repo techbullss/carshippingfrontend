@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
    
     <div className="flex h-screen bg-gray-100 overflow-hidden">
   {/* Sidebar - fixed height, no scroll */}
-  <div className="w-64 h-full  left-0 top-0 bg-white shadow-md">
+  <div className=" h-full  left-0 top-0 bg-white shadow-md">
     <Sidebar />
   </div>
 
