@@ -72,6 +72,9 @@ const [isOpen, setIsOpen] = useState(false);
 const [openDrawer, setOpenDrawer] = useState<null | "history" | "safety">(null);
 const [user, setUser] = useState<User | null>(null);
 const [userDetails, setUserDetails] = useState<SignupRequest | null>(null);
+const [openReview, setOpenReview] = useState(false);
+const [rating, setRating] = useState(0);
+const [reviewText, setReviewText] = useState("");
  const preview =
     (vehicle?.description ?? "").length > 70
       ? vehicle?.description?.slice(0, 70) + "..."
@@ -401,6 +404,12 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
       <button className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-lg text-xs">
         Message seller
       </button>
+      <button
+  onClick={() => setOpenReview(true)}
+  className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg text-sm"
+>
+  Leave a Review
+</button>
     </div>
   </div>
 </div>
@@ -549,10 +558,10 @@ onClick={() => setOpenSpec(true)}>
 
       {/* Drawer */}
       {openDrawer && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-5 flex">
           {/* Overlay */}
           <div
-            className="fixed inset-0 bg-black bg-opacity-50"
+            className="fixed inset-0 bg-black bg-opacity-5"
             onClick={() => setOpenDrawer(null)}
           ></div>
 
@@ -734,8 +743,88 @@ onClick={() => setOpenSpec(true)}>
     </div>
   </div>
 )}
+{openReview && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative">
+      <button
+        onClick={() => setOpenReview(false)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl"
+      >
+        ×
+      </button>
+
+      <h2 className="text-xl font-semibold mb-4 text-center">Leave a Review</h2>
+
+      {/* Rating */}
+      <div className="flex justify-center mb-4 space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => setRating(star)}
+            className={`text-2xl ${
+              star <= rating ? "text-yellow-400" : "text-gray-300"
+            }`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+
+      {/* Review Text */}
+      <textarea
+        rows={4}
+        value={reviewText}
+        onChange={(e) => setReviewText(e.target.value)}
+        placeholder="Write your review here..."
+        className="w-full border rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+
+      {/* Submit Button */}
+      <button
+        onClick={async () => {
+          if (!reviewText || rating === 0) {
+            alert("Please add a rating and a comment.");
+            return;
+          }
+
+          try {
+            const response = await fetch(`https://api.f-carshipping.com/api/reviews`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({
+                vehicleId: vehicle.id,
+                rating,
+                comment: reviewText,
+                userEmail: user?.email,
+              }),
+            });
+
+            if (response.ok) {
+              alert("Review submitted successfully!");
+              setOpenReview(false);
+              setRating(0);
+              setReviewText("");
+            } else {
+              alert("Failed to submit review. Please try again.");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("An error occurred while submitting your review.");
+          }
+        }}
+        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
+      >
+        Submit Review
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
+  
 };
 
 export default VehicleDetails;

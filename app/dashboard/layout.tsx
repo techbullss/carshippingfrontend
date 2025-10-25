@@ -16,9 +16,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!user) return <div>Not logged in</div>;
   return (
    
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
-      <main className="flex-1 p-2">{children}</main>
-    </div>
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
+  {/* Sidebar - fixed height, no scroll */}
+  <div className="w-64 h-full fixed left-0 top-0 bg-white shadow-md">
+    <Sidebar />
+  </div>
+
+  {/* Main content - scrollable */}
+  <main className="flex-1 ml-64 overflow-y-auto p-4">
+    {children}
+  </main>
+</div>
   );
 }
