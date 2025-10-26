@@ -208,10 +208,9 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: str
   const { govtId, passportPhoto, confirmPassword, termsAccepted, ...userData } = formData;
 
   // Append "data" JSON as Blob
-  multipartData.append(
-    'data',
-    new Blob([JSON.stringify(userData)], { type: 'application/json' })
-  );
+  
+    multipartData.append("data", JSON.stringify(userData));
+
 
   // Append files if provided
   if (govtId) multipartData.append('govtId', govtId);
