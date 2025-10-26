@@ -209,7 +209,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: str
 
   // Append "data" JSON as Blob
   
-    multipartData.append("data", JSON.stringify(userData));
+    multipartData.append("data", new Blob([JSON.stringify(userData)], { type: "application/json" }));
 
 
   // Append files if provided
@@ -221,7 +221,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: str
     method: "POST",
     body: multipartData, // 👈 DO NOT manually set headers — browser handles it
     credentials: "include",
-    headers: { 'Accept': 'application/json' }
+  
   });
 
   if (!response.ok) {
