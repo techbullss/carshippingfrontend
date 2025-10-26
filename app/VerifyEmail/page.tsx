@@ -21,7 +21,7 @@ export default function VerifyEmail() {
     setMessage('');
 
     try {
-      const res = await fetch(`https://api.f-carshipping.com/auth/verify`, {
+      const res = await fetch(`https://api.f-carshipping.com/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
@@ -44,7 +44,7 @@ export default function VerifyEmail() {
     setMessage('');
 
     try {
-      const res = await fetch(`https://api.f-carshipping.com/auth/resend-code`, {
+      const res = await fetch(`https://api.f-carshipping.com/api/auth/resend-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
