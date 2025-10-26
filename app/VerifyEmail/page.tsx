@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
+import VerificationSuccess from '../components/VerificationSuccess';
 
 export default function VerifyEmail() {
   const [email, setEmail] = useState('');
@@ -13,7 +14,11 @@ export default function VerifyEmail() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-
+const [verificationSuccess, setVerificationSuccess] = useState(false);
+  
+  if (verificationSuccess) {
+    return <VerificationSuccess />;
+  }
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -30,6 +35,7 @@ export default function VerifyEmail() {
       if (!res.ok) throw new Error('Invalid or expired code.');
 
       setMessage(' Email verified successfully!');
+        setVerificationSuccess(true);
     } catch (err: any) {
       setError(err.message);
     } finally {
