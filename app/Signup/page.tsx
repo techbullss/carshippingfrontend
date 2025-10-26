@@ -60,7 +60,9 @@ interface SignupRequest {
   shippingFrequency: string;
   vehicleType: string;
   estimatedShippingDate: string;
- 
+   govtId: null,
+  passportPhoto: null,
+  idNumber: '',
 }
 
 interface AuthResponse {
@@ -199,61 +201,65 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: str
   }
 };
   // API call handled directly in component
-  const handleSignup = async (signupData: SignupRequest): Promise<AuthResponse> => {
-    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // This sends cookies automatically
-      body: JSON.stringify(signupData),
-    });
+ const handleSignup = async (): Promise<AuthResponse> => {
+  const multipartData = new FormData();
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Registration failed');
-    }
+  // Prepare JSON data (excluding files)
+  const { govtId, passportPhoto, confirmPassword, termsAccepted, ...userData } = formData;
 
-    return await response.json();
-  };
+  // Append "data" JSON as Blob
+  multipartData.append(
+    'data',
+    new Blob([JSON.stringify(userData)], { type: 'application/json' })
+  );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
+  // Append files if provided
+  if (govtId) multipartData.append('govtId', govtId);
+  if (passportPhoto) multipartData.append('passportPhoto', passportPhoto);
 
-    if (!validateStep(4)) {
-      setError('Please accept the terms and conditions.');
-      setIsLoading(false);
-      return;
-    }
+  // Send multipart request to backend
+  const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+    method: 'POST',
+    body: multipartData, // 👈 DO NOT manually set headers — browser handles it
+    credentials: 'include',
+  });
 
-    try {
-      // Prepare data - remove confirmPassword and termsAccepted
-      const { confirmPassword, termsAccepted, ...apiData } = formData;
-      
-      const signupData: SignupRequest = {
-        ...apiData,
-        preferredCommunication: formData.preferredCommunication,
-      };
+  if (!response.ok) {
+    const errorData = await response.text();
+    throw new Error(errorData || 'Registration failed');
+  }
 
-      console.log('Sending registration to backend...', signupData);
+  return await response.json();
+};
 
-      // Direct API call to backend
-      const response = await handleSignup(signupData);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError('');
 
-      console.log('Registration successful:', response);
+  if (!validateStep(4)) {
+    setError('Please accept the terms and conditions.');
+    setIsLoading(false);
+    return;
+  }
 
-      // Redirect to verification page with email query parameter
-     router.push(`/verify-email?email=${formData.email}`);
-      
-    } catch (err: any) {
-      console.error('Registration error:', err);
-      setError(err.message || 'An error occurred during registration');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  try {
+    console.log('📤 Sending registration to backend...', formData);
+
+    const response = await handleSignup();
+
+    console.log('✅ Registration successful:', response);
+
+    // Redirect to verification page
+    router.push(`/verify-email?email=${formData.email}`);
+
+  } catch (err: any) {
+    console.error('❌ Registration error:', err);
+    setError(err.message || 'An error occurred during registration');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const steps = [
     { number: 1, title: 'Personal Info' },
