@@ -137,123 +137,131 @@ const toggleRole = async (userId: number, role: string) => {
         </div>
       )}
 
-      <div className="bg-white shadow-md rounded-lg ">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contact
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Roles
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Newsletter
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Joined
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                      {user.firstName[0]}{user.lastName[0]}
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {user.firstName} {user.lastName}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{user.email}</div>
-                  <div className="text-sm text-gray-500">{user.phone}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex flex-wrap gap-1">
-                    {user.roles.map((role) => (
-                      <span
-                        key={role}
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          role === "ADMIN" 
-                            ? "bg-red-100 text-red-800"
-                            : role === "SELLER"
-                            ? "bg-blue-100 text-blue-800"
-                            : role === "ASSISTANT"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {role}
-                        <button
-                          onClick={() => toggleRole(user.id, role)}
-                          className="ml-1 text-xs hover:text-red-600"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                    <select
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          toggleRole(user.id, e.target.value);
-                          e.target.value = "";
-                        }
-                      }}
-                      className="text-xs border rounded p-1"
-                    >
-                      <option value="">Add Role</option>
-                      <option value="ADMIN">ADMIN</option>
-                      <option value="SELLER">SELLER</option>
-                      <option value="ASSISTANT">ASSISTANT</option>
-                      <option value="USER">USER</option>
-                    </select>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      user.newsletter
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    {user.newsletter ? "Subscribed" : "Not Subscribed"}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+   <div className="bg-white shadow-md rounded-lg overflow-x-auto">
+  <table className="min-w-full divide-y divide-gray-200">
+    <thead className="bg-gray-50">
+      <tr>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          User
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Contact
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Roles
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Newsletter
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Joined
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Actions
+        </th>
+      </tr>
+    </thead>
+
+    <tbody className="bg-white divide-y divide-gray-200">
+      {users.map((user) => (
+        <tr key={user.id}>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                {user.firstName[0]}
+                {user.lastName[0]}
+              </div>
+              <div className="ml-4">
+                <div className="text-sm font-medium text-gray-900">
+                  {user.firstName} {user.lastName}
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="text-sm text-gray-900">{user.email}</div>
+            <div className="text-sm text-gray-500">{user.phone}</div>
+          </td>
+
+          <td className="px-6 py-4 whitespace-nowrap">
+            <div className="flex flex-wrap gap-1">
+              {user.roles.map((role) => (
+                <span
+                  key={role}
+                  className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                    role === "ADMIN"
+                      ? "bg-red-100 text-red-800"
+                      : role === "SELLER"
+                      ? "bg-blue-100 text-blue-800"
+                      : role === "ASSISTANT"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  {role}
                   <button
-                    onClick={() => handleEdit(user)}
-                    className="text-blue-600 hover:text-blue-900 mr-3"
+                    onClick={() => toggleRole(user.id, role)}
+                    className="ml-1 text-xs hover:text-red-600"
                   >
-                    Edit
+                    ×
                   </button>
-                  <button
-                    onClick={() => handleDelete(user)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </span>
+              ))}
+              <select
+                onChange={(e) => {
+                  if (e.target.value) {
+                    toggleRole(user.id, e.target.value);
+                    e.target.value = "";
+                  }
+                }}
+                className="text-xs border rounded p-1"
+              >
+                <option value="">Add Role</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="SELLER">SELLER</option>
+                <option value="ASSISTANT">ASSISTANT</option>
+                <option value="USER">USER</option>
+              </select>
+            </div>
+          </td>
+
+          <td className="px-6 py-4 whitespace-nowrap">
+            <span
+              className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                user.newsletter
+                  ? "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {user.newsletter ? "Subscribed" : "Not Subscribed"}
+            </span>
+          </td>
+
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {new Date(user.createdAt).toLocaleDateString()}
+          </td>
+
+          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button
+              onClick={() => handleEdit(user)}
+              className="text-blue-600 hover:text-blue-900 mr-3"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDelete(user)}
+              className="text-red-600 hover:text-red-900"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
 
       {/* Edit Modal */}
       {editingUser && (
