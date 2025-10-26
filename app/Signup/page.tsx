@@ -253,7 +253,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     console.log('✅ Registration successful:', response);
 
     // Redirect to verification page
-    router.push(`/verify-email?email=${formData.email}`);
+    router.push(`/VerifyEmail?email=${formData.email}`);
 
   } catch (err: any) {
     console.error('❌ Registration error:', err);
