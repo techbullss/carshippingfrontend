@@ -213,14 +213,15 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: str
 
 
   // Append files if provided
-  if (govtId) multipartData.append('govtId', govtId);
-  if (passportPhoto) multipartData.append('passportPhoto', passportPhoto);
+  if (govtId) multipartData.append("govtId", govtId);
+  if (passportPhoto) multipartData.append("passportPhoto", passportPhoto);
 
   // Send multipart request to backend
   const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-    method: 'POST',
+    method: "POST",
     body: multipartData, // 👈 DO NOT manually set headers — browser handles it
-    credentials: 'include',
+    credentials: "include",
+    headers: { 'Accept': 'application/json' }
   });
 
   if (!response.ok) {
