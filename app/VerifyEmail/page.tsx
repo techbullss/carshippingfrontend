@@ -21,7 +21,7 @@ export default function VerifyEmail() {
     setMessage('');
 
     try {
-      const res = await fetch(`https://api.f-carshipping.com/api/auth/verify`, {
+      const res = await fetch(`https://api.f-carshipping.com/api/auth/verify-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
