@@ -34,11 +34,12 @@ interface FormData {
   shippingFrequency: string;
   vehicleType: string;
   estimatedShippingDate: string;
-
-  
-   idNumber: "",
-  govtId: null,
-  passportPhoto: null,
+  verificationCode: string;
+  emailVerified: boolean;
+  status: string;
+  idNumber: string;
+  govtId: File | null;
+  passportPhoto: File | null;
 }
 
 // Types for API
@@ -63,6 +64,7 @@ interface SignupRequest {
    govtId: null,
   passportPhoto: null,
   idNumber: '',
+  status: '',
 }
 
 interface AuthResponse {
@@ -96,10 +98,12 @@ const RegisterPage = () => {
     shippingFrequency: '',
     vehicleType: '',
     estimatedShippingDate: '',
-    
+    status: '',
     idNumber: '',
     govtId: null,
     passportPhoto: null,
+    verificationCode: '',
+    emailVerified: false,
   });
 
   const [currentStep, setCurrentStep] = useState(1);
