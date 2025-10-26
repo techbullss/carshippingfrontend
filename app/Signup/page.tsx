@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
+import { getCountryCallingCode } from "libphonenumber-js";
 interface FormData {
   // Personal Information
   firstName: string;
@@ -34,8 +34,11 @@ interface FormData {
   shippingFrequency: string;
   vehicleType: string;
   estimatedShippingDate: string;
-  sourceCountry: string;
-  destinationCountry: string;
+
+  
+   idNumber: "",
+  govtId: null,
+  passportPhoto: null,
 }
 
 // Types for API
@@ -57,8 +60,7 @@ interface SignupRequest {
   shippingFrequency: string;
   vehicleType: string;
   estimatedShippingDate: string;
-  sourceCountry: string;
-  destinationCountry: string;
+ 
 }
 
 interface AuthResponse {
@@ -92,8 +94,10 @@ const RegisterPage = () => {
     shippingFrequency: '',
     vehicleType: '',
     estimatedShippingDate: '',
-    sourceCountry: 'UK',
-    destinationCountry: 'Kenya',
+    
+    idNumber: '',
+    govtId: null,
+    passportPhoto: null,
   });
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -102,7 +106,36 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+ const [countryCode, setCountryCode] = useState("+");
+ const [loadingLocation, setLoadingLocation] = useState(false);
 
+ useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        setLoadingLocation(true);
+        const res = await fetch("https://ipapi.co/json/"); // free and reliable API
+        const data = await res.json();
+
+        if (data && data.country_name && data.country_code) {
+          const country = data.country_name;
+          const countryCode = data.country_code; // e.g., "KE", "US", "GB"
+          const phoneCode = getCountryCallingCode(countryCode); // e.g., "254"
+
+          setFormData((prev) => ({
+            ...prev,
+            country: country,
+            phone: `+${phoneCode} `, // prefill with +254 format
+          }));
+        }
+      } catch (err) {
+        console.error("Location fetch failed:", err);
+      } finally {
+        setLoadingLocation(false);
+      }
+    };
+
+    fetchLocation();
+  }, [setFormData]);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     
@@ -158,7 +191,13 @@ const RegisterPage = () => {
     setCurrentStep(prev => prev - 1);
     setError('');
   };
-
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+  const files = e.target.files;
+  if (files && files.length > 0) {
+    const file = files[0];
+    setFormData((prev) => ({ ...prev, [fieldName]: file }));
+  }
+};
   // API call handled directly in component
   const handleSignup = async (signupData: SignupRequest): Promise<AuthResponse> => {
     const response = await fetch(`${API_BASE_URL}/auth/signup`, {
@@ -204,9 +243,9 @@ const RegisterPage = () => {
       const response = await handleSignup(signupData);
 
       console.log('Registration successful:', response);
-      
-      // Redirect to dashboard - HTTP-only cookie is automatically set by backend
-      router.push('/dashboard');
+
+      // Redirect to verification page with email query parameter
+     router.push(`/verify-email?email=${formData.email}`);
       
     } catch (err: any) {
       console.error('Registration error:', err);
@@ -339,20 +378,23 @@ const RegisterPage = () => {
                       />
                     </div>
 
-                    <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                        Phone Number *
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        required
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      />
-                    </div>
+       <div>
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+          Phone Number *
+        </label>
+        <input
+          type="tel"
+          id="phone"
+          name="phone"
+          required
+          value={formData.phone}
+          onChange={handleInputChange}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+            focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+        />
+        {loadingLocation && <p className="text-xs text-gray-500 mt-1">Detecting location...</p>}
+      </div>
+
 
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                       <div>
@@ -391,87 +433,134 @@ const RegisterPage = () => {
                   </div>
                 )}
 
-                {/* Step 2: Address Information */}
-                {currentStep === 2 && (
-                  <div className="space-y-6">
-                    <div>
-                      <label htmlFor="streetAddress" className="block text-sm font-medium text-gray-700">
-                        Street Address *
-                      </label>
-                      <input
-                        type="text"
-                        id="streetAddress"
-                        name="streetAddress"
-                        required
-                        value={formData.streetAddress}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      />
-                    </div>
+             {/* Step 2: Address Information */}
+{currentStep === 2 && (
+  <div className="space-y-6">
+    {/* Address Fields */}
+    <div>
+      <label htmlFor="streetAddress" className="block text-sm font-medium text-gray-700">
+        Street Address *
+      </label>
+      <input
+        type="text"
+        id="streetAddress"
+        name="streetAddress"
+        required
+        value={formData.streetAddress}
+        onChange={handleInputChange}
+        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+      />
+    </div>
 
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div>
-                        <label htmlFor="city" className="block text-sm font-medium text-gray-700">
-                          City *
-                        </label>
-                        <input
-                          type="text"
-                          id="city"
-                          name="city"
-                          required
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="state" className="block text-sm font-medium text-gray-700">
-                          State/Province *
-                        </label>
-                        <input
-                          type="text"
-                          id="state"
-                          name="state"
-                          required
-                          value={formData.state}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div>
+        <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+          City *
+        </label>
+        <input
+          type="text"
+          id="city"
+          name="city"
+          required
+          value={formData.city}
+          onChange={handleInputChange}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="state" className="block text-sm font-medium text-gray-700">
+          State/Province *
+        </label>
+        <input
+          type="text"
+          id="state"
+          name="state"
+          required
+          value={formData.state}
+          onChange={handleInputChange}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+        />
+      </div>
+    </div>
 
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div>
-                        <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">
-                          Postal Code *
-                        </label>
-                        <input
-                          type="text"
-                          id="postalCode"
-                          name="postalCode"
-                          required
-                          value={formData.postalCode}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                          Country *
-                        </label>
-                        <input
-                          type="text"
-                          id="country"
-                          name="country"
-                          required
-                          value={formData.country}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div>
+        <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700">
+          Postal Code *
+        </label>
+        <input
+          type="text"
+          id="postalCode"
+          name="postalCode"
+          required
+          value={formData.postalCode}
+          onChange={handleInputChange}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+        />
+      </div>
+      <div>
+        <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+          Country *
+        </label>
+        <input
+          type="text"
+          id="country"
+          name="country"
+          required
+          value={formData.country}
+          onChange={handleInputChange}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+        />
+      </div>
+    </div>
+
+    {/* New Fields */}
+    <div>
+      <label htmlFor="idNumber" className="block text-sm font-medium text-gray-700">
+        ID/Passport Number *
+      </label>
+      <input
+        type="text"
+        id="idNumber"
+        name="idNumber"
+        required
+        value={formData.idNumber}
+        onChange={handleInputChange}
+        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+      />
+    </div>
+
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div>
+        <label htmlFor="govtId" className="block text-sm font-medium text-gray-700">
+          Upload Government Issued ID / Passport *
+        </label>
+        <input
+          type="file"
+          id="govtId"
+          name="govtId"
+          accept="image/*,application/pdf"
+          onChange={(e) => handleFileChange(e, "govtId")}
+          className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="passportPhoto" className="block text-sm font-medium text-gray-700">
+          Upload Passport Size Photo *
+        </label>
+        <input
+          type="file"
+          id="passportPhoto"
+          name="passportPhoto"
+          accept="image/*"
+          onChange={(e) => handleFileChange(e, "passportPhoto")}
+          className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+    </div>
+  </div>
+)}
 
                 {/* Step 3: Account Information */}
                 {currentStep === 3 && (
