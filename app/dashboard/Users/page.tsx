@@ -202,10 +202,13 @@ export default function UserManagement() {
                     </h3>
                     <p className="text-blue-100 text-sm">{user.email}</p>
                   </div>
+                  <div>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
+                      {user.status || "Pending"}
+                    </span>
+                  </div>
                 </div>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                  {user.status || "Pending"}
-                </span>
+                
               </div>
             </div>
 
