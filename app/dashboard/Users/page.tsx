@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 interface User {
   id: number;
@@ -42,21 +41,50 @@ export default function UserManagement() {
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  
+  // Search and Pagination states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(9);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [currentPage, pageSize, searchTerm]);
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("https://api.f-carshipping.com/api/admin/users",{
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: (currentPage - 1).toString(),
+        size: pageSize.toString(),
+        ...(searchTerm && { search: searchTerm })
+      });
+
+      const response = await fetch(`https://api.f-carshipping.com/api/admin/users?${params}`, {
         method: "GET",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
       });
+      
       if (!response.ok) throw new Error("Failed to fetch users");
+      
       const data = await response.json();
-      setUsers(data);
+      
+      if (Array.isArray(data)) {
+        setUsers(data);
+        setTotalUsers(data.length);
+        setTotalPages(1);
+      } else if (data.content) {
+        setUsers(data.content);
+        setTotalUsers(data.totalElements);
+        setTotalPages(data.totalPages);
+      } else {
+        setUsers(data);
+        setTotalUsers(data.length || 0);
+        setTotalPages(1);
+      }
     } catch (err) {
       setError("Failed to load users");
       console.error(err);
@@ -109,6 +137,7 @@ export default function UserManagement() {
       setUsers(users.filter(user => user.id !== userToDelete.id));
       setShowDeleteModal(false);
       setUserToDelete(null);
+      fetchUsers();
     } catch (err) {
       setError("Failed to delete user");
     }
@@ -150,7 +179,6 @@ export default function UserManagement() {
 
       if (!response.ok) throw new Error("Failed to approve user");
 
-      // Update local state
       setUsers(users.map(user => 
         user.id === userId ? { ...user, status: "approved" } : user
       ));
@@ -173,6 +201,39 @@ export default function UserManagement() {
     }
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchUsers();
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    
+    return pages;
+  };
+
   if (loading) return <div className="text-center py-8">Loading users...</div>;
 
   return (
@@ -185,151 +246,258 @@ export default function UserManagement() {
         </div>
       )}
 
-      {/* Cards Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users.map((user) => (
-          <div key={user.id} className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-            {/* Card Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="h-12 w-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-black font-bold text-lg">
-                    {user.firstName[0]}{user.lastName[0]}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg">
-                      {user.firstName} {user.lastName}
-                    </h3>
-                    <p className="text-blue-100 text-sm">{user.email}</p>
-                    <p className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                      {user.status || "Pending"}
-                    </p>
-                  </div>
-                  
-                </div>
-                
-              </div>
+      {/* Search and Controls Section */}
+      <div className="mb-6 bg-white p-4 rounded-lg shadow-md">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+          <form onSubmit={handleSearch} className="flex-1 w-full md:max-w-md">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Search by name or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Search
+              </button>
             </div>
+          </form>
 
-            {/* Card Body */}
-            <div className="p-4">
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Phone:</span>
-                  <span className="font-medium">{user.phone}</span>
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="text-sm text-gray-600">
+              Showing {users.length} of {totalUsers} users
+            </div>
+            
+            <select
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={6}>6 per page</option>
+              <option value={9}>9 per page</option>
+              <option value={12}>12 per page</option>
+              <option value={24}>24 per page</option>
+            </select>
+          </div>
+        </div>
+
+        {searchTerm && (
+          <div className="mt-3">
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setCurrentPage(1);
+              }}
+              className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+            >
+              <span>Clear search</span>
+              <span>×</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Cards Layout */}
+      {users.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-lg shadow-md">
+          <div className="text-gray-500 text-lg">
+            {searchTerm ? "No users found matching your search." : "No users found."}
+          </div>
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Clear Search
+            </button>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {users.map((user) => (
+              <div key={user.id} className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-12 w-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-black font-bold text-lg">
+                        {user.firstName[0]}{user.lastName[0]}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">
+                          {user.firstName} {user.lastName}
+                        </h3>
+                        <p className="text-blue-100 text-sm">{user.email}</p>
+                        <p className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
+                          {user.status || "Pending"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Location:</span>
-                  <span className="font-medium">{user.city}, {user.country}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Joined:</span>
-                  <span className="font-medium">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                
-                {/* Roles */}
-                <div>
-                  <span className="text-gray-500 text-sm">Roles:</span>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {user.roles.map((role) => (
+
+                <div className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Phone:</span>
+                      <span className="font-medium">{user.phone}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Location:</span>
+                      <span className="font-medium">{user.city}, {user.country}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Joined:</span>
+                      <span className="font-medium">
+                        {new Date(user.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    
+                    <div>
+                      <span className="text-gray-500 text-sm">Roles:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {user.roles.map((role) => (
+                          <span
+                            key={role}
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              role === "ADMIN"
+                                ? "bg-red-100 text-red-800"
+                                : role === "SELLER"
+                                ? "bg-blue-100 text-blue-800"
+                                : role === "ASSISTANT"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {role}
+                            <button
+                              onClick={() => toggleRole(user.id, role)}
+                              className="ml-1 text-xs hover:text-red-600"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 text-sm">Newsletter:</span>
                       <span
-                        key={role}
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          role === "ADMIN"
-                            ? "bg-red-100 text-red-800"
-                            : role === "SELLER"
-                            ? "bg-blue-100 text-blue-800"
-                            : role === "ASSISTANT"
+                          user.newsletter
                             ? "bg-green-100 text-green-800"
                             : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {role}
-                        <button
-                          onClick={() => toggleRole(user.id, role)}
-                          className="ml-1 text-xs hover:text-red-600"
-                        >
-                          ×
-                        </button>
+                        {user.newsletter ? "Subscribed" : "Not Subscribed"}
                       </span>
-                    ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Newsletter Status */}
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500 text-sm">Newsletter:</span>
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      user.newsletter
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    {user.newsletter ? "Subscribed" : "Not Subscribed"}
-                  </span>
+                <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleViewDetails(user)}
+                      className="flex-1 min-w-[120px] bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+                    >
+                      View Details
+                    </button>
+                    
+                    {user.status !== "approved" && (
+                      <button
+                        onClick={() => handleApprove(user.id)}
+                        className="flex-1 min-w-[120px] bg-green-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
+                      >
+                        Approve
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="flex-1 min-w-[80px] bg-gray-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
+                    >
+                      Edit
+                    </button>
+                    
+                    <button
+                      onClick={() => handleDelete(user)}
+                      className="flex-1 min-w-[80px] bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+
+                  <div className="mt-2">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          toggleRole(user.id, e.target.value);
+                          e.target.value = "";
+                        }
+                      }}
+                      className="w-full text-xs border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Add Role...</option>
+                      <option value="ADMIN">ADMIN</option>
+                      <option value="SELLER">SELLER</option>
+                      <option value="ASSISTANT">ASSISTANT</option>
+                      <option value="USER">USER</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Card Footer - Actions */}
-            <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => handleViewDetails(user)}
-                  className="flex-1 min-w-[120px] bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  View Details
-                </button>
-                
-                {user.status !== "approved" && (
-                  <button
-                    onClick={() => handleApprove(user.id)}
-                    className="flex-1 min-w-[120px] bg-green-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
-                  >
-                    Approve
-                  </button>
-                )}
-                
-                <button
-                  onClick={() => handleEdit(user)}
-                  className="flex-1 min-w-[80px] bg-gray-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
-                >
-                  Edit
-                </button>
-                
-                <button
-                  onClick={() => handleDelete(user)}
-                  className="flex-1 min-w-[80px] bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-
-              {/* Add Role Dropdown */}
-              <div className="mt-2">
-                <select
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      toggleRole(user.id, e.target.value);
-                      e.target.value = "";
-                    }
-                  }}
-                  className="w-full text-xs border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Add Role...</option>
-                  <option value="ADMIN">ADMIN</option>
-                  <option value="SELLER">SELLER</option>
-                  <option value="ASSISTANT">ASSISTANT</option>
-                  <option value="USER">USER</option>
-                </select>
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+
+          {totalPages > 1 && (
+            <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg shadow-md">
+              <div className="text-sm text-gray-600">
+                Page {currentPage} of {totalPages} • {totalUsers} total users
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                >
+                  Previous
+                </button>
+
+                <div className="flex gap-1">
+                  {getPageNumbers().map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-3 py-2 border rounded-lg transition-colors ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* User Details Drawer */}
       {drawerOpen && selectedUser && (
@@ -375,13 +543,10 @@ interface UserDetailsDrawerProps {
 function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
-      {/* Backdrop */}
-      <div className="absolute inset-0  bg-opacity-5" onClick={onClose} />
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
       
-      {/* Drawer */}
       <div className="absolute right-0 top-0 h-full w-full max-w-2xl bg-white shadow-xl overflow-y-auto">
         <div className="p-6">
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">User Details</h2>
             <button
@@ -394,7 +559,6 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
             </button>
           </div>
 
-          {/* User Profile Section */}
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white mb-6">
             <div className="flex items-center space-x-4">
               <div className="h-16 w-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white font-bold text-xl">
@@ -411,7 +575,6 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Personal Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Personal Information</h3>
               
@@ -433,7 +596,6 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
               </div>
             </div>
 
-            {/* Address Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Address Information</h3>
               
@@ -446,7 +608,6 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
               <InfoField label="Destination Country" value={user.destinationCountry} />
             </div>
 
-            {/* Shipping Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Shipping Information</h3>
               
@@ -464,7 +625,6 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
               </div>
             </div>
 
-            {/* Documents Section */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Documents</h3>
               
@@ -489,7 +649,6 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
               )}
             </div>
 
-            {/* Account Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Account Information</h3>
               
@@ -553,7 +712,6 @@ function DocumentPreview({ label, url, type }: { label: string; url: string; typ
         </button>
       </div>
 
-      {/* Full Screen Preview */}
       {isPreviewOpen && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4">
           <div className="relative max-w-4xl max-h-full">
