@@ -193,7 +193,7 @@ export default function UserManagement() {
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="h-12 w-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  <div className="h-12 w-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-black font-bold text-lg">
                     {user.firstName[0]}{user.lastName[0]}
                   </div>
                   <div>
