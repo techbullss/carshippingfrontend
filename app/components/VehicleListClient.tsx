@@ -118,7 +118,7 @@ export default function VehicleListClient() {
 
     console.log("Fetching with params:", params.toString());
 
-    const res = await fetch(`https://api.f-carshipping.com/api/cars?${params.toString()}`, {
+    const res = await fetch(`https://www.api.f-carshipping.com/api/cars?${params.toString()}`, {
       credentials: "include",
       method: "GET",
       headers: { "Content-Type": "application/json" },

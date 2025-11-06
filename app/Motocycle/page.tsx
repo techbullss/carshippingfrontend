@@ -1,4 +1,4 @@
-"use client";
+
 import MotorcycleListing from "../components/MotorcycleListing";
 
 export default function MotorcyclePage() {
