@@ -6,6 +6,7 @@ import { Car } from "@/app/car";
 import router from "next/router";
 import AddCarForm from "@/app/components/AddCarForm";
 import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
+import RejectModal from "@/app/components/RejectModal";
 
 export default function CarsPage() {
   const [cars, setCars] = useState<Car[]>([]);
@@ -20,7 +21,7 @@ export default function CarsPage() {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("");
   const [seller, setSeller] = useState("");
-
+const [approving, setApproving] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editCar, setEditCar] = useState<Car | null>(null);
   const [detailCar, setDetailCar] = useState<Car | null>(null);
@@ -28,6 +29,71 @@ export default function CarsPage() {
     const { user } = useCurrentUser();
     const email = user?.email || '';
     const role = user?.roles?.[0] || ''; // assuming roles = ["ADMIN"]
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
+const [rejecting, setRejecting] = useState<number | null>(null);
+  const openRejectModal = (carId: number) => {
+    setSelectedCarId(carId);
+    setShowRejectModal(true);
+  };
+
+  const closeRejectModal = () => {
+    setSelectedCarId(null);
+    setShowRejectModal(false);
+  };
+
+ const handleRejectWrapper = async (carId: number, reason: string) => {
+  setRejecting(carId);
+  try {
+    const res = await fetch(`https://api.f-carshipping.com/api/cars/reject/${carId}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reason }),
+    });
+    if (!res.ok) throw new Error("Failed to reject car");
+
+    const updated = await res.json();
+    setCars((prev) =>
+      prev.map((c) => (c.id === carId ? { ...c, status: "REJECTED" } : c))
+    );
+    alert("Car rejected and seller notified!");
+  } catch (err) {
+    console.error(err);
+    alert("Error rejecting car");
+  } finally {
+    setRejecting(null);
+    closeRejectModal();
+  }
+};
+
+
+const approveCar = async (carId: number) => {
+  setApproving(carId);
+  try {
+    const res = await fetch(`https://api.f-carshipping.com/api/cars/approve/${carId}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) throw new Error("Failed to approve car");
+    const updated = await res.json();
+
+    setCars((prev) =>
+      prev.map((c) => (c.id === carId ? { ...c, status: "APPROVED" } : c))
+    );
+  } catch (err) {
+    console.error(err);
+    alert("Error approving car");
+  } finally {
+    setApproving(null);
+  }
+};
+
+
 const fetchCars = async () => {
   try {
     setLoading(true);
@@ -164,80 +230,123 @@ const fetchCars = async () => {
       {loading && <p>Loading cars…</p>}
 
       {/* Cards Grid */}
-      {!loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cars.map((car) => (
-            <div
-              key={car.id}
-              className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
-            >
-              <img
-                src={car.imageUrls?.[0] || "/placeholder-car.jpg"}
-                alt={`${car.brand} ${car.model}`}
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-4 flex-1 flex flex-col">
-                <h2 className="text-xl font-semibold">
-                  {car.brand} {car.model}
-                </h2>
-                <p className="text-gray-500 text-sm">
-                  {car.yearOfManufacture || "Year N/A"}
-                </p>
-                <p className="text-gray-500 text-sm">
-                 ref: {car.refNo || "Ref No N/A"}
-                </p>
-                <p className="text-lg font-bold text-green-600 mt-2">
-                  KES {car.priceKes?.toLocaleString() ?? "-"}
-                </p>
-                                 <p className="text-lg font-bold text-green-600 mt-2">
-  {car.refLink ? (
-    <a
-      href={car.refLink}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="hover:underline text-blue-600"
-    >
-      Listed on otherSite
-    </a>
-  ) : (
-    "-"
-  )}
-</p>
+     {!loading && (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {cars.map((car) => (
+      <div
+        key={car.id}
+        className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
+      >
+        <img
+          src={car.imageUrls?.[0] || "/placeholder-car.jpg"}
+          alt={`${car.brand} ${car.model}`}
+          className="h-48 w-full object-cover"
+        />
+        <div className="p-4 flex-1 flex flex-col">
+          <h2 className="text-xl font-semibold">
+            {car.brand} {car.model}
+          </h2>
+          <p className="text-gray-500 text-sm">
+            {car.yearOfManufacture || "Year N/A"}
+          </p>
+          <p className="text-gray-500 text-sm">
+            ref: {car.refNo || "Ref No N/A"}
+          </p>
+          <p className="text-lg font-bold text-green-600 mt-2">
+            KES {car.priceKes?.toLocaleString() ?? "-"}
+          </p>
 
-                <div className="mt-auto flex gap-2 pt-4">
- 
-                  <button
-                    onClick={() => {
-                      setEditCar(car);
-                      setShowForm(true);
-                    }}
-                    className="flex-1 bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteCar(car.id)}
-                    className="flex-1 bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => setDetailCar(car)}
-                    className="flex-1 bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Details
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-          {cars.length === 0 && (
-            <p className="col-span-full text-center text-gray-500">
-              No cars found.
-            </p>
-          )}
+          <p className="text-lg font-bold text-green-600 mt-2">
+            {car.refLink ? (
+              <a
+                href={car.refLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline text-blue-600"
+              >
+                Listed on otherSite
+              </a>
+            ) : (
+              "-"
+            )}
+          </p>
+
+          {/* Vehicle Status Section */}
+        <div className="mt-3 flex gap-2">
+  {role === "ADMIN" && car.status !== "APPROVED" && car.status !== "REJECTED" ? (
+    <>
+      <button
+        onClick={() => approveCar(car.id)}
+        className={`px-3 py-1 rounded-lg text-white transition ${
+          approving === car.id ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+        }`}
+        disabled={approving === car.id}
+      >
+        {approving === car.id ? "Approving..." : "Approve"}
+      </button>
+
+      <button
+  onClick={() => openRejectModal(car.id)}
+  className={`px-3 py-1 rounded-lg text-white transition ${
+    rejecting === car.id ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
+  }`}
+  disabled={rejecting === car.id}
+>
+  {rejecting === car.id ? "Rejecting..." : "Reject"}
+</button>
+
+    </>
+  ) : (
+    <span
+      className={`px-3 py-1 rounded-full text-sm font-medium ${
+        car.status === "APPROVED"
+          ? "bg-green-100 text-green-700"
+          : car.status === "REJECTED"
+          ? "bg-red-100 text-red-700"
+          : "bg-yellow-100 text-yellow-700"
+      }`}
+    >
+      {car.status}
+    </span>
+  )}
+</div>
+
+
+          {/* Actions (Edit/Delete/Details) */}
+          <div className="mt-auto flex gap-2 pt-4">
+            <button
+              onClick={() => {
+                setEditCar(car);
+                setShowForm(true);
+              }}
+              className="flex-1 bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => deleteCar(car.id)}
+              className="flex-1 bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => setDetailCar(car)}
+              className="flex-1 bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
+            >
+              Details
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+    ))}
+
+    {cars.length === 0 && (
+      <p className="col-span-full text-center text-gray-500">
+        No cars found.
+      </p>
+    )}
+  </div>
+)}
 
       {/* Pagination */}
       <div className="flex justify-center items-center gap-4">
@@ -385,6 +494,16 @@ const fetchCars = async () => {
   </div>
 )}
 
+      {/* Reject Modal */}
+      <RejectModal
+        carId={selectedCarId}
+        show={showRejectModal}
+        onClose={closeRejectModal}
+        onReject={handleRejectWrapper}
+      />
     </div>
+    
+    
   );
+  
 }

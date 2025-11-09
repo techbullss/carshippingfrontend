@@ -42,16 +42,18 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
       href: "/CommercialVehicles",
       label: "Commercial Vehicles",
       submenu: [
-        { href: "/CommercialVehicles/Trucks", label: "Trucks" },
-        { href: "/CommercialVehicles/Vans", label: "Vans" },
+        { href: "/CommercialVehicles", label: "All" },
+        { href: "/CommercialVehicles?location=local", label: "Local" },
+        { href: "/CommercialVehicles?location=import", label: "Imported" },
       ],
     },
     {
       href: "/Motocycle",
       label: "Bikes",
       submenu: [
-        { href: "/Motocycle/Used", label: "Imports" },
-        { href: "/Motocycle/New", label: "Locally Available" },
+        { href: "/Motocycle", label: "All" },
+        { href: "/Motocycle?location=import", label: "Imports" },
+        { href: "/Motocycle?location=local", label: "Locally Available" },
       ],
     },
     

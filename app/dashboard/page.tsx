@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Package
 } from "lucide-react";
+import { useCurrentUser } from "../Hookes/useCurrentUser";
 
 interface DashboardStats {
   totalCars: number;
@@ -37,7 +38,9 @@ export default function DashboardHome() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+const { user } = useCurrentUser();
+    const email = user?.email || '';
+    const role = user?.roles?.[0] || '';
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -48,9 +51,14 @@ export default function DashboardHome() {
       
       // Fetch all data in parallel
       const [carsRes, commercialRes, motorcyclesRes, usersRes] = await Promise.all([
-        fetch('https://api.f-carshipping.com/api/cars/dashboard?page=0&size=5', {
-          credentials: 'include'
-        }),
+       fetch(`https://api.f-carshipping.com/api/cars/dashboard?`, {
+      method: 'POST', // change to POST to send JSON body
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, role }), // send user info
+    }),
         fetch('https://api.f-carshipping.com/api/vehicles?page=0&size=5', {
           credentials: 'include'
         }),

@@ -27,5 +27,6 @@ export interface Car {
   Seller: string;        // optional
   roles: string[];       // optional
   refLink: string; 
-  refNo: string;         // optional
+  refNo: string;  
+  status?: string;       // optional
 }
