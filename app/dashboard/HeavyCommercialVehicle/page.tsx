@@ -6,13 +6,14 @@ import RejectModal from "@/app/components/RejectModal";
 import { useEffect, useState } from "react";
 import { Edit, Trash2, Info, MapPin, Truck, X, Check } from "lucide-react";
 import Reject_Modal from "@/app/components/Reject_Modal";
+import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
 
 interface User {
   role: "ADMIN" | "SELLER";
   email: string;
 }
 
-export default function CommercialVehicleList({ currentUser }: { currentUser: User }) {
+export default function CommercialVehicleList() {
   const [vehicles, setVehicles] = useState<CommercialVehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -25,6 +26,9 @@ export default function CommercialVehicleList({ currentUser }: { currentUser: Us
   const [selectedVehicle, setSelectedVehicle] = useState<CommercialVehicle | null>(null);
   const [rejectVehicle, setRejectVehicle] = useState<CommercialVehicle | null>(null);
 
+    const { user } = useCurrentUser();
+    const email = user?.email || '';
+    const role = user?.roles?.[0] || '';
   const fetchVehicles = async () => {
     setLoading(true);
     setError("");
@@ -195,7 +199,7 @@ export default function CommercialVehicleList({ currentUser }: { currentUser: Us
                     {/* Actions */}
                     <div className="flex gap-2 mt-4 flex-wrap">
                       {/* Edit & Delete for Owner */}
-                      {currentUser.role === "SELLER" && (
+                      {role === "SELLER" && (
                         <>
                           <button
                             onClick={() => {
@@ -216,7 +220,7 @@ export default function CommercialVehicleList({ currentUser }: { currentUser: Us
                       )}
 
                       {/* Admin Approve/Reject */}
-                      {currentUser.role === "ADMIN" && (
+                      {role === "ADMIN" && (
                         <>
                           {v.status === "PENDING" && (
                             <>
@@ -238,7 +242,7 @@ export default function CommercialVehicleList({ currentUser }: { currentUser: Us
                       )}
 
                       {/* Show status for all users */}
-                      {v.status && currentUser.role !== "ADMIN" && (
+                      {v.status && role !== "ADMIN" && (
                         <span
                           className={`px-2 py-1 rounded text-white ${
                             v.status === "APPROVED"
