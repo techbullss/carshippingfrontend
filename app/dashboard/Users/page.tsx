@@ -62,11 +62,13 @@ export default function UserManagement() {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`https://api.f-carshipping.com/api/admin/users?${params}`, {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+    const response = await fetch(
+  `https://api.f-carshipping.com/api/admin/users?${params.toString()}`,
+  {
+    method: "GET",
+    credentials: "include"
+  }
+);
       
       if (!response.ok) throw new Error("Failed to fetch users");
       
