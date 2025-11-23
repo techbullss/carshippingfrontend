@@ -2,17 +2,17 @@
 
 import { CommercialVehicle } from "@/app/CommercialVehicle";
 import AddCommercialVehicleForm from "@/app/components/AddCommercialVehicleForm";
+import RejectModal from "@/app/components/RejectModal";
 import { useEffect, useState } from "react";
-import {
-  Edit,
-  Trash2,
-  Info,
-  MapPin,
-  Truck,
-  X,
-} from "lucide-react";
+import { Edit, Trash2, Info, MapPin, Truck, X, Check } from "lucide-react";
+import Reject_Modal from "@/app/components/Reject_Modal";
 
-export default function CommercialVehicleList() {
+interface User {
+  role: "ADMIN" | "SELLER";
+  email: string;
+}
+
+export default function CommercialVehicleList({ currentUser }: { currentUser: User }) {
   const [vehicles, setVehicles] = useState<CommercialVehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,9 +20,10 @@ export default function CommercialVehicleList() {
   const [filterType, setFilterType] = useState("");
   const [editingVehicle, setEditingVehicle] = useState<CommercialVehicle | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [page, setPage] = useState(0); // Spring Boot is 0-based
+  const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedVehicle, setSelectedVehicle] = useState<CommercialVehicle | null>(null);
+  const [rejectVehicle, setRejectVehicle] = useState<CommercialVehicle | null>(null);
 
   const fetchVehicles = async () => {
     setLoading(true);
@@ -32,10 +33,9 @@ export default function CommercialVehicleList() {
       if (search) query += `&search=${encodeURIComponent(search)}`;
       if (filterType) query += `&type=${encodeURIComponent(filterType)}`;
 
-      const res = await fetch(query, { method: 'GET', credentials: 'include' });
+      const res = await fetch(query, { method: "GET", credentials: "include" });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
-
       setVehicles(data.content || data);
       setTotalPages(data.totalPages || 1);
     } catch (err: any) {
@@ -54,7 +54,7 @@ export default function CommercialVehicleList() {
     try {
       const res = await fetch(`https://api.f-carshipping.com/api/vehicles/${vehicle.id}`, {
         method: "DELETE",
-        credentials: 'include'
+        credentials: "include",
       });
       if (!res.ok) throw new Error(await res.text());
       alert("Vehicle deleted successfully!");
@@ -64,10 +64,42 @@ export default function CommercialVehicleList() {
     }
   };
 
-  const handleFormSuccess = () => {
-    setShowForm(false);
-    setEditingVehicle(null);
-    fetchVehicles();
+  const handleReject = async (reason: string) => {
+    if (!rejectVehicle) return;
+    try {
+      const res = await fetch(
+        `https://api.f-carshipping.com/api/vehicles/reject/${rejectVehicle.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ reason }),
+        }
+      );
+      if (!res.ok) throw new Error(await res.text());
+      alert("Vehicle rejected successfully!");
+      setRejectVehicle(null);
+      fetchVehicles();
+    } catch (err: any) {
+      alert(err.message || "Failed to reject vehicle.");
+    }
+  };
+
+  const handleApprove = async (vehicle: CommercialVehicle) => {
+    try {
+      const res = await fetch(
+        `https://api.f-carshipping.com/api/vehicles/approve/${vehicle.id}`,
+        {
+          method: "PUT",
+          credentials: "include",
+        }
+      );
+      if (!res.ok) throw new Error(await res.text());
+      alert("Vehicle approved successfully!");
+      fetchVehicles();
+    } catch (err: any) {
+      alert(err.message || "Failed to approve vehicle.");
+    }
   };
 
   const vehicleTypes = ["Truck", "Bus", "Van", "Trailer", "Camper Van", "Other"];
@@ -82,7 +114,11 @@ export default function CommercialVehicleList() {
             setShowForm(false);
             setEditingVehicle(null);
           }}
-          onSuccess={handleFormSuccess}
+          onSuccess={() => {
+            setShowForm(false);
+            setEditingVehicle(null);
+            fetchVehicles();
+          }}
         />
       )}
 
@@ -104,7 +140,9 @@ export default function CommercialVehicleList() {
             >
               <option value="">Filter by Type</option>
               {vehicleTypes.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>
+                  {t}
+                </option>
               ))}
             </select>
             <button
@@ -155,22 +193,65 @@ export default function CommercialVehicleList() {
                     </p>
 
                     {/* Actions */}
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        onClick={() => {
-                          setEditingVehicle(v);
-                          setShowForm(true);
-                        }}
-                        className="flex items-center gap-1 px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500"
-                      >
-                        <Edit className="w-4 h-4" /> Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(v)}
-                        className="flex items-center gap-1 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        <Trash2 className="w-4 h-4" /> Delete
-                      </button>
+                    <div className="flex gap-2 mt-4 flex-wrap">
+                      {/* Edit & Delete for Owner */}
+                      {currentUser.role === "SELLER" && (
+                        <>
+                          <button
+                            onClick={() => {
+                              setEditingVehicle(v);
+                              setShowForm(true);
+                            }}
+                            className="flex items-center gap-1 px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500"
+                          >
+                            <Edit className="w-4 h-4" /> Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(v)}
+                            className="flex items-center gap-1 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                          >
+                            <Trash2 className="w-4 h-4" /> Delete
+                          </button>
+                        </>
+                      )}
+
+                      {/* Admin Approve/Reject */}
+                      {currentUser.role === "ADMIN" && (
+                        <>
+                          {v.status === "PENDING" && (
+                            <>
+                              <button
+                                onClick={() => handleApprove(v)}
+                                className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                              >
+                                <Check className="w-4 h-4" /> Approve
+                              </button>
+                              <button
+                                onClick={() => setRejectVehicle(v)}
+                                className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                              >
+                                <X className="w-4 h-4" /> Reject
+                              </button>
+                            </>
+                          )}
+                        </>
+                      )}
+
+                      {/* Show status for all users */}
+                      {v.status && currentUser.role !== "ADMIN" && (
+                        <span
+                          className={`px-2 py-1 rounded text-white ${
+                            v.status === "APPROVED"
+                              ? "bg-green-600"
+                              : v.status === "REJECTED"
+                              ? "bg-red-600"
+                              : "bg-gray-500"
+                          }`}
+                        >
+                          {v.status}
+                        </span>
+                      )}
+
                       <button
                         onClick={() => setSelectedVehicle(v)}
                         className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -207,7 +288,7 @@ export default function CommercialVehicleList() {
         </>
       )}
 
-      {/* Drawer for Vehicle Details */}
+      {/* Vehicle Details Drawer */}
       {selectedVehicle && (
         <div className="fixed inset-0 bg-black/40 flex justify-end z-50">
           <div className="w-full sm:w-2/3 lg:w-1/3 bg-white h-full shadow-xl flex flex-col">
@@ -223,7 +304,6 @@ export default function CommercialVehicleList() {
               </button>
             </div>
 
-            {/* Image */}
             {selectedVehicle.imageUrls && selectedVehicle.imageUrls.length > 0 && (
               <img
                 src={selectedVehicle.imageUrls[0]}
@@ -232,17 +312,37 @@ export default function CommercialVehicleList() {
               />
             )}
 
-            {/* Details */}
             <div className="p-4 space-y-2 overflow-y-auto">
-              <p><strong>Brand:</strong> {selectedVehicle.brand}</p>
-              <p><strong>Model:</strong> {selectedVehicle.model}</p>
-              <p><strong>Type:</strong> {selectedVehicle.type}</p>
-              <p><strong>Price:</strong> KES {selectedVehicle.priceKes}</p>
-              <p><strong>Location:</strong> {selectedVehicle.location}</p>
-              <p><strong>Description:</strong> {selectedVehicle.description || "N/A"}</p>
+              <p>
+                <strong>Brand:</strong> {selectedVehicle.brand}
+              </p>
+              <p>
+                <strong>Model:</strong> {selectedVehicle.model}
+              </p>
+              <p>
+                <strong>Type:</strong> {selectedVehicle.type}
+              </p>
+              <p>
+                <strong>Price:</strong> KES {selectedVehicle.priceKes}
+              </p>
+              <p>
+                <strong>Location:</strong> {selectedVehicle.location}
+              </p>
+              <p>
+                <strong>Description:</strong> {selectedVehicle.description || "N/A"}
+              </p>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Reject Modal */}
+      {rejectVehicle && (
+        <Reject_Modal
+          vehicle={rejectVehicle}
+          onClose={() => setRejectVehicle(null)}
+          onSubmit={handleReject}
+        />
       )}
     </div>
   );

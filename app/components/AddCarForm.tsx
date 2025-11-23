@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Car } from "@/app/car";
+import { useCurrentUser } from "../Hookes/useCurrentUser";
 export interface User {
   id: number;
   firstName: string;
@@ -85,7 +86,9 @@ useEffect(() => {
   fetchUser();
 }, []);
 
-
+const { user: currentUser } = useCurrentUser();
+    const email = currentUser?.email || '';
+    const role = currentUser?.roles?.[0] || '';
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [customSpecsList, setCustomSpecsList] = useState<{ key: string; value: string }[]>([]);
   const [newCustomSpec, setNewCustomSpec] = useState({ key: "", value: "" });
@@ -239,10 +242,13 @@ useEffect(() => {
 
       alert(carToEdit ? "Car updated successfully!" : "Car listed successfully!");
       onSuccess();
+       resetForm();
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
+       resetForm();
     } finally {
       setLoading(false);
+       resetForm();
     }
   };
 
