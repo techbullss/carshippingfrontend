@@ -43,7 +43,7 @@ const { user } = useCurrentUser();
     const role = user?.roles?.[0] || '';
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [user]);
 
   const fetchDashboardData = async () => {
     try {
