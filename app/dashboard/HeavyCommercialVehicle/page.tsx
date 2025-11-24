@@ -37,7 +37,7 @@ export default function CommercialVehicleList() {
       if (search) query += `&search=${encodeURIComponent(search)}`;
       if (filterType) query += `&type=${encodeURIComponent(filterType)}`;
 
-      const res = await fetch(query, { method: "GET", credentials: "include", body: JSON.stringify({ email, role }), });
+      const res = await fetch(query, { method: "POST", credentials: "include", body: JSON.stringify({ email, role }), });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
       setVehicles(data.content || data);
