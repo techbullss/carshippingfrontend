@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CommercialVehicle } from "../CommercialVehicle";
+import { useCurrentUser } from "../Hookes/useCurrentUser";
 
 interface AddCommercialVehicleFormProps {
   onSuccess: () => void;
@@ -45,7 +46,9 @@ export default function AddCommercialVehicleForm({
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [customSpecsList, setCustomSpecsList] = useState<{ key: string; value: string }[]>([]);
   const [newCustomSpec, setNewCustomSpec] = useState({ key: "", value: "" });
-
+ const { user } = useCurrentUser();
+    const email = user?.email || '';
+    const role = user?.roles?.[0] || '';
   const [images, setImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -185,6 +188,7 @@ export default function AddCommercialVehicleForm({
       const payload = {
         ...form,
         priceKes: Number(form.priceKes),
+        seller:email,
         features: selectedFeatures.join(", "),
         customSpecs: JSON.stringify(customSpecsList),
       };
@@ -242,7 +246,16 @@ export default function AddCommercialVehicleForm({
             <input name="sleeperCapacity" value={form.sleeperCapacity} onChange={handleChange} placeholder="Sleeper Capacity" className="border p-2 rounded"/>
             <input name="camperFeatures" value={form.camperFeatures} onChange={handleChange} placeholder="Camper Features" className="border p-2 rounded"/>
             <input name="priceKes" value={form.priceKes} onChange={handleChange} placeholder="Price (KES) *" required className="border p-2 rounded"/>
-            <input name="location" value={form.location} onChange={handleChange} placeholder="Location" className="border p-2 rounded"/>
+<select
+  name="location"
+  value={form.location}
+  onChange={handleChange}
+  className="border p-2 rounded w-full"
+>
+  <option value="">Select Location</option>
+  <option value="Local">Local</option>
+  <option value="Import">Import</option>
+</select>
             <select name="type" value={form.type} onChange={handleChange} className="border p-2 rounded">
               <option value="">Select Type</option>
               {vehicleTypes.map((v) => <option key={v}>{v}</option>)}
