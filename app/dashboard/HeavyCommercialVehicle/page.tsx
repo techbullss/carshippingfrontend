@@ -33,11 +33,22 @@ export default function CommercialVehicleList() {
     setLoading(true);
     setError("");
     try {
-      let query = `https://api.f-carshipping.com/api/vehicles/dashboard?page=${page}&size=10`;
-      if (search) query += `&search=${encodeURIComponent(search)}`;
-      if (filterType) query += `&type=${encodeURIComponent(filterType)}`;
+const res = await fetch("https://api.f-carshipping.com/api/vehicles/dashboard", {
+  method: "POST",
+  credentials: "include",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email,            // FIXED
+    role,             // FIXED
+    page,
+    size: 10,
+    search,
+    type: filterType
+  }),
+});
 
-      const res = await fetch(query, { method: "POST", credentials: "include", body: JSON.stringify({ email, role }), });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
       setVehicles(data.content || data);
