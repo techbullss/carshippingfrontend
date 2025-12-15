@@ -61,8 +61,10 @@ const res = await fetch("https://api.f-carshipping.com/api/vehicles/dashboard", 
   };
 
   useEffect(() => {
-    fetchVehicles();
-  }, [page, search, filterType,user]);
+    if (email && role) {
+      fetchVehicles();
+    }
+  }, [email, role, page, search, filterType]);
 
   const handleDelete = async (vehicle: CommercialVehicle) => {
     if (!confirm("Are you sure you want to delete this vehicle?")) return;
