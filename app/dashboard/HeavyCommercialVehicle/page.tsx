@@ -212,7 +212,7 @@ const res = await fetch("https://api.f-carshipping.com/api/vehicles/dashboard", 
                     {/* Actions */}
                     <div className="flex gap-2 mt-4 flex-wrap">
                       {/* Edit & Delete for Owner */}
-                      {role === "SELLER" && (
+                      {role === "SELLER" || role === "ADMIN" && (
                         <>
                           <button
                             onClick={() => {
