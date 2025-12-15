@@ -59,8 +59,13 @@ const { user } = useCurrentUser();
       },
       body: JSON.stringify({ email, role }), // send user info
     }),
-        fetch('https://api.f-carshipping.com/api/vehicles?page=0&size=5', {
-          credentials: 'include'
+        fetch(`https://api.f-carshipping.com/api/vehicles/dashboard?`, {
+      method: 'POST', // change to POST to send JSON body
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, role }),
         }),
         fetch('https://api.f-carshipping.com/api/motorcycles?page=0&size=5', {
           credentials: 'include'
