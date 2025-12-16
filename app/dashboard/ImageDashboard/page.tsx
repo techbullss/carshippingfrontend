@@ -31,7 +31,7 @@ export default function ImageDashboard() {
   const [dragOver, setDragOver] = useState(false);
   
   // Spring Boot backend URL - Update this with your actual backend URL
-  const BACKEND_URL = 'https://api.f-carshipping.com/api';
+  const BACKEND_URL = 'https://api.f-carshipping.com/api/images';
   
   // Fetch images on component mount
   useEffect(() => {
@@ -106,6 +106,7 @@ export default function ImageDashboard() {
     
     try {
       const response = await fetch(`${BACKEND_URL}/images/${id}`, {
+        credentials: 'include',
         method: 'DELETE',
       });
       
@@ -176,6 +177,7 @@ export default function ImageDashboard() {
   const forceRotate = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/images/rotate`, {
+        credentials: 'include',
         method: 'POST',
       });
       
