@@ -90,7 +90,11 @@ export default function AuxiliaryShippingPage() {
   const fetchStats = async () => {
     try {
       setLoading(prev => ({ ...prev, stats: true }));
-      const response = await fetch(`${API_BASE_URL}/stats`);
+      const response = await fetch(`${API_BASE_URL}/stats`,{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!response.ok) throw new Error('Failed to fetch stats');
       const data = await response.json();
       setStats(data);
@@ -120,7 +124,11 @@ export default function AuxiliaryShippingPage() {
       if (status) url += `&status=${status}`;
       if (search) url += `&search=${search}`;
 
-      const response = await fetch(url);
+      const response = await fetch(url,{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!response.ok) throw new Error('Failed to fetch products');
       const data = await response.json();
       
@@ -141,7 +149,11 @@ export default function AuxiliaryShippingPage() {
   const fetchReviews = async () => {
     try {
       setLoading(prev => ({ ...prev, reviews: true }));
-      const response = await fetch(`${API_BASE_URL}/reviews/public?page=0&size=6`);
+      const response = await fetch(`${API_BASE_URL}/reviews/public?page=0&size=6`,{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!response.ok) throw new Error('Failed to fetch reviews');
       const data = await response.json();
       setReviews(data.content);

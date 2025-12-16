@@ -71,7 +71,11 @@ export default function ReviewsPage() {
       //   url = `${API_BASE_URL}/reviews?page=${page}&size=${pageSize}`;
       // }
       
-      const response = await fetch(url);
+      const response = await fetch(url,{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!response.ok) throw new Error('Failed to fetch reviews');
       
       const data = await response.json();
@@ -89,7 +93,11 @@ export default function ReviewsPage() {
   const fetchReviewStats = async () => {
     try {
       setLoading(prev => ({ ...prev, stats: true }));
-      const response = await fetch(`${API_BASE_URL}/reviews/stats`);
+      const response = await fetch(`${API_BASE_URL}/reviews/stats`,{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!response.ok) throw new Error('Failed to fetch review statistics');
       const data = await response.json();
       setStats(data);
@@ -127,6 +135,7 @@ export default function ReviewsPage() {
     try {
       const response = await fetch(`${API_BASE_URL}/reviews`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

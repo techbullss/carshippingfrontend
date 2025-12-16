@@ -190,9 +190,7 @@ export default function RequestItemPage() {
       
       const response = await fetch(`${API_BASE_URL}/request-item`, {
         method: 'POST',
-        headers: token ? {
-          'Authorization': `Bearer ${token}`,
-        } : {},
+      
         body: formDataToSend,
         credentials: 'include', // If using cookies/sessions
       });

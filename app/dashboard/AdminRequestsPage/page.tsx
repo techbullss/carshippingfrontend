@@ -62,7 +62,11 @@ export default function AdminRequestsPage() {
   const fetchStats = async () => {
     try {
       setLoading(prev => ({ ...prev, stats: true }));
-      const response = await fetch(`${API_BASE_URL}/stats`);
+      const response = await fetch(`${API_BASE_URL}/stats`,{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!response.ok) throw new Error('Failed to fetch stats');
       const data = await response.json();
       setStats(data);
@@ -94,7 +98,11 @@ export default function AdminRequestsPage() {
       if (status) url += `&status=${status}`;
       if (search) url += `&search=${search}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url,{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!response.ok) throw new Error('Failed to fetch requests');
       
       const data = await response.json();
@@ -116,10 +124,8 @@ export default function AdminRequestsPage() {
       
       const response = await fetch(`${API_BASE_URL}/requests/${id}/status?status=${status}`, {
         method: 'PATCH',
-        headers: token ? {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        } : {},
+       credentials: 'include',
+       headers: { 'Accept': 'application/json' }
       });
       
       if (!response.ok) throw new Error('Failed to update status');
@@ -138,7 +144,11 @@ export default function AdminRequestsPage() {
   // Export requests (CSV)
   const exportRequests = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/requests?size=${totalElements}`);
+      const response = await fetch(`${API_BASE_URL}/requests?size=${totalElements}`,{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
       if (!response.ok) throw new Error('Failed to fetch data for export');
       
       const data = await response.json();
