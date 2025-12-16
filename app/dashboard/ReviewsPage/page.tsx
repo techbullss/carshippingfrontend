@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { 
-  Star, ThumbsUp, MessageSquare, Filter, Calendar, 
-  Loader2, AlertCircle, TrendingUp, BarChart, 
+  Star, ThumbsUp, MessageSquare, Calendar, 
+  Loader2, AlertCircle, TrendingUp,
   ChevronLeft, ChevronRight, User, Package,
-  CheckCircle, XCircle, Shield, Clock
+  Shield, CheckCircle
 } from "lucide-react";
 
 // Types
@@ -18,7 +18,6 @@ interface Review {
   itemName: string;
   helpfulCount: number;
   createdAt: string;
-  approved: boolean;
 }
 
 interface ReviewStats {
@@ -46,7 +45,6 @@ export default function ReviewsPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize] = useState(10);
-  const [filter, setFilter] = useState("approved"); // approved, pending, all
   
   const [newReview, setNewReview] = useState({
     clientName: "",
@@ -62,20 +60,14 @@ export default function ReviewsPage() {
       setLoading(prev => ({ ...prev, reviews: true }));
       setError(null);
       
-      let url = `${API_BASE_URL}/reviews/public?page=${page}&size=${pageSize}`;
+      const url = `${API_BASE_URL}/reviews/public?page=${page}&size=${pageSize}`;
       
-      // For admin view (if needed)
-      // if (filter === "pending") {
-      //   url = `${API_BASE_URL}/reviews?approved=false&page=${page}&size=${pageSize}`;
-      // } else if (filter === "all") {
-      //   url = `${API_BASE_URL}/reviews?page=${page}&size=${pageSize}`;
-      // }
-      
-      const response = await fetch(url,{
+      const response = await fetch(url, {
         method: 'GET',
         credentials: 'include',
         headers: { 'Accept': 'application/json' }
       });
+      
       if (!response.ok) throw new Error('Failed to fetch reviews');
       
       const data = await response.json();
@@ -93,11 +85,12 @@ export default function ReviewsPage() {
   const fetchReviewStats = async () => {
     try {
       setLoading(prev => ({ ...prev, stats: true }));
-      const response = await fetch(`${API_BASE_URL}/reviews/stats`,{
+      const response = await fetch(`${API_BASE_URL}/reviews/stats`, {
         method: 'GET',
         credentials: 'include',
         headers: { 'Accept': 'application/json' }
       });
+      
       if (!response.ok) throw new Error('Failed to fetch review statistics');
       const data = await response.json();
       setStats(data);
@@ -149,7 +142,7 @@ export default function ReviewsPage() {
 
       const savedReview = await response.json();
       
-      // Add to local state (will be approved by admin)
+      // Add to local state immediately
       setReviews(prev => [savedReview, ...prev]);
       
       // Reset form
@@ -164,7 +157,8 @@ export default function ReviewsPage() {
       // Refresh stats
       fetchReviewStats();
       
-      alert('Review submitted successfully! It will appear after admin approval.');
+      // Show success message
+      alert('Review submitted successfully! Thank you for your feedback.');
       
     } catch (err) {
       console.error('Error submitting review:', err);
@@ -184,13 +178,11 @@ export default function ReviewsPage() {
           : review
       ));
 
-      // Send API request
-      // Note: You'll need to create this endpoint in your backend
+      // Optional: Send API request to update helpful count
       // const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/helpful`, {
       //   method: 'POST',
+      //   credentials: 'include',
       // });
-      
-      // if (!response.ok) throw new Error('Failed to update helpful count');
       
     } catch (err) {
       console.error('Error marking as helpful:', err);
@@ -208,7 +200,9 @@ export default function ReviewsPage() {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -224,13 +218,6 @@ export default function ReviewsPage() {
       fetchReviewStats();
     }
   }, [reviews.length]);
-
-  // Handle review filter change
-  const handleFilterChange = (newFilter: string) => {
-    setFilter(newFilter);
-    setPage(0); // Reset to first page
-    // Note: For admin view, you'd need to call a different endpoint
-  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -298,11 +285,11 @@ export default function ReviewsPage() {
           <div className="space-y-3">
             <div className="flex items-center text-sm text-gray-600">
               <Shield className="mr-2 text-green-500" size={16} />
-              <span>Verified purchases only</span>
+              <span>Real customer reviews</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
               <CheckCircle className="mr-2 text-green-500" size={16} />
-              <span>Admin-approved reviews</span>
+              <span>Posted instantly</span>
             </div>
           </div>
         </div>
@@ -348,8 +335,10 @@ export default function ReviewsPage() {
       </div>
 
       {/* Add Review Form */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-green-100">
         <h2 className="text-xl font-bold text-gray-800 mb-6">Share Your Experience</h2>
+        <p className="text-gray-600 mb-6">Your review will be posted immediately for others to see.</p>
+        
         <div className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -440,59 +429,49 @@ export default function ReviewsPage() {
               onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
               disabled={loading.submitting}
             />
+            <p className="text-sm text-gray-500 mt-2">
+              Be honest and specific about your experience. Your review helps others make better decisions.
+            </p>
           </div>
           
-          <button 
-            onClick={submitReview}
-            disabled={loading.submitting}
-            className="w-full md:w-auto bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {loading.submitting ? (
-              <>
-                <Loader2 className="animate-spin" size={20} />
-                Submitting Review...
-              </>
-            ) : (
-              <>
-                <MessageSquare size={20} />
-                Submit Review
-              </>
-            )}
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <button 
+              onClick={submitReview}
+              disabled={loading.submitting}
+              className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading.submitting ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  Posting Review...
+                </>
+              ) : (
+                <>
+                  <MessageSquare size={20} />
+                  Post Review Now
+                </>
+              )}
+            </button>
+            
+            <p className="text-sm text-gray-500">
+              Your review will appear immediately on this page
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Reviews Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Client Reviews</h2>
+          <h2 className="text-xl font-bold text-gray-800">Recent Reviews</h2>
           <p className="text-gray-600">
             {loading.reviews ? (
               <span className="inline-block h-4 bg-gray-200 rounded w-32 animate-pulse"></span>
             ) : (
-              `${reviews.length} ${reviews.length === 1 ? 'review' : 'reviews'}`
+              `${stats?.totalReviews || 0} total ${stats?.totalReviews === 1 ? 'review' : 'reviews'}`
             )}
           </p>
         </div>
-        
-        {/* Filter Buttons (for admin view) */}
-        {false && ( // Disabled for now, enable for admin
-          <div className="flex gap-2 mt-4 md:mt-0">
-            {["approved", "pending", "all"].map((filterType) => (
-              <button
-                key={filterType}
-                onClick={() => handleFilterChange(filterType)}
-                className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  filter === filterType
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Reviews List */}
@@ -524,11 +503,13 @@ export default function ReviewsPage() {
           ))
         ) : reviews.length > 0 ? (
           reviews.map((review) => (
-            <div key={review.id} className="bg-white rounded-xl shadow-sm p-6">
+            <div key={review.id} className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <div className="flex items-center gap-3 mb-1">
-                    <User className="w-8 h-8 rounded-full bg-gray-100 p-1 text-gray-600" />
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <User className="text-green-600" size={20} />
+                    </div>
                     <div>
                       <h3 className="font-bold text-gray-800">{review.clientName}</h3>
                       <div className="flex items-center text-sm text-gray-600">
@@ -550,23 +531,15 @@ export default function ReviewsPage() {
               </div>
               <p className="text-gray-700 mb-4">{review.comment}</p>
               <div className="flex justify-between items-center text-sm text-gray-500">
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1">
-                    <Calendar size={14} />
-                    {formatDate(review.createdAt)}
-                  </span>
-                  {!review.approved && (
-                    <span className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-                      <Clock size={12} />
-                      Awaiting approval
-                    </span>
-                  )}
-                </div>
+                <span className="flex items-center gap-1">
+                  <Calendar size={14} />
+                  {formatDate(review.createdAt)}
+                </span>
                 <button 
                   onClick={() => markAsHelpful(review.id)}
-                  className="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors"
+                  className="flex items-center gap-1 text-gray-600 hover:text-gray-900 transition-colors hover:bg-gray-50 px-2 py-1 rounded"
                 >
-                  <ThumbsUp size={16} />
+                  <ThumbsUp size={14} />
                   Helpful ({review.helpfulCount})
                 </button>
               </div>
