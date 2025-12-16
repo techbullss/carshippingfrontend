@@ -9,6 +9,7 @@ import {
   faUsers,
   faUserTie,
   faRightFromBracket,
+  faTicketSimple
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
@@ -23,9 +24,10 @@ const navItems = [
   { name: "Motorcycles", href: "/dashboard/Motocycle", icon: faMotorcycle },
   { name: "Users", href: "/dashboard/Users", icon: faUsers },
   { name: "Profile", href: "/dashboard/UserProfile", icon: faUserTie },
-    
+  { name: "Admin Requests", href: "/dashboard/AdminRequests", icon: faBoxOpen },
    { name: "Image Dashboard", href: "/dashboard/ImageDashboard", icon: faBoxOpen }, //
   { name: "Logout", href: "/dashboard/Logout", icon: faRightFromBracket },
+  { name: "Request Item", href: "/dashboard/RequestItem", icon: faTicketSimple }
 ];
 
 export default function Sidebar() {
