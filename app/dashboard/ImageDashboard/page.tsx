@@ -177,6 +177,7 @@ export default function ImageDashboard() {
     try {
       const response = await fetch(`${BACKEND_URL}/images/rotate`, {
         method: 'POST',
+        credentials: 'include',
       });
       
       if (response.ok) {
