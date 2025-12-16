@@ -76,7 +76,7 @@ export default function ImageDashboard() {
     formData.append('image', file);
     
     try {
-      const response = await fetch(`${BACKEND_URL}/images/upload`, {
+      const response = await fetch(`${BACKEND_URL}/images`, {
         method: 'POST',
         credentials: 'include',
         body: formData,
