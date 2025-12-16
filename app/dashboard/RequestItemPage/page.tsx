@@ -5,13 +5,44 @@ import { motion } from "framer-motion";
 import { 
   Upload, Package, MapPin, DollarSign, 
   MessageSquare, ShoppingBag, ArrowLeft,
-  CheckCircle, Image as ImageIcon
+  CheckCircle, Image as ImageIcon, Loader2, AlertCircle
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+// Types
+interface FormData {
+  clientName: string;
+  clientEmail: string;
+  clientPhone: string;
+  itemName: string;
+  category: string;
+  description: string;
+  originCountry: string;
+  destination: string;
+  budget: string;
+  quantity: number;
+  urgency: string;
+  notes: string;
+}
+
+interface ImagePreview {
+  file: File;
+  preview: string;
+}
+
+const API_BASE_URL = "https://api.f-carshipping.com/api/auxiliary";
 
 export default function RequestItemPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
+  const [formData, setFormData] = useState<FormData>({
+    clientName: "",
+    clientEmail: "",
+    clientPhone: "",
     itemName: "",
     category: "",
     description: "",
@@ -20,28 +51,8 @@ export default function RequestItemPage() {
     budget: "",
     quantity: 1,
     urgency: "normal",
-    images: [] as File[],
-    contactMethod: "email",
-    email: "",
-    phone: "",
     notes: "",
   });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission to your backend
-    console.log("Submitting:", formData);
-    // API call would go here
-    setStep(4); // Go to success step
-  };
-
-  const handleImageUpload = (files: FileList) => {
-    const newImages = Array.from(files);
-    setFormData(prev => ({
-      ...prev,
-      images: [...prev.images, ...newImages]
-    }));
-  };
 
   const categories = [
     "Electronics", "Clothing & Fashion", "Home & Kitchen",
@@ -54,6 +65,170 @@ export default function RequestItemPage() {
     { value: "normal", label: "Normal (3-4 weeks)", price: "Standard" },
     { value: "flexible", label: "Flexible (1-2 months)", price: "-10%" },
   ];
+
+  // Handle image upload with preview
+  const handleImageUpload = (files: FileList) => {
+    const newImages = Array.from(files).slice(0, 5 - imagePreviews.length); // Limit to 5 images
+    
+    newImages.forEach(file => {
+      if (!file.type.startsWith('image/')) {
+        setError("Please upload only image files");
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setError("File size should be less than 5MB");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, {
+          file,
+          preview: reader.result as string
+        }]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Remove image from preview
+  const removeImage = (index: number) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Validate form before proceeding
+  const validateStep = (currentStep: number): boolean => {
+    setError(null);
+    
+    switch (currentStep) {
+      case 1:
+        if (!formData.itemName.trim()) {
+          setError("Item name is required");
+          return false;
+        }
+        if (!formData.category) {
+          setError("Please select a category");
+          return false;
+        }
+        if (!formData.description.trim()) {
+          setError("Description is required");
+          return false;
+        }
+        break;
+      
+      case 2:
+        if (!formData.originCountry) {
+          setError("Origin country is required");
+          return false;
+        }
+        if (!formData.destination.trim()) {
+          setError("Destination is required");
+          return false;
+        }
+        break;
+      
+      case 3:
+        if (!formData.clientName.trim()) {
+          setError("Your name is required");
+          return false;
+        }
+        if (!formData.clientEmail.trim()) {
+          setError("Email is required");
+          return false;
+        }
+        if (!/\S+@\S+\.\S+/.test(formData.clientEmail)) {
+          setError("Please enter a valid email address");
+          return false;
+        }
+        break;
+    }
+    
+    return true;
+  };
+
+  // Handle next step
+  const handleNext = () => {
+    if (validateStep(step)) {
+      setStep(prev => prev + 1);
+    }
+  };
+
+  // Handle previous step
+  const handleBack = () => {
+    setStep(prev => prev - 1);
+    setError(null);
+  };
+
+  // Submit form to backend
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateStep(3)) return;
+    
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Create FormData for multipart upload
+      const formDataToSend = new FormData();
+      
+      // Add all form fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formDataToSend.append(key, value.toString());
+        }
+      });
+
+      // Add images
+      imagePreviews.forEach((image, index) => {
+        formDataToSend.append('images', image.file);
+      });
+
+      // Get authentication token (adjust based on your auth setup)
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_BASE_URL}/request-item`, {
+        method: 'POST',
+        headers: token ? {
+          'Authorization': `Bearer ${token}`,
+        } : {},
+        body: formDataToSend,
+        credentials: 'include', // If using cookies/sessions
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to submit request: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Request submitted successfully:', data);
+      
+      // Move to success step
+      setStep(4);
+      
+    } catch (err) {
+      console.error('Error submitting request:', err);
+      setError(err instanceof Error ? err.message : "Failed to submit request. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update form field
+  const updateFormData = (field: keyof FormData, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Format budget for display
+  const formatBudget = (budget: string) => {
+    if (!budget) return "Not specified";
+    return `$${parseFloat(budget).toLocaleString()}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -104,6 +279,14 @@ export default function RequestItemPage() {
           </div>
         </div>
 
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start">
+            <AlertCircle className="mr-2 mt-0.5 flex-shrink-0" size={20} />
+            <span>{error}</span>
+          </div>
+        )}
+
         {/* Form */}
         <motion.form 
           onSubmit={handleSubmit}
@@ -129,7 +312,7 @@ export default function RequestItemPage() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="e.g., iPhone 15 Pro, Designer Handbag, Car Parts"
                   value={formData.itemName}
-                  onChange={(e) => setFormData({...formData, itemName: e.target.value})}
+                  onChange={(e) => updateFormData('itemName', e.target.value)}
                 />
               </div>
 
@@ -141,7 +324,7 @@ export default function RequestItemPage() {
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  onChange={(e) => updateFormData('category', e.target.value)}
                 >
                   <option value="">Select a category</option>
                   {categories.map(cat => (
@@ -160,13 +343,13 @@ export default function RequestItemPage() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Please provide as much detail as possible: brand, model, size, color, specifications, links to similar products, etc."
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) => updateFormData('description', e.target.value)}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Upload Reference Images (Optional)
+                  Upload Reference Images (Optional, max 5)
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                   <input
@@ -176,23 +359,44 @@ export default function RequestItemPage() {
                     className="hidden"
                     id="image-upload"
                     onChange={(e) => e.target.files && handleImageUpload(e.target.files)}
+                    disabled={imagePreviews.length >= 5}
                   />
-                  <label htmlFor="image-upload" className="cursor-pointer">
+                  <label htmlFor="image-upload" className={`cursor-pointer ${imagePreviews.length >= 5 ? 'opacity-50' : ''}`}>
                     <div className="flex flex-col items-center">
                       <ImageIcon className="text-gray-400 mb-3" size={40} />
                       <p className="text-gray-600 font-medium mb-1">
                         Click to upload images
                       </p>
                       <p className="text-gray-400 text-sm">
-                        PNG, JPG, GIF up to 5MB
+                        PNG, JPG, GIF up to 5MB each
                       </p>
                     </div>
                   </label>
                 </div>
-                {formData.images.length > 0 && (
+                
+                {/* Image Previews */}
+                {imagePreviews.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm text-gray-600 mb-2">
-                      {formData.images.length} image(s) uploaded
+                    <div className="flex flex-wrap gap-2">
+                      {imagePreviews.map((image, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={image.preview}
+                            alt={`Preview ${index + 1}`}
+                            className="w-20 h-20 object-cover rounded-lg border border-gray-300"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">
+                      {imagePreviews.length} of 5 images uploaded
                     </p>
                   </div>
                 )}
@@ -200,10 +404,18 @@ export default function RequestItemPage() {
 
               <button
                 type="button"
-                onClick={() => setStep(2)}
-                className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                onClick={handleNext}
+                className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
               >
-                Continue to Shipping Details
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Processing...
+                  </div>
+                ) : (
+                  "Continue to Shipping Details"
+                )}
               </button>
             </div>
           )}
@@ -224,16 +436,16 @@ export default function RequestItemPage() {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     value={formData.originCountry}
-                    onChange={(e) => setFormData({...formData, originCountry: e.target.value})}
+                    onChange={(e) => updateFormData('originCountry', e.target.value)}
                   >
                     <option value="">Select country</option>
-                    <option value="germany">Germany</option>
-                    <option value="uk">United Kingdom</option>
-                    <option value="italy">Italy</option>
-                    <option value="france">France</option>
-                    <option value="usa">USA</option>
-                    <option value="china">China</option>
-                    <option value="other">Other</option>
+                    <option value="Germany">Germany</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Italy">Italy</option>
+                    <option value="France">France</option>
+                    <option value="USA">USA</option>
+                    <option value="China">China</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
@@ -248,7 +460,7 @@ export default function RequestItemPage() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="e.g., Nairobi, Kenya"
                     value={formData.destination}
-                    onChange={(e) => setFormData({...formData, destination: e.target.value})}
+                    onChange={(e) => updateFormData('destination', e.target.value)}
                   />
                 </div>
               </div>
@@ -259,13 +471,18 @@ export default function RequestItemPage() {
                     <DollarSign className="inline mr-2" size={16} />
                     Estimated Budget (USD)
                   </label>
-                  <input
-                    type="number"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="e.g., 500"
-                    value={formData.budget}
-                    onChange={(e) => setFormData({...formData, budget: e.target.value})}
-                  />
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      placeholder="0.00"
+                      value={formData.budget}
+                      onChange={(e) => updateFormData('budget', e.target.value)}
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -278,7 +495,7 @@ export default function RequestItemPage() {
                     min="1"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     value={formData.quantity}
-                    onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value)})}
+                    onChange={(e) => updateFormData('quantity', parseInt(e.target.value))}
                   />
                 </div>
               </div>
@@ -302,7 +519,7 @@ export default function RequestItemPage() {
                         name="urgency"
                         value={option.value}
                         checked={formData.urgency === option.value}
-                        onChange={(e) => setFormData({...formData, urgency: e.target.value})}
+                        onChange={(e) => updateFormData('urgency', e.target.value)}
                         className="hidden"
                       />
                       <div className="font-medium mb-1">
@@ -325,17 +542,26 @@ export default function RequestItemPage() {
               <div className="flex gap-4">
                 <button
                   type="button"
-                  onClick={() => setStep(1)}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+                  onClick={handleBack}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition disabled:opacity-50"
+                  disabled={loading}
                 >
                   Back
                 </button>
                 <button
                   type="button"
-                  onClick={() => setStep(3)}
-                  className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                  onClick={handleNext}
+                  className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={loading}
                 >
-                  Continue to Review
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="animate-spin" size={20} />
+                      Processing...
+                    </div>
+                  ) : (
+                    "Continue to Review"
+                  )}
                 </button>
               </div>
             </div>
@@ -369,9 +595,11 @@ export default function RequestItemPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Budget:</span>
-                    <span className="font-medium">
-                      {formData.budget ? `$${formData.budget}` : "Not specified"}
-                    </span>
+                    <span className="font-medium">{formatBudget(formData.budget)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Quantity:</span>
+                    <span className="font-medium">{formData.quantity}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Urgency:</span>
@@ -388,23 +616,16 @@ export default function RequestItemPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Preferred Contact Method *
+                    Your Name *
                   </label>
-                  <div className="flex gap-4 mb-4">
-                    {["email", "phone", "whatsapp"].map((method) => (
-                      <label key={method} className="flex items-center">
-                        <input
-                          type="radio"
-                          name="contactMethod"
-                          value={method}
-                          checked={formData.contactMethod === method}
-                          onChange={(e) => setFormData({...formData, contactMethod: e.target.value})}
-                          className="mr-2"
-                        />
-                        <span className="capitalize">{method}</span>
-                      </label>
-                    ))}
-                  </div>
+                  <input
+                    type="text"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Enter your full name"
+                    value={formData.clientName}
+                    onChange={(e) => updateFormData('clientName', e.target.value)}
+                  />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
@@ -416,34 +637,36 @@ export default function RequestItemPage() {
                       type="email"
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      placeholder="your.email@example.com"
+                      value={formData.clientEmail}
+                      onChange={(e) => updateFormData('clientEmail', e.target.value)}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
+                      Phone Number (Optional)
                     </label>
                     <input
                       type="tel"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      placeholder="+254 712 345 678"
+                      value={formData.clientPhone}
+                      onChange={(e) => updateFormData('clientPhone', e.target.value)}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Additional Notes
+                    Additional Notes (Optional)
                   </label>
                   <textarea
                     rows={3}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Any special requirements or questions?"
                     value={formData.notes}
-                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                    onChange={(e) => updateFormData('notes', e.target.value)}
                   />
                 </div>
               </div>
@@ -451,17 +674,28 @@ export default function RequestItemPage() {
               <div className="flex gap-4">
                 <button
                   type="button"
-                  onClick={() => setStep(2)}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+                  onClick={handleBack}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition disabled:opacity-50"
+                  disabled={loading}
                 >
                   Back
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
+                  className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  disabled={loading}
                 >
-                  <ShoppingBag size={20} />
-                  Submit Request
+                  {loading ? (
+                    <>
+                      <Loader2 className="animate-spin" size={20} />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag size={20} />
+                      Submit Request
+                    </>
+                  )}
                 </button>
               </div>
             </div>

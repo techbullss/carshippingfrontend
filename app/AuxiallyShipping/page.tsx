@@ -5,80 +5,190 @@ import { motion } from "framer-motion";
 import { 
   Plane, Package, ShoppingBag, Globe2, Users, 
   Star, ChevronRight, Plus, Filter, Search, 
-  MessageSquare, Truck, CheckCircle, Clock, Shield
+  MessageSquare, Truck, CheckCircle, Clock, Shield,
+  TrendingUp, Loader2
 } from "lucide-react";
 
-// Mock data - replace with API calls
-const mockProducts = [
-  {
-    id: 1,
-    name: "Designer Handbag",
-    client: "Sarah M.",
-    origin: "Italy",
-    destination: "Nairobi, Kenya",
-    status: "In Transit",
-    progress: 75,
-    date: "2024-01-15",
-    rating: 4.8,
-    image: "/api/placeholder/300/200",
-  },
-  {
-    id: 2,
-    name: "Electronics Bundle",
-    client: "John D.",
-    origin: "Germany",
-    destination: "Mombasa, Kenya",
-    status: "Sourcing",
-    progress: 40,
-    date: "2024-01-18",
-    rating: 4.9,
-    image: "/api/placeholder/300/200",
-  },
-  {
-    id: 3,
-    name: "Medical Equipment",
-    client: "Health Clinic Ltd",
-    origin: "UK",
-    destination: "Kampala, Uganda",
-    status: "Delivered",
-    progress: 100,
-    date: "2024-01-10",
-    rating: 5.0,
-    image: "/api/placeholder/300/200",
-  },
-];
+// Types
+interface Product {
+  id: number;
+  requestId: string;
+  itemName: string;
+  clientName: string;
+  originCountry: string;
+  destination: string;
+  status: string;
+  progress: number; // We'll calculate this based on status
+  imageUrls: string[];
+  budget: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Michael K.",
-    role: "Business Owner",
-    comment: "Excellent service! They sourced rare automotive parts from Germany and delivered on time. Highly recommended!",
-    rating: 5,
-    date: "2 weeks ago",
-  },
-  {
-    id: 2,
-    name: "Grace W.",
-    role: "Individual Client",
-    comment: "Helped me ship gifts from London to my family in Nairobi. Professional and reliable.",
-    rating: 4,
-    date: "1 month ago",
-  },
-];
+interface Review {
+  id: number;
+  clientName: string;
+  rating: number;
+  comment: string;
+  itemName: string;
+  createdAt: string;
+}
+
+interface DashboardStats {
+  totalRequests: number;
+  pendingRequests: number;
+  activeShipments: number;
+  averageRating: number;
+  totalReviews: number;
+}
+
+const API_BASE_URL = "https://api.f-carshipping.com/api/auxiliary"; // Update with your actual backend URL
 
 export default function AuxiliaryShippingPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  
-  const filteredProducts = mockProducts.filter(product => {
-    if (searchQuery) {
-      return product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-             product.client.toLowerCase().includes(searchQuery.toLowerCase());
-    }
-    if (activeTab === "all") return true;
-    return product.status.toLowerCase().includes(activeTab.toLowerCase());
+  const [products, setProducts] = useState<Product[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState({
+    products: true,
+    reviews: true,
+    stats: true
   });
+  const [error, setError] = useState<string | null>(null);
+
+  // Calculate progress based on status
+  const calculateProgress = (status: string): number => {
+    switch (status.toLowerCase()) {
+      case "pending": return 10;
+      case "sourcing": return 40;
+      case "in_transit": return 75;
+      case "delivered": return 100;
+      default: return 0;
+    }
+  };
+
+  // Format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  // Format status for display
+  const formatStatus = (status: string): string => {
+    return status
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+
+  // Fetch dashboard stats
+  const fetchStats = async () => {
+    try {
+      setLoading(prev => ({ ...prev, stats: true }));
+      const response = await fetch(`${API_BASE_URL}/stats`);
+      if (!response.ok) throw new Error('Failed to fetch stats');
+      const data = await response.json();
+      setStats(data);
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+      setError('Failed to load dashboard statistics');
+    } finally {
+      setLoading(prev => ({ ...prev, stats: false }));
+    }
+  };
+
+  // Fetch active shipments/requests
+  const fetchProducts = async () => {
+    try {
+      setLoading(prev => ({ ...prev, products: true }));
+      const statusMap: Record<string, string> = {
+        "all": "",
+        "sourcing": "SOURCING",
+        "in transit": "IN_TRANSIT",
+        "delivered": "DELIVERED"
+      };
+
+      const status = statusMap[activeTab] || "";
+      const search = searchQuery || "";
+      
+      let url = `${API_BASE_URL}/requests?page=0&size=10`;
+      if (status) url += `&status=${status}`;
+      if (search) url += `&search=${search}`;
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch products');
+      const data = await response.json();
+      
+      const productsWithProgress = data.content.map((product: Product) => ({
+        ...product,
+        progress: calculateProgress(product.status)
+      }));
+      setProducts(productsWithProgress);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to load active shipments');
+    } finally {
+      setLoading(prev => ({ ...prev, products: false }));
+    }
+  };
+
+  // Fetch reviews
+  const fetchReviews = async () => {
+    try {
+      setLoading(prev => ({ ...prev, reviews: true }));
+      const response = await fetch(`${API_BASE_URL}/reviews/public?page=0&size=6`);
+      if (!response.ok) throw new Error('Failed to fetch reviews');
+      const data = await response.json();
+      setReviews(data.content);
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+      setError('Failed to load reviews');
+    } finally {
+      setLoading(prev => ({ ...prev, reviews: false }));
+    }
+  };
+
+  // Fetch all data on component mount
+  useEffect(() => {
+    fetchStats();
+    fetchProducts();
+    fetchReviews();
+  }, []);
+
+  // Refetch products when filter changes
+  useEffect(() => {
+    fetchProducts();
+  }, [activeTab, searchQuery]);
+
+  // Filter products locally (as backup or for additional filtering)
+  const filteredProducts = products.filter(product => {
+    if (searchQuery) {
+      return product.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+             product.clientName.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+    return true;
+  });
+
+  // Handle tab change
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+  // Handle search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery !== '') {
+        fetchProducts();
+      }
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -124,23 +234,38 @@ export default function AuxiliaryShippingPage() {
               className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 lg:w-1/3 border border-white/20"
             >
               <h3 className="text-xl font-bold mb-6">Our Impact</h3>
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-white/80">Active Shipments</span>
-                  <span className="text-2xl font-bold">24</span>
+              {loading.stats ? (
+                <div className="space-y-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="h-4 bg-white/20 rounded w-24 animate-pulse"></div>
+                      <div className="h-8 bg-white/20 rounded w-12 animate-pulse"></div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-white/80">Items Sourced</span>
-                  <span className="text-2xl font-bold">156+</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-white/80">Client Rating</span>
-                  <div className="flex items-center gap-2">
-                    <Star className="fill-yellow-400 text-yellow-400" size={20} />
-                    <span className="text-2xl font-bold">4.9</span>
+              ) : stats ? (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Active Shipments</span>
+                    <span className="text-2xl font-bold">{stats.activeShipments}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Items Sourced</span>
+                    <span className="text-2xl font-bold">{stats.totalRequests}+</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/80">Client Rating</span>
+                    <div className="flex items-center gap-2">
+                      <Star className="fill-yellow-400 text-yellow-400" size={20} />
+                      <span className="text-2xl font-bold">{stats.averageRating.toFixed(1)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-4 text-white/80">
+                  Failed to load statistics
+                </div>
+              )}
             </motion.div>
           </div>
         </div>
@@ -169,6 +294,7 @@ export default function AuxiliaryShippingPage() {
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  disabled={loading.products}
                 />
               </div>
               
@@ -176,14 +302,19 @@ export default function AuxiliaryShippingPage() {
                 {["all", "sourcing", "in transit", "delivered"].map((tab) => (
                   <button
                     key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 rounded-full whitespace-nowrap ${
+                    onClick={() => handleTabChange(tab)}
+                    disabled={loading.products}
+                    className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
                       activeTab === tab
                         ? "bg-green-600 text-white"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
+                    } ${loading.products ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    {loading.products && activeTab === tab ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      tab.charAt(0).toUpperCase() + tab.slice(1)
+                    )}
                   </button>
                 ))}
               </div>
@@ -191,78 +322,121 @@ export default function AuxiliaryShippingPage() {
           </div>
 
           {/* Products Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {filteredProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
-              >
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-bold text-lg text-gray-800">{product.name}</h3>
-                      <p className="text-gray-600 text-sm">Requested by {product.client}</p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      product.status === "Delivered" ? "bg-green-100 text-green-800" :
-                      product.status === "In Transit" ? "bg-blue-100 text-blue-800" :
-                      "bg-yellow-100 text-yellow-800"
-                    }`}>
-                      {product.status}
-                    </span>
-                  </div>
-                  
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Progress</span>
-                      <span>{product.progress}%</span>
-                    </div>
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-green-600 rounded-full"
-                        style={{ width: `${product.progress}%` }}
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Route Info */}
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-                    <div className="flex items-center gap-1">
-                      <Globe2 size={14} />
-                      <span>{product.origin}</span>
-                    </div>
-                    <ChevronRight size={16} />
-                    <div className="flex items-center gap-1">
-                      <Package size={14} />
-                      <span>{product.destination}</span>
-                    </div>
-                  </div>
-                  
-                  {/* Rating and Action */}
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          size={16} 
-                          className={i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
-                        />
-                      ))}
-                      <span className="text-sm text-gray-600 ml-1">{product.rating}</span>
-                    </div>
-                    <button className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1">
-                      View Details
-                      <ChevronRight size={16} />
-                    </button>
+          {loading.products ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-gray-50 rounded-xl border border-gray-200 p-6 animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
+                  <div className="h-2 bg-gray-200 rounded w-full mb-4"></div>
+                  <div className="flex justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="text-red-500 mb-4">⚠️ {error}</div>
+              <button
+                onClick={() => {
+                  setError(null);
+                  fetchProducts();
+                }}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                Retry
+              </button>
+            </div>
+          ) : filteredProducts.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {filteredProducts.map((product) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-800">{product.itemName}</h3>
+                        <p className="text-gray-600 text-sm">Requested by {product.clientName}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        product.status === "DELIVERED" ? "bg-green-100 text-green-800" :
+                        product.status === "IN_TRANSIT" ? "bg-blue-100 text-blue-800" :
+                        "bg-yellow-100 text-yellow-800"
+                      }`}>
+                        {formatStatus(product.status)}
+                      </span>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="mb-4">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span>Progress</span>
+                        <span>{product.progress}%</span>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-green-600 rounded-full transition-all duration-500"
+                          style={{ width: `${product.progress}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Route Info */}
+                    <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+                      <div className="flex items-center gap-1">
+                        <Globe2 size={14} />
+                        <span>{product.originCountry}</span>
+                      </div>
+                      <ChevronRight size={16} />
+                      <div className="flex items-center gap-1">
+                        <Package size={14} />
+                        <span>{product.destination}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Budget and Date */}
+                    <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
+                      <div className="flex items-center gap-1">
+                        <TrendingUp size={14} />
+                        <span>${product.budget?.toLocaleString() || "N/A"}</span>
+                      </div>
+                      <span>{formatDate(product.createdAt)}</span>
+                    </div>
+                    
+                    {/* View Details Button */}
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                      <div className="text-sm text-gray-600">
+                        ID: {product.requestId}
+                      </div>
+                      <button className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1">
+                        View Details
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-gray-600 mb-2">
+                No shipments found
+              </h3>
+              <p className="text-gray-500">
+                {searchQuery 
+                  ? "No shipments match your search criteria"
+                  : "There are no active shipments at the moment"}
+              </p>
+            </div>
+          )}
 
           {/* CTA for New Request */}
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 text-center border border-green-200">
@@ -298,41 +472,59 @@ export default function AuxiliaryShippingPage() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial) => (
-              <motion.div
-                key={testimonial.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h4 className="font-bold text-gray-800">{testimonial.name}</h4>
-                    <p className="text-gray-600 text-sm">{testimonial.role}</p>
-                  </div>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        size={16} 
-                        className={i < testimonial.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
-                      />
-                    ))}
-                  </div>
+          {loading.reviews ? (
+            <div className="grid md:grid-cols-2 gap-8">
+              {[1, 2].map((i) => (
+                <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/4 mb-6"></div>
+                  <div className="h-20 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
                 </div>
-                <p className="text-gray-700 mb-4 italic">"{testimonial.comment}"</p>
-                <div className="flex justify-between items-center text-sm text-gray-500">
-                  <span>{testimonial.date}</span>
-                  <button className="text-green-600 hover:text-green-700 font-medium flex items-center gap-1">
-                    <MessageSquare size={14} />
-                    Reply
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : reviews.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-8">
+              {reviews.map((review) => (
+                <motion.div
+                  key={review.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h4 className="font-bold text-gray-800">{review.clientName}</h4>
+                      <p className="text-gray-600 text-sm">{review.itemName}</p>
+                    </div>
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          size={16} 
+                          className={i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-700 mb-4 italic">"{review.comment}"</p>
+                  <div className="flex justify-between items-center text-sm text-gray-500">
+                    <span>{formatDate(review.createdAt)}</span>
+                    <button className="text-green-600 hover:text-green-700 font-medium flex items-center gap-1">
+                      <MessageSquare size={14} />
+                      Reply
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No reviews yet. Be the first to leave one!</p>
+            </div>
+          )}
           
           {/* Add Review CTA */}
           <div className="text-center mt-12">
