@@ -107,6 +107,7 @@ export default function ImageDashboard() {
     try {
       const response = await fetch(`${BACKEND_URL}/images/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
       
       if (response.ok) {
@@ -350,19 +351,20 @@ export default function ImageDashboard() {
                       )}
                       
                       {/* Delete Button */}
-                      <button
-                        onClick={() => deleteImage(image.id)}
-                        disabled={deletingId === image.id}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full 
-                                 opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                                 hover:bg-red-600 disabled:opacity-50"
-                      >
-                        {deletingId === image.id ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        ) : (
-                          <Trash2 size={16} />
-                        )}
-                      </button>
+                      {/* Delete Button */}
+<button
+  onClick={() => deleteImage(image.id)}
+  disabled={deletingId === image.id}
+  className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full 
+           opacity-0 group-hover:opacity-100 transition-opacity duration-200
+           hover:bg-red-600 disabled:opacity-50 z-20" 
+>
+  {deletingId === image.id ? (
+    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+  ) : (
+    <Trash2 size={16} />
+  )}
+</button>
                       
                       {/* Overlay Info */}
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 
