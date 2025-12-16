@@ -27,7 +27,8 @@ const navItems = [
   { name: "Admin Requests", href: "/dashboard/AdminRequestsPage", icon: faBoxOpen },
    { name: "Image Dashboard", href: "/dashboard/ImageDashboard", icon: faBoxOpen }, //
   { name: "Logout", href: "/dashboard/Logout", icon: faRightFromBracket },
-  { name: "Request Item", href: "/dashboard/RequestItemPage", icon: faTicketSimple }
+  { name: "Request Item", href: "/dashboard/RequestItemPage", icon: faTicketSimple },
+  { name: "Reviews", href: "/dashboard/ReviewsPage", icon: faBoxOpen }
 ];
 
 export default function Sidebar() {
