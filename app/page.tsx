@@ -148,7 +148,7 @@ export default function Home() {
   <section
       className="flex items-center min-h-[600px]"
       style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${backgroundImage}')`,
+        backgroundImage: ` url('${backgroundImage}')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
