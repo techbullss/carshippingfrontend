@@ -40,7 +40,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-56 bg-white shadow-lg h-screen flex flex-col">
+    <aside className="w-56 bg-white shadow-lg h-screen flex flex-col overflow-y-auto">
       <div className="p-4 border-b">
         <p className="text-xl font-bold text-indigo-600 tracking-tight">F-carshipping</p>
       </div>
