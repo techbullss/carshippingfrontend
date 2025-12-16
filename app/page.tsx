@@ -122,21 +122,47 @@ export default function Home() {
   function handleCarClick(id: number): void {
     router.push(`/Cardetails/${id}`);
   }
+   const [backgroundImage, setBackgroundImage] = useState('/used1.jpg'); // fallback
+  const BACKEND_URL = 'https://api.f-carshipping.com/api'; // Your Spring Boot backend URL
+  
+  useEffect(() => {
+    fetchCurrentImage();
+  }, []);
+  
+  const fetchCurrentImage = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/images/current`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.image) {
+          setBackgroundImage(data.image.url);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching current image:', error);
+      // Keep using fallback image
+    }
+  };
   return (
    <div>
   <section
-  className=" flex items-center 
-             bg-[url('/used1.jpg')] bg-cover bg-center bg-no-repeat"
->
-  <div className="container px-2 w-full h-full ">
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-center">
-      {/* Search Component */}
-      <div className="bg-white/10 w-full p-6 rounded-lg  lg:col-span-2">
-        <CarSearchHero />
+      className="flex items-center min-h-[600px]"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${backgroundImage}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="container px-2 w-full h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-center">
+          {/* Search Component */}
+          <div className="bg-white/10 backdrop-blur-sm w-full p-6 rounded-lg lg:col-span-2">
+            <CarSearchHero />
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 <section className="relative bg-gradient-to-b from-blue-50 to-green-50 py-16">
   <div className="container mx-auto px-6 lg:px-12 relative">
     {/* FULL-WIDTH TITLE */}
