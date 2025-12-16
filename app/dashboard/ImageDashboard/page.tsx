@@ -31,7 +31,7 @@ export default function ImageDashboard() {
   const [dragOver, setDragOver] = useState(false);
   
   // Spring Boot backend URL - Update this with your actual backend URL
-  const BACKEND_URL = 'http://localhost:8080/api';
+  const BACKEND_URL = 'https://api.f-carshipping.com/api';
   
   // Fetch images on component mount
   useEffect(() => {
