@@ -331,7 +331,7 @@ const handleTabChange = (tab: string) => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <motion.a
-                  href="/dashboard/request-item"
+                  href="/dashboard/RequestItemPage"
                   className="group bg-white text-green-700 px-8 py-4 rounded-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center gap-3 hover:scale-105"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -636,7 +636,7 @@ const handleTabChange = (tab: string) => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <motion.a
-                  href="/dashboard/request-item"
+                  href="/dashboard/RequestItemPage"
                   className="group bg-white text-green-700 px-8 py-4 rounded-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center gap-3"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -810,7 +810,7 @@ const handleTabChange = (tab: string) => {
           {/* Enhanced Add Review CTA */}
           <div className="text-center mt-16">
             <motion.a
-              href="/dashboard/add-review"
+              href="/dashboard/ReviewPage"
               className="group inline-flex items-center gap-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
