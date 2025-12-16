@@ -131,7 +131,12 @@ export default function Home() {
   
   const fetchCurrentImage = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/images/current`);
+      const response = await fetch(`${BACKEND_URL}/images/current`,{
+        method: 'GET',
+        credentials: 'include',
+      }
+
+      );
       if (response.ok) {
         const data = await response.json();
         if (data.image) {

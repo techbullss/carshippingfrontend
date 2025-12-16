@@ -55,7 +55,9 @@ export default function ImageDashboard() {
   // Fetch current displayed image (rotates every 48h)
   const fetchCurrentImage = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/images/current`);
+      const response = await fetch(`${BACKEND_URL}/images/current`,{
+        credentials: 'include',
+      });
       if (response.ok) {
         const data: RotationInfo = await response.json();
         setCurrentImage(data.image);
@@ -76,6 +78,7 @@ export default function ImageDashboard() {
     try {
       const response = await fetch(`${BACKEND_URL}/images/upload`, {
         method: 'POST',
+        credentials: 'include',
         body: formData,
       });
       
