@@ -30,6 +30,7 @@ const navItems = [
   { name: "Reviews", href: "/dashboard/ReviewsPage", icon: faBoxOpen },
   { name: "User Orders", href: "/dashboard/UserOrdersPage", icon: faBoxOpen },
   { name: "Logout", href: "/dashboard/Logout", icon: faRightFromBracket },
+  { name: "Admin Reviews Mngm", href: "/dashboard/AdminReviewsPage", icon: faBoxOpen }
 ];
 
 export default function Sidebar() {
