@@ -79,6 +79,7 @@ export default function ImageDashboard() {
       const response = await fetch(`${BACKEND_URL}/images`, {
         method: 'POST',
         credentials: 'include',
+        headers: { 'Accept': 'application/json' },
         body: formData,
       });
       
