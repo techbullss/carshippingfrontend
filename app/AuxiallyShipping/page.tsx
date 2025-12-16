@@ -123,14 +123,14 @@ export default function AuxiliaryShippingPage() {
   };
 
   // Get status icon
-  const getStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "delivered": return CheckCircle;
-      case "in_transit": return Truck;
-      case "sourcing": return ShoppingBag;
-      default: return Clock;
-    }
-  };
+const getStatusIcon = (status: string, size: number = 16) => {
+  switch (status.toLowerCase()) {
+    case "delivered": return <CheckCircle size={size} />;
+    case "in_transit": return <Truck size={size} />;
+    case "sourcing": return <ShoppingBag size={size} />;
+    default: return <Clock size={size} />;
+  }
+};
 
   // Fetch dashboard stats
   const fetchStats = async () => {
@@ -494,7 +494,6 @@ const handleTabChange = (tab: string) => {
           ) : products.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
               {products.map((product) => {
-                const StatusIcon = getStatusIcon(product.status);
                 return (
                   <motion.div
                     key={product.id}
@@ -517,7 +516,7 @@ const handleTabChange = (tab: string) => {
                       </div>
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
                         <div className="flex items-center gap-2 text-white">
-                          <StatusIcon size={16} />
+                          {getStatusIcon(product.status, 16)}
                           <span className="text-sm font-medium">Progress: {product.progress}%</span>
                         </div>
                         <div className="h-1.5 bg-white/30 rounded-full mt-2 overflow-hidden">
@@ -983,9 +982,9 @@ const handleTabChange = (tab: string) => {
                           <div className="bg-gray-50 rounded-xl p-4">
                             <div className="text-sm text-gray-500 mb-1">Status</div>
                             <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedProduct.status)} text-white`}>
-                              {getStatusIcon(selectedProduct.status)({ size: 12 })}
-                              {formatStatus(selectedProduct.status)}
-                            </div>
+                                {getStatusIcon(selectedProduct.status, 12)}
+                                {formatStatus(selectedProduct.status)}
+                              </div>
                           </div>
                         </div>
                         
