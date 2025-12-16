@@ -24,10 +24,10 @@ const navItems = [
   { name: "Motorcycles", href: "/dashboard/Motocycle", icon: faMotorcycle },
   { name: "Users", href: "/dashboard/Users", icon: faUsers },
   { name: "Profile", href: "/dashboard/UserProfile", icon: faUserTie },
-  { name: "Admin Requests", href: "/dashboard/AdminRequests", icon: faBoxOpen },
+  { name: "Admin Requests", href: "/dashboard/AdminRequestsPage", icon: faBoxOpen },
    { name: "Image Dashboard", href: "/dashboard/ImageDashboard", icon: faBoxOpen }, //
   { name: "Logout", href: "/dashboard/Logout", icon: faRightFromBracket },
-  { name: "Request Item", href: "/dashboard/RequestItem", icon: faTicketSimple }
+  { name: "Request Item", href: "/dashboard/RequestItemPage", icon: faTicketSimple }
 ];
 
 export default function Sidebar() {
