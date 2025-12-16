@@ -157,7 +157,7 @@ export default function Home() {
       <div className="container px-2 w-full h-full">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-center">
           {/* Search Component */}
-          <div className="bg-white/10 backdrop-blur-sm w-full p-6 rounded-lg lg:col-span-2">
+          <div className="bg-white/10  w-full p-6 rounded-lg lg:col-span-2">
             <CarSearchHero />
           </div>
         </div>

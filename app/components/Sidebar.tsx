@@ -23,7 +23,7 @@ const navItems = [
   { name: "Motorcycles", href: "/dashboard/Motocycle", icon: faMotorcycle },
   { name: "Users", href: "/dashboard/Users", icon: faUsers },
   { name: "Profile", href: "/dashboard/UserProfile", icon: faUserTie },
-    { name: "Profile", href: "/dashboard/UserProfile", icon: faUserTie },
+    
    { name: "Image Dashboard", href: "/dashboard/ImageDashboard", icon: faBoxOpen }, //
   { name: "Logout", href: "/dashboard/Logout", icon: faRightFromBracket },
 ];
