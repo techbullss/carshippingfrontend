@@ -84,6 +84,8 @@ export default function CommercialVehicleListing() {
         if (filters.maxPrice) params.append("maxPrice", filters.maxPrice);
         if (filters.minMileage) params.append("minMileage", filters.minMileage);
         if (filters.maxMileage) params.append("maxMileage", filters.maxMileage);
+            if (filters.location) params.append("location", filters.location);
+
 
         console.log("Fetching with params:", params.toString()); // Debug log
 
@@ -301,8 +303,8 @@ export default function CommercialVehicleListing() {
                 <div>
   <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
   <select
-    value={filters.year_gte ?? ""} 
-    onChange={(e) => updateQuery("year_gte", e.target.value)} 
+    value={filters.yearofmanufacture ?? ""} 
+    onChange={(e) => updateQuery("yearofmanufacture", e.target.value)} 
     className="w-full border p-2 rounded-md text-sm"
   >
     <option value="">Any Year</option>
