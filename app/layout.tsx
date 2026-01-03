@@ -38,7 +38,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} relative w-full h-full min-h-screen antialiased`}
       >
      
-          <div className="mx-[6%] my-[1%] bg-gray-50 border-l-2 border-rounded rounded border-t-2 border-t-green-500 border-gray-100 shadow-lg">
+          <div className="mx-[2%]  bg-gray-50 border-l-2 border-rounded rounded border-t-2 border-t-green-500 border-gray-100 shadow-lg">
             <Header />
             {children}
             <Footer />
