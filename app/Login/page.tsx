@@ -51,18 +51,14 @@ const LoginPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Login | UK to Kenya Vehicle Shipping</title>
-        <meta name="description" content="Login to your account to manage vehicle exports from UK to Kenya" />
-      </Head>
-
+      
       <div className="min-h-screen ">
         {/* Left side - Form */}
         <div className=" flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div>
               <div className="flex items-center">
-                <div className="bg-blue-700 rounded-lg w-10 h-10 flex items-center justify-center">
+                <div className="bg-green-700 rounded-lg w-10 h-10 flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
