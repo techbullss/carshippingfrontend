@@ -56,9 +56,9 @@ const LoginPage = () => {
         <meta name="description" content="Login to your account to manage vehicle exports from UK to Kenya" />
       </Head>
 
-      <div className="min-h-screen flex">
+      <div className="min-h-screen ">
         {/* Left side - Form */}
-        <div className=" flex flex-col justify-center py-12 px-4 sm:px-6 ">
+        <div className=" flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div>
               <div className="flex items-center">
