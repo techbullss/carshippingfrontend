@@ -237,7 +237,9 @@ const { user: currentUser } = useCurrentUser();
         : "https://api.f-carshipping.com/api/cars";
       const method = carToEdit ? "PUT" : "POST";
 
-      const res = await fetch(url, { method, body: formData, credentials: 'include' ,headers: { 'Accept': 'application/json' } });
+      const res = await fetch(
+        url, { method, body: formData, 
+          credentials: 'include' ,headers: { 'Accept': 'application/json' } });
       if (!res.ok) throw new Error(await res.text());
 
       alert(carToEdit ? "Car updated successfully!" : "Car listed successfully!");

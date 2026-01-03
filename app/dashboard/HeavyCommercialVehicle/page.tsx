@@ -1,60 +1,142 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { CommercialVehicle } from "@/app/CommercialVehicle";
 import AddCommercialVehicleForm from "@/app/components/AddCommercialVehicleForm";
-import RejectModal from "@/app/components/RejectModal";
-import { useEffect, useState } from "react";
-import { Edit, Trash2, Info, MapPin, Truck, X, Check } from "lucide-react";
-import Reject_Modal from "@/app/components/Reject_Modal";
 import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
-
-interface User {
-  role: "ADMIN" | "SELLER";
-  email: string;
-}
+import Reject_Modal from "@/app/components/Reject_Modal";
 
 export default function CommercialVehicleList() {
   const [vehicles, setVehicles] = useState<CommercialVehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState("");
-  const [editingVehicle, setEditingVehicle] = useState<CommercialVehicle | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [selectedVehicle, setSelectedVehicle] = useState<CommercialVehicle | null>(null);
-  const [rejectVehicle, setRejectVehicle] = useState<CommercialVehicle | null>(null);
+  const [size, setSize] = useState(6);
+  const [totalPages, setTotalPages] = useState(0);
 
-    const { user } = useCurrentUser();
-    const email = user?.email || '';
-    const role = user?.roles?.[0] || '';
-  const fetchVehicles = async () => {
-    setLoading(true);
-    setError("");
+  const [search, setSearch] = useState("");
+  const [brand, setBrand] = useState("");
+  const [seller, setSeller] = useState("");
+  const [filterType, setFilterType] = useState("");
+  
+  const [approving, setApproving] = useState<number | null>(null);
+  const [rejecting, setRejecting] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editVehicle, setEditVehicle] = useState<CommercialVehicle | null>(null);
+  const [detailVehicle, setDetailVehicle] = useState<CommercialVehicle | null>(null);
+  
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
+
+  const { user } = useCurrentUser();
+  const email = user?.email || '';
+  const role = user?.roles?.[0] || '';
+
+  const openRejectModal = (vehicleId: number) => {
+    setSelectedVehicleId(vehicleId);
+    setShowRejectModal(true);
+  };
+
+  const closeRejectModal = () => {
+    setSelectedVehicleId(null);
+    setShowRejectModal(false);
+  };
+
+  const handleRejectWrapper = async (vehicleId: number, reason: string) => {
+    setRejecting(vehicleId);
     try {
-const res = await fetch("https://api.f-carshipping.com/api/vehicles/dashboard", {
-  method: "POST",
-  credentials: "include",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    email,            // FIXED
-    role,             // FIXED
-    page,
-    size: 10,
-    search,
-    type: filterType
-  }),
-});
+      const res = await fetch(`https://api.f-carshipping.com/api/vehicles/reject/${vehicleId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason }),
+      });
+      
+      if (!res.ok) throw new Error("Failed to reject vehicle");
+      
+      const updated = await res.json();
+      setVehicles((prev) =>
+        prev.map((v) => (v.id === vehicleId ? { ...v, status: "REJECTED" } : v))
+      );
+      alert("Vehicle rejected and seller notified!");
+    } catch (err) {
+      console.error(err);
+      alert("Error rejecting vehicle");
+    } finally {
+      setRejecting(null);
+      closeRejectModal();
+    }
+  };
 
-      if (!res.ok) throw new Error(await res.text());
+  const approveVehicle = async (vehicleId: number) => {
+    setApproving(vehicleId);
+    try {
+      const res = await fetch(`https://api.f-carshipping.com/api/vehicles/approve/${vehicleId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error("Failed to approve vehicle");
+      
+      const updated = await res.json();
+      setVehicles((prev) =>
+        prev.map((v) => (v.id === vehicleId ? { ...v, status: "APPROVED" } : v))
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Error approving vehicle");
+    } finally {
+      setApproving(null);
+    }
+  };
+
+  const fetchVehicles = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const params = new URLSearchParams({
+        page: page.toString(),
+        size: size.toString(),
+        ...(search ? { search } : {}),
+        ...(brand ? { brand } : {}),
+        ...(seller ? { seller } : {}),
+        ...(filterType ? { type: filterType } : {}),
+      });
+
+      const res = await fetch(`https://api.f-carshipping.com/api/vehicles/dashboard?${params}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role }),
+      });
+
+      console.log('Vehicles API response status:', res.status);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Vehicles API error:', {
+          status: res.status,
+          error: errorText
+        });
+        throw new Error(`HTTP ${res.status}: ${errorText}`);
+      }
+
       const data = await res.json();
-      setVehicles(data.content || data);
-      setTotalPages(data.totalPages || 1);
+      setVehicles(data.content || []);
+      setTotalPages(data.totalPages || 0);
     } catch (err: any) {
-      setError(err.message || "Failed to fetch vehicles.");
+      console.error('Error fetching vehicles:', err);
+      
+      if (err.message === 'SESSION_EXPIRED') {
+        setError('Your session has expired. Please log in again.');
+      } else if (err.message === 'ACCESS_DENIED') {
+        setError('You do not have permission to access this resource.');
+      } else {
+        setError(err.message || "Failed to load vehicles");
+      }
     } finally {
       setLoading(false);
     }
@@ -64,303 +146,372 @@ const res = await fetch("https://api.f-carshipping.com/api/vehicles/dashboard", 
     if (email && role) {
       fetchVehicles();
     }
-  }, [email, role, page, search, filterType]);
+  }, [email, role, page, size, search, brand, seller, filterType]);
 
-  const handleDelete = async (vehicle: CommercialVehicle) => {
-    if (!confirm("Are you sure you want to delete this vehicle?")) return;
+  const deleteVehicle = async (id: number) => {
+    if (!confirm("Delete this vehicle?")) return;
     try {
-      const res = await fetch(`https://api.f-carshipping.com/api/vehicles/${vehicle.id}`, {
+      await fetch(`https://api.f-carshipping.com/api/vehicles/${id}`, {
         method: "DELETE",
-        credentials: "include",
+        credentials: 'include'
       });
-      if (!res.ok) throw new Error(await res.text());
-      alert("Vehicle deleted successfully!");
       fetchVehicles();
-    } catch (err: any) {
-      alert(err.message || "Failed to delete vehicle.");
+    } catch {
+      alert("Failed to delete vehicle");
     }
   };
 
-  const handleReject = async (reason: string) => {
-    if (!rejectVehicle) return;
-    try {
-      const res = await fetch(
-        `https://api.f-carshipping.com/api/vehicles/reject/${rejectVehicle.id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ reason }),
-        }
-      );
-      if (!res.ok) throw new Error(await res.text());
-      alert("Vehicle rejected successfully!");
-      setRejectVehicle(null);
-      fetchVehicles();
-    } catch (err: any) {
-      alert(err.message || "Failed to reject vehicle.");
-    }
+  const handleSave = () => {
+    setShowForm(false);
+    setEditVehicle(null);
+    fetchVehicles();
   };
 
-  const handleApprove = async (vehicle: CommercialVehicle) => {
-    try {
-      const res = await fetch(
-        `https://api.f-carshipping.com/api/vehicles/approve/${vehicle.id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-        }
-      );
-      if (!res.ok) throw new Error(await res.text());
-      alert("Vehicle approved successfully!");
-      fetchVehicles();
-    } catch (err: any) {
-      alert(err.message || "Failed to approve vehicle.");
-    }
+  const handleCloseModal = () => {
+    setShowForm(false);
+    setEditVehicle(null);
   };
 
   const vehicleTypes = ["Truck", "Bus", "Van", "Trailer", "Camper Van", "Other"];
 
   return (
-    <div className="p-4">
-      {/* Vehicle Form */}
-      {showForm && (
-        <AddCommercialVehicleForm
-          vehicleToEdit={editingVehicle}
-          onCancel={() => {
-            setShowForm(false);
-            setEditingVehicle(null);
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-3xl font-bold">Commercial Vehicle Management</h1>
+        <button
+          onClick={() => setShowForm(true)}
+          className="px-5 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+        >
+          + Add Vehicle
+        </button>
+      </div>
+
+      {/* Filters - Matching Cars Grid */}
+      <div className="flex flex-wrap gap-3 bg-gray-50 p-4 rounded-xl border shadow-sm">
+        <input
+          type="text"
+          placeholder="Global search..."
+          value={search}
+          onChange={(e) => {
+            setPage(0);
+            setSearch(e.target.value);
           }}
-          onSuccess={() => {
-            setShowForm(false);
-            setEditingVehicle(null);
-            fetchVehicles();
-          }}
+          className="border p-2 rounded w-full sm:w-64"
         />
-      )}
+        
+        <input
+          type="text"
+          placeholder="Filter by brand"
+          value={brand}
+          onChange={(e) => {
+            setPage(0);
+            setBrand(e.target.value);
+          }}
+          className="border p-2 rounded w-full sm:w-48"
+        />
+        
+        <input
+          type="text"
+          placeholder="Filter by seller"
+          value={seller}
+          onChange={(e) => {
+            setPage(0);
+            setSeller(e.target.value);
+          }}
+          className="border p-2 rounded w-full sm:w-48"
+        />
+        
+        <select
+          value={filterType}
+          onChange={(e) => {
+            setPage(0);
+            setFilterType(e.target.value);
+          }}
+          className="border p-2 rounded w-full sm:w-48"
+        >
+          <option value="">All Types</option>
+          {vehicleTypes.map((type) => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
+        
+        <select
+          value={size}
+          onChange={(e) => {
+            setPage(0);
+            setSize(Number(e.target.value));
+          }}
+          className="border p-2 rounded"
+        >
+          {[6, 12, 24].map((s) => (
+            <option key={s} value={s}>
+              {s} per page
+            </option>
+          ))}
+        </select>
+      </div>
 
-      {!showForm && (
-        <>
-          {/* Search + Filter + Add */}
-          <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
-            <input
-              type="text"
-              placeholder="Search by brand, model..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="p-2 border rounded w-full md:w-1/3"
-            />
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="p-2 border rounded w-full md:w-1/4"
+      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p>Loading vehicles…</p>}
+
+      {/* Cards Grid - Matching Cars Grid */}
+      {!loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {vehicles.map((vehicle) => (
+            <div
+              key={vehicle.id}
+              className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
             >
-              <option value="">Filter by Type</option>
-              {vehicleTypes.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={() => setShowForm(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
-            >
-              + Add Vehicle
-            </button>
-          </div>
+              <img
+                src={vehicle.imageUrls?.[0] || "/placeholder-car.jpg"}
+                alt={`${vehicle.brand} ${vehicle.model}`}
+                className="h-48 w-full object-cover"
+              />
+              
+              <div className="p-4 flex-1 flex flex-col">
+                <h2 className="text-xl font-semibold">
+                  {vehicle.brand} {vehicle.model}
+                </h2>
+                <p className="text-gray-500 text-sm">
+                  {vehicle.type || "Type N/A"} • {vehicle.yearOfManufacture || "Year N/A"}
+                </p>
+                <p className="text-gray-500 text-sm">
+                  {vehicle.location || "Location N/A"}
+                </p>
+                <p className="text-lg font-bold text-green-600 mt-2">
+                  KES {vehicle.priceKes?.toLocaleString() ?? "-"}
+                </p>
 
-          {/* Vehicle Cards */}
-          {loading ? (
-            <div>Loading...</div>
-          ) : error ? (
-            <div className="text-red-500">{error}</div>
-          ) : vehicles.length === 0 ? (
-            <div>No vehicles found.</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {vehicles.map((v) => (
-                <div
-                  key={v.id}
-                  className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col"
-                >
-                  {/* Vehicle Image */}
-                  {v.imageUrls && v.imageUrls.length > 0 ? (
-                    <img
-                      src={v.imageUrls[0]}
-                      alt={`${v.brand} ${v.model}`}
-                      className="h-48 w-full object-cover"
-                    />
-                  ) : (
-                    <div className="h-48 flex items-center justify-center bg-gray-200 text-gray-500">
-                      No Image
-                    </div>
-                  )}
-
-                  {/* Vehicle Info */}
-                  <div className="p-4 flex-1 flex flex-col">
-                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <Truck className="w-5 h-5 text-blue-600" />
-                      {v.brand} {v.model}
-                    </h3>
-                    <p className="text-gray-600">Type: {v.type}</p>
-                    <p className="text-gray-800 font-bold">KES {v.priceKes}</p>
-                    <p className="text-gray-500 flex items-center gap-1">
-                      <MapPin className="w-4 h-4" /> {v.location}
-                    </p>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 mt-4 flex-wrap">
-                      {/* Edit & Delete for Owner */}
-                      {role === "SELLER" || role === "ADMIN" && (
-                        <>
-                          <button
-                            onClick={() => {
-                              setEditingVehicle(v);
-                              setShowForm(true);
-                            }}
-                            className="flex items-center gap-1 px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500"
-                          >
-                            <Edit className="w-4 h-4" /> Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(v)}
-                            className="flex items-center gap-1 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" /> Delete
-                          </button>
-                        </>
-                      )}
-
-                      {/* Admin Approve/Reject */}
-                      {role === "ADMIN" && (
-                        <>
-                          {v.status === "PENDING" && (
-                            <>
-                              <button
-                                onClick={() => handleApprove(v)}
-                                className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                              >
-                                <Check className="w-4 h-4" /> Approve
-                              </button>
-                              <button
-                                onClick={() => setRejectVehicle(v)}
-                                className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                              >
-                                <X className="w-4 h-4" /> Reject
-                              </button>
-                            </>
-                          )}
-                        </>
-                      )}
-
-                      {/* Show status for all users */}
-                      {v.status && role !== "ADMIN" && (
-                        <span
-                          className={`px-2 py-1 rounded text-white ${
-                            v.status === "APPROVED"
-                              ? "bg-green-600"
-                              : v.status === "REJECTED"
-                              ? "bg-red-600"
-                              : "bg-gray-500"
-                          }`}
-                        >
-                          {v.status}
-                        </span>
-                      )}
+                {/* Vehicle Status Section */}
+                <div className="mt-3 flex gap-2">
+                  {role === "ADMIN" && vehicle.status !== "APPROVED" && vehicle.status !== "REJECTED" ? (
+                    <>
+                      <button
+                        onClick={() => approveVehicle(vehicle.id)}
+                        className={`px-3 py-1 rounded-lg text-white transition ${
+                          approving === vehicle.id ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+                        }`}
+                        disabled={approving === vehicle.id}
+                      >
+                        {approving === vehicle.id ? "Approving..." : "Approve"}
+                      </button>
 
                       <button
-                        onClick={() => setSelectedVehicle(v)}
-                        className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        onClick={() => openRejectModal(vehicle.id)}
+                        className={`px-3 py-1 rounded-lg text-white transition ${
+                          rejecting === vehicle.id ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
+                        }`}
+                        disabled={rejecting === vehicle.id}
                       >
-                        <Info className="w-4 h-4" /> Details
+                        {rejecting === vehicle.id ? "Rejecting..." : "Reject"}
                       </button>
-                    </div>
-                  </div>
+                    </>
+                  ) : (
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        vehicle.status === "APPROVED"
+                          ? "bg-green-100 text-green-700"
+                          : vehicle.status === "REJECTED"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {vehicle.status || "PENDING"}
+                    </span>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
 
-          {/* Pagination */}
-          <div className="flex justify-between items-center mt-6">
-            <button
-              onClick={() => setPage((p) => Math.max(p - 1, 0))}
-              disabled={page === 0}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Prev
-            </button>
-            <span>
-              Page {page + 1} of {totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
-              disabled={page === totalPages - 1}
-              className="px-3 py-1 border rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </>
+                {/* Actions (Edit/Delete/Details) */}
+                <div className="mt-auto flex gap-2 pt-4">
+                  <button
+                    onClick={() => {
+                      setEditVehicle(vehicle);
+                      setShowForm(true);
+                    }}
+                    className="flex-1 bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteVehicle(vehicle.id)}
+                    className="flex-1 bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => setDetailVehicle(vehicle)}
+                    className="flex-1 bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {vehicles.length === 0 && (
+            <p className="col-span-full text-center text-gray-500">
+              No vehicles found.
+            </p>
+          )}
+        </div>
       )}
 
-      {/* Vehicle Details Drawer */}
-      {selectedVehicle && (
-        <div className="fixed inset-0 bg-black/40 flex justify-end z-50">
-          <div className="w-full sm:w-2/3 lg:w-1/3 bg-white h-full shadow-xl flex flex-col">
-            <div className="flex justify-between items-center p-4 border-b">
+      {/* Pagination - Matching Cars Grid */}
+      <div className="flex justify-center items-center gap-4">
+        <button
+          onClick={() => setPage((p) => Math.max(0, p - 1))}
+          disabled={page === 0}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+        <span>
+          Page {page + 1} of {totalPages}
+        </span>
+        <button
+          onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          disabled={page >= totalPages - 1}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+
+      {/* Add/Edit Modal - Matching Cars Grid */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b">
               <h2 className="text-xl font-semibold">
-                {selectedVehicle.brand} {selectedVehicle.model}
+                {editVehicle ? "Edit Vehicle" : "Add New Vehicle"}
               </h2>
               <button
-                onClick={() => setSelectedVehicle(null)}
-                className="p-2 hover:bg-gray-200 rounded-full"
+                onClick={handleCloseModal}
+                className="p-2 hover:bg-gray-100 rounded-full"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
             </div>
-
-            {selectedVehicle.imageUrls && selectedVehicle.imageUrls.length > 0 && (
-              <img
-                src={selectedVehicle.imageUrls[0]}
-                alt="Vehicle"
-                className="h-64 w-full object-cover"
+            <div className="flex-1 overflow-y-auto">
+              <AddCommercialVehicleForm
+                onSuccess={handleSave}
+                vehicleToEdit={editVehicle ?? undefined}
+                onCancel={handleCloseModal}
               />
-            )}
-
-            <div className="p-4 space-y-2 overflow-y-auto">
-              <p>
-                <strong>Brand:</strong> {selectedVehicle.brand}
-              </p>
-              <p>
-                <strong>Model:</strong> {selectedVehicle.model}
-              </p>
-              <p>
-                <strong>Type:</strong> {selectedVehicle.type}
-              </p>
-              <p>
-                <strong>Price:</strong> KES {selectedVehicle.priceKes}
-              </p>
-              <p>
-                <strong>Location:</strong> {selectedVehicle.location}
-              </p>
-              <p>
-                <strong>Description:</strong> {selectedVehicle.description || "N/A"}
-              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Reject Modal */}
-      {rejectVehicle && (
-        <Reject_Modal
-          vehicle={rejectVehicle}
-          onClose={() => setRejectVehicle(null)}
-          onSubmit={handleReject}
-        />
+      {/* Details Drawer - Matching Cars Grid */}
+      {detailVehicle && (
+        <div className="fixed inset-0 flex justify-end z-50 pointer-events-none">
+          <div className="bg-white w-full sm:w-96 h-full p-6 shadow-xl overflow-y-auto pointer-events-auto">
+            <button
+              onClick={() => setDetailVehicle(null)}
+              className="mb-4 p-2 hover:bg-gray-100 rounded"
+            >
+              Close
+            </button>
+
+            <img
+              src={detailVehicle.imageUrls?.[0] || "/placeholder-car.jpg"}
+              alt={`${detailVehicle.brand} ${detailVehicle.model}`}
+              className="w-full h-48 object-cover rounded-lg mb-4"
+            />
+
+            <h3 className="text-2xl font-bold mb-2">
+              {detailVehicle.brand} {detailVehicle.model}
+            </h3>
+            <p className="text-gray-600 mb-1">
+              Year: {detailVehicle.yearOfManufacture || "N/A"}
+            </p>
+            <p className="text-gray-600 mb-1">
+              Seller: {detailVehicle.seller || "N/A"}
+            </p>
+            <p className="text-gray-600 mb-1">
+              Type: {detailVehicle.type || "N/A"}
+            </p>
+            <p className="text-gray-800 font-semibold mt-2">
+              Price: KES {detailVehicle.priceKes?.toLocaleString() ?? "-"}
+            </p>
+
+            <p className="mt-4 text-gray-500">
+              {detailVehicle.description || "No description provided."}
+            </p>
+
+            {/* Commercial-specific details */}
+            <div className="mt-4 text-gray-600 space-y-1">
+              <p>Condition: {detailVehicle.conditionType || "N/A"}</p>
+              <p>Body Type: {detailVehicle.bodyType || "N/A"}</p>
+              <p>Color: {detailVehicle.color || "N/A"}</p>
+              <p>Engine: {detailVehicle.engineType || "N/A"} {detailVehicle.engineCapacityCc || ""} CC</p>
+              <p>Fuel Type: {detailVehicle.fuelType || "N/A"}</p>
+              <p>Transmission: {detailVehicle.transmission || "N/A"}</p>
+              <p>Seats: {detailVehicle.seats || "N/A"}</p>
+              <p>Doors: {detailVehicle.doors || "N/A"}</p>
+              <p>Mileage: {detailVehicle.mileageKm || "N/A"} km</p>
+              <p>Payload Capacity: {detailVehicle.payloadCapacityKg || "N/A"} kg</p>
+              <p>Cargo Volume: {detailVehicle.cargoVolumeM3 || "N/A"} m³</p>
+              <p>Sleeper Capacity: {detailVehicle.sleeperCapacity || "N/A"}</p>
+              <p>Camper Features: {detailVehicle.camperFeatures || "N/A"}</p>
+              <p>Location: {detailVehicle.location || "N/A"}</p>
+              <p>Owner Type: {detailVehicle.ownerType || "N/A"}</p>
+            </div>
+
+            {/* Features */}
+            {detailVehicle.features && (
+              <div className="mt-4">
+                <h4 className="font-semibold mb-1">Features:</h4>
+                <ul className="list-disc list-inside text-gray-700">
+                  {detailVehicle.features.split(",").map((feature, idx) => (
+                    <li key={idx}>{feature.trim()}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Custom Specifications */}
+            {detailVehicle.customSpecs && (
+              <div className="mt-4">
+                <h4 className="font-semibold mb-1">Specifications:</h4>
+                <ul className="list-disc list-inside text-gray-700">
+                  {(() => {
+                    try {
+                      const specs = JSON.parse(detailVehicle.customSpecs) as
+                        | { key: string; value: string }[]
+                        | Record<string, any>;
+
+                      if (Array.isArray(specs)) {
+                        return specs.map((spec, idx) => (
+                          <li key={idx}>{spec.key}: {spec.value}</li>
+                        ));
+                      } else if (specs && typeof specs === "object") {
+                        return Object.entries(specs).map(([key, value], idx) => (
+                          <li key={idx}>{key}: {String(value)}</li>
+                        ));
+                      }
+                    } catch {
+                      return <li>{detailVehicle.customSpecs}</li>;
+                    }
+                    return null;
+                  })()}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
       )}
+
+      {/* Reject Modal */}
+      <Reject_Modal
+        vehicleId={selectedVehicleId}
+        show={showRejectModal}
+        onClose={closeRejectModal}
+        onReject={handleRejectWrapper}
+      />
     </div>
   );
 }
