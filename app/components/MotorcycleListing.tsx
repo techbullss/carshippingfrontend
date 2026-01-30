@@ -1,24 +1,11 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { 
-  Search, 
-  Filter, 
-  X, 
-  ChevronLeft, 
-  ChevronRight, 
-  Sparkles, 
-  TrendingUp,
-  Shield,
-  Zap,
-  Calendar,
-  MapPin,
-  Fuel,
-  Eye
-} from "lucide-react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { motion } from "framer-motion";
+import { ChevronRight, Filter, Heart, Zap, MapPin, Calendar, Fuel } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-interface Motorcycle {
+type Motorcycle = {
   id: string;
   brand: string;
   model: string;
@@ -33,167 +20,168 @@ interface Motorcycle {
   createdAt: string;
   year: number;
   features?: string[];
-}
+};
 
-const MotorcycleListing = () => {
-  const router = useRouter();
+export default function MotorcycleListing() {
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
-  const [filters, setFilters] = useState({
-    brand: "",
-    type: "",
-    priceRange: "",
-    year: "",
-  });
-  const [loading, setLoading] = useState(false);
+  const [brands, setBrands] = useState<string[]>([]);
+  const [types, setTypes] = useState<string[]>([]);
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
-  const [error, setError] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [sortBy, setSortBy] = useState("newest");
+  const [filtersApplied, setFiltersApplied] = useState(false);
 
-  const motorcycleTypes = [
-    { value: "", label: "All Types", icon: "⚡" },
-    { value: "Adventure", label: "Adventure", icon: "🏔️" },
-    { value: "Sport", label: "Sport", icon: "🏍️" },
-    { value: "Cruiser", label: "Cruiser", icon: "🛥️" },
-    { value: "Naked", label: "Naked", icon: "💪" },
-    { value: "Classic", label: "Classic", icon: "👑" },
-    { value: "Scooter", label: "Scooter", icon: "🛵" },
-    { value: "Touring", label: "Touring", icon: "🧳" },
-    { value: "Off-Road", label: "Off-Road", icon: "🏜️" },
-  ];
+  const observer = useRef<IntersectionObserver | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   
-  const motorcycleBrands = [
-    { value: "", label: "All Brands", icon: "🏁" },
-    { value: "Triumph", label: "Triumph", icon: "🇬🇧" },
-    { value: "BMW", label: "BMW", icon: "🇩🇪" },
-    { value: "Royal Enfield", label: "Royal Enfield", icon: "🇮🇳" },
-    { value: "Ducati", label: "Ducati", icon: "🇮🇹" },
-    { value: "Kawasaki", label: "Kawasaki", icon: "🇯🇵" },
-    { value: "Yamaha", label: "Yamaha", icon: "🇯🇵" },
-    { value: "Honda", label: "Honda", icon: "🇯🇵" },
-    { value: "Suzuki", label: "Suzuki", icon: "🇯🇵" },
-    { value: "KTM", label: "KTM", icon: "🇦🇹" },
-    { value: "Bajaj", label: "Bajaj", icon: "🇮🇳" },
-    { value: "TVS", label: "TVS", icon: "🇮🇳" },
-    { value: "Hero", label: "Hero", icon: "🇮🇳" },
-  ];
+  const filters = useMemo(
+    () => Object.fromEntries(searchParams.entries()),
+    [searchParams]
+  );
 
-  const priceRanges = [
-    { value: "", label: "All Prices", description: "Any price" },
-    { value: "0-300000", label: "KES 0-300K", description: "Budget friendly" },
-    { value: "300000-600000", label: "KES 300K-600K", description: "Mid-range" },
-    { value: "600000-1000000", label: "KES 600K-1M", description: "Premium" },
-    { value: "1000000-9999999", label: "KES 1M+", description: "Luxury" },
-  ];
+  // Reset everything when filters change
+  useEffect(() => {
+    setMotorcycles([]);
+    setPage(0);
+    setHasMore(true);
+    setFiltersApplied(true);
+  }, [filters]);
 
-  const sortOptions = [
-    { value: "newest", label: "Newest First", icon: "🆕" },
-    { value: "price-low", label: "Price: Low to High", icon: "⬆️" },
-    { value: "price-high", label: "Price: High to Low", icon: "⬇️" },
-    { value: "year-new", label: "Year: Newest", icon: "📅" },
-    { value: "year-old", label: "Year: Oldest", icon: "📜" },
-  ];
+  function updateQuery(key: string, value: string | number) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "" || value === null || value === undefined) {
+      params.delete(key);
+    } else {
+      params.set(key, String(value));
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }
 
-  const fetchMotorcycles = useCallback(async () => {
-    try {
+  // Clear all filters
+  const clearAllFilters = () => {
+    const params = new URLSearchParams();
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  // Generate year options (last 25 years)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 25 }, (_, i) => currentYear - i);
+
+  // Fetch Motorcycles
+  useEffect(() => {
+    let cancelled = false;
+    
+    const fetchMotorcycles = async () => {
+      if (loading || (!hasMore && page > 0)) return;
+
       setLoading(true);
-      setError("");
-      const params = new URLSearchParams();
+      setError(false);
 
-      // Add filters
-      if (filters.brand) params.append("brand", filters.brand);
-      if (filters.type) params.append("type", filters.type);
-      if (filters.priceRange) params.append("priceRange", filters.priceRange);
-      if (filters.year) params.append("year", filters.year);
-      if (searchQuery) params.append("search", searchQuery);
+      try {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("size", "12");
 
-      // Add sorting
-      if (sortBy === "newest") {
-        params.append("sort", "createdAt,desc");
-      } else if (sortBy === "price-low") {
-        params.append("sort", "price,asc");
-      } else if (sortBy === "price-high") {
-        params.append("sort", "price,desc");
-      } else if (sortBy === "year-new") {
-        params.append("sort", "year,desc");
-      } else if (sortBy === "year-old") {
-        params.append("sort", "year,asc");
+        // Add sorting
+        if (filters.sort === "price-low") {
+          params.append("sort", "price,asc");
+        } else if (filters.sort === "price-high") {
+          params.append("sort", "price,desc");
+        } else if (filters.sort === "year-new") {
+          params.append("sort", "year,desc");
+        } else if (filters.sort === "year-old") {
+          params.append("sort", "year,asc");
+        } else {
+          params.append("sort", "createdAt,desc"); // default
+        }
+
+        // Add filters
+        if (filters.brand) params.append("brand", filters.brand);
+        if (filters.type) params.append("type", filters.type);
+        if (filters.location) params.append("location", filters.location);
+        if (filters.year) params.append("year", filters.year);
+        if (filters.search) params.append("search", filters.search);
+
+        // Price range filter
+        if (filters.minPrice) params.append("minPrice", filters.minPrice);
+        if (filters.maxPrice) params.append("maxPrice", filters.maxPrice);
+
+        // Engine capacity range
+        if (filters.minEngine) params.append("minEngineCapacity", filters.minEngine);
+        if (filters.maxEngine) params.append("maxEngineCapacity", filters.maxEngine);
+
+        console.log("Fetching with params:", params.toString());
+
+        const res = await fetch(`https://api.f-carshipping.com/api/motorcycles/public?${params.toString()}`, {
+          credentials: "include",
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!res.ok) throw new Error("Network error");
+
+        const data = await res.json();
+        if (cancelled) return;
+
+        const newMotorcycles = data.content ?? [];
+
+        if (page === 0) {
+          setMotorcycles(newMotorcycles);
+
+          // Extract unique filter values
+          const extractUnique = (arr: (string | undefined | null)[]) =>
+            Array.from(new Set(arr.filter((v): v is string => Boolean(v))));
+
+          setBrands(extractUnique(newMotorcycles.map((v: { brand: any; }) => v.brand)));
+          setTypes(extractUnique(newMotorcycles.map((v: { type: any; }) => v.type)));
+        } else {
+          setMotorcycles((prev) => [...prev, ...newMotorcycles]);
+        }
+
+        setHasMore(page < data.totalPages - 1);
+        setFiltersApplied(false);
+      } catch (e) {
+        console.error("Fetch error:", e);
+        if (!cancelled) setError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
+    };
 
-      params.append("page", page.toString());
-      params.append("size", "12");
+    fetchMotorcycles();
+    return () => {
+      cancelled = true;
+    };
+  }, [page, filters]);
 
-      const endpoint = "/api/motorcycles/public";
-      const url = `https://api.f-carshipping.com${endpoint}?${params.toString()}`;
+  const lastMotorcycleRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (loading || !hasMore || motorcycles.length === 0) return;
+      if (observer.current) observer.current.disconnect();
 
-      const res = await fetch(url, {
-        method: "GET",
-        credentials: "include",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          setPage((prev) => prev + 1);
+        }
       });
 
-      if (!res.ok) {
-        throw new Error(`Failed to load: ${res.statusText}`);
-      }
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, motorcycles.length]
+  );
 
-      const data = await res.json();
+  function handleMotorcycleClick(id: string): void {
+    router.push(`/MotorcycleDetails/${id}`);
+  }
 
-      if (data.content !== undefined) {
-        setMotorcycles(Array.isArray(data.content) ? data.content : []);
-        setTotalPages(data.totalPages || 0);
-        setTotalElements(data.totalElements || 0);
-      } else if (Array.isArray(data)) {
-        setMotorcycles(data);
-        setTotalPages(1);
-        setTotalElements(data.length);
-      } else {
-        setMotorcycles([]);
-        setTotalPages(0);
-        setTotalElements(0);
-      }
+  // Check if any filters are active
+  const hasActiveFilters = Object.keys(filters).length > 0;
 
-    } catch (err: any) {
-      console.error("Error:", err);
-      setError(err.message || "Unable to load motorcycles");
-      setMotorcycles([]);
-      setTotalPages(0);
-      setTotalElements(0);
-    } finally {
-      setLoading(false);
-    }
-  }, [filters, page, searchQuery, sortBy]);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchMotorcycles();
-    }, 300); // Debounce search
-
-    return () => clearTimeout(timeoutId);
-  }, [fetchMotorcycles]);
-
-  const handleFilterChange = (key: string, value: string) => {
-    setPage(0);
-    setFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const clearFilters = () => {
-    setPage(0);
-    setFilters({
-      brand: "",
-      type: "",
-      priceRange: "",
-      year: "",
-    });
-    setSearchQuery("");
-    setSortBy("newest");
-  };
-
+  // Format price
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
@@ -202,522 +190,373 @@ const MotorcycleListing = () => {
     }).format(price);
   };
 
+  // Get status badge color
   const getStatusBadge = (status: string) => {
-    const styles = {
-      APPROVED: "bg-emerald-100 text-emerald-800 border-emerald-200",
-      PENDING: "bg-amber-100 text-amber-800 border-amber-200",
-      REJECTED: "bg-rose-100 text-rose-800 border-rose-200",
-    };
-    return styles[status as keyof typeof styles] || "bg-gray-100 text-gray-800 border-gray-200";
+    if (status === 'APPROVED') return 'bg-emerald-500 text-white';
+    if (status === 'PENDING') return 'bg-amber-500 text-white';
+    return 'bg-gray-500 text-white';
   };
 
-  const activeFiltersCount = Object.values(filters).filter(Boolean).length + (searchQuery ? 1 : 0);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-4">
-              <Sparkles className="w-8 h-8" />
-              <span className="px-3 py-1 bg-white/20 rounded-full text-sm font-medium">
-                Premium Marketplace
-              </span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Discover Your Perfect Ride
-            </h1>
-            <p className="text-xl text-white/90 mb-8">
-              Explore our curated collection of premium motorcycles. 
-              Find adventure, performance, and style in every listing.
-            </p>
+    <div className="bg-gray-50 min-h-screen">
+      {/* ======= FILTER BAR ======= */}
+      <div className="sticky top-0 bg-white z-50 shadow-md">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3">
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <button
+              onClick={clearAllFilters}
+              className="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-full hover:bg-red-50 transition whitespace-nowrap"
+            >
+              Clear All
+            </button>
+          )}
+
+          {/* Brand Filter Buttons */}
+          <div className="flex overflow-x-auto gap-2 p-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 flex-1">
+            <button
+              onClick={() => updateQuery("brand", "")}
+              className={`px-4 py-2 text-sm font-medium rounded-full border whitespace-nowrap transition 
+                ${!filters.brand
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                }`}
+            >
+              All Brands
+            </button>
+
+            {brands.map((brand) => (
+              <button
+                key={brand}
+                onClick={() => updateQuery("brand", brand)}
+                className={`px-4 py-2 text-sm font-medium rounded-full border whitespace-nowrap transition 
+                  ${filters.brand === brand
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                  }`}
+              >
+                {brand}
+              </button>
+            ))}
           </div>
+
+          {/* More Filters Button */}
+          <button
+            onClick={() => setShowFilters(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-green-700 text-white text-sm rounded-lg hover:bg-green-800 whitespace-nowrap"
+          >
+            <Filter className="w-4 h-4" />
+            More Filters
+          </button>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 max-w-7xl -mt-8 relative z-10">
-        {/* Search Bar */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-200">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search motorcycles by brand, model, or features..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+      {/* ======= ADVANCED FILTERS MODAL ======= */}
+      {showFilters && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[9999] p-4">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <h2 className="text-xl font-bold mb-4">Advanced Filters</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select
+                    value={filters.type ?? ""}
+                    onChange={(e) => updateQuery("type", e.target.value)}
+                    className="w-full border p-2 rounded-md text-sm"
                   >
-                    <X className="w-5 h-5" />
+                    <option value="">All Types</option>
+                    {types.map((type) => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Year */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                  <select
+                    value={filters.year ?? ""}
+                    onChange={(e) => updateQuery("year", e.target.value)}
+                    className="w-full border p-2 rounded-md text-sm"
+                  >
+                    <option value="">Any Year</option>
+                    {yearOptions.map((year) => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Price Range */}
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Price Range (KES)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      placeholder="Min Price"
+                      value={filters.minPrice ?? ""}
+                      onChange={(e) => updateQuery("minPrice", e.target.value)}
+                      className="border p-2 rounded-md text-sm w-1/2"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max Price"
+                      value={filters.maxPrice ?? ""}
+                      onChange={(e) => updateQuery("maxPrice", e.target.value)}
+                      className="border p-2 rounded-md text-sm w-1/2"
+                    />
+                  </div>
+                </div>
+
+                {/* Engine Capacity Range */}
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Engine Capacity (cc)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      placeholder="Min Engine"
+                      value={filters.minEngine ?? ""}
+                      onChange={(e) => updateQuery("minEngine", e.target.value)}
+                      className="border p-2 rounded-md text-sm w-1/2"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max Engine"
+                      value={filters.maxEngine ?? ""}
+                      onChange={(e) => updateQuery("maxEngine", e.target.value)}
+                      className="border p-2 rounded-md text-sm w-1/2"
+                    />
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <input
+                    type="text"
+                    placeholder="Enter location"
+                    value={filters.location ?? ""}
+                    onChange={(e) => updateQuery("location", e.target.value)}
+                    className="w-full border p-2 rounded-md text-sm"
+                  />
+                </div>
+
+                {/* Sorting */}
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
+                  <select
+                    value={filters.sort ?? ""}
+                    onChange={(e) => updateQuery("sort", e.target.value)}
+                    className="w-full border p-2 rounded-md text-sm"
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="year-new">Year: Newest</option>
+                    <option value="year-old">Year: Oldest</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center mt-6">
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearAllFilters}
+                    className="px-4 py-2 text-red-600 border border-red-300 rounded-lg text-sm hover:bg-red-50"
+                  >
+                    Clear All Filters
                   </button>
                 )}
+                
+                <div className="flex gap-3 ml-auto">
+                  <button
+                    onClick={() => setShowFilters(false)}
+                    className="px-4 py-2 bg-gray-300 rounded-lg text-sm hover:bg-gray-400"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => setShowFilters(false)}
+                    className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm hover:bg-green-800"
+                  >
+                    Apply Filters
+                  </button>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-colors"
-              >
-                <Filter className="w-5 h-5" />
-                <span>Filters</span>
-                {activeFiltersCount > 0 && (
-                  <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
-                    {activeFiltersCount}
-                  </span>
-                )}
-              </button>
-              
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.icon} {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="flex items-center gap-6 mt-6 pt-6 border-t border-gray-100">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-green-600" />
-              <span className="text-sm text-gray-600">
-                <span className="font-semibold">{totalElements}</span> Total Listings
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-blue-600" />
-              <span className="text-sm text-gray-600">
-                <span className="font-semibold">{motorcycles.filter(m => m.status === 'APPROVED').length}</span> Verified
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Zap className="w-5 h-5 text-amber-600" />
-              <span className="text-sm text-gray-600">
-                <span className="font-semibold">{motorcycles.filter(m => m.year >= new Date().getFullYear() - 2).length}</span> New Models
-              </span>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Filters Panel */}
-        {showFilters && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-200 animate-slideDown">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Refine Your Search</h2>
-              <div className="flex items-center gap-3">
+      {/* Loading state when filters are being applied */}
+      {filtersApplied && loading && (
+        <div className="p-4 text-center text-blue-600">
+          Applying filters...
+        </div>
+      )}
+
+      {/* Active Filters Display */}
+      {hasActiveFilters && (
+        <div className="px-4 py-2 bg-blue-50 border-b">
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm text-gray-600">Active filters:</span>
+            {Object.entries(filters).map(([key, value]) => (
+              <span
+                key={key}
+                className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+              >
+                {key}: {value}
                 <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                  onClick={() => updateQuery(key, "")}
+                  className="ml-1 text-blue-600 hover:text-blue-800"
                 >
-                  Clear All
+                  ×
                 </button>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ======= CONTENT ======= */}
+      {error ? (
+        <div className="p-8 text-center text-red-500">
+          ⚠️ Failed to load motorcycles. Please try again later.
+        </div>
+      ) : !loading && motorcycles.length === 0 ? (
+        <div className="p-8 text-center text-gray-500">
+          No motorcycles available for the selected filters.
+          {hasActiveFilters && (
+            <button
+              onClick={clearAllFilters}
+              className="block mx-auto mt-2 px-4 py-2 text-blue-600 hover:text-blue-800"
+            >
+              Clear filters to see all motorcycles
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 p-4 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {motorcycles.map((motorcycle, index) => (
+            <motion.div
+              key={motorcycle.id}
+              ref={index === motorcycles.length - 1 ? lastMotorcycleRef : null}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: false }}
+              variants={{
+                hidden: { opacity: 0, y: 50 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ scale: 1.02 }}
+              onClick={() => handleMotorcycleClick(motorcycle.id)}
+              className="bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+            >
+              <div className="relative">
+                <img
+                  src={motorcycle.imageUrls?.[0] || "/motorcycle-placeholder.jpg"}
+                  alt={`${motorcycle.brand} ${motorcycle.model}`}
+                  className="w-full h-64 object-cover"
+                />
+                <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full backdrop-blur-sm hover:bg-red-100 transition-colors">
+                  <Heart className="text-red-500 w-5 h-5" />
                 </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Brand
-                </label>
-                <select
-                  value={filters.brand}
-                  onChange={(e) => handleFilterChange("brand", e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                >
-                  {motorcycleBrands.map((brand) => (
-                    <option key={brand.value} value={brand.value}>
-                      {brand.icon} {brand.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Type
-                </label>
-                <select
-                  value={filters.type}
-                  onChange={(e) => handleFilterChange("type", e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                >
-                  {motorcycleTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.icon} {type.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Price Range
-                </label>
-                <select
-                  value={filters.priceRange}
-                  onChange={(e) => handleFilterChange("priceRange", e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                >
-                  {priceRanges.map((range) => (
-                    <option key={range.value} value={range.value}>
-                      {range.label}
-                    </option>
-                  ))}
-                </select>
-                {filters.priceRange && (
-                  <p className="mt-2 text-xs text-gray-500">
-                    {priceRanges.find(r => r.value === filters.priceRange)?.description}
-                  </p>
+                {motorcycle.status && (
+                  <span className={`absolute top-4 left-4 text-xs font-bold px-3 py-1 rounded-full ${getStatusBadge(motorcycle.status)}`}>
+                    {motorcycle.status}
+                  </span>
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-3">
-                  Year
-                </label>
-                <select
-                  value={filters.year}
-                  onChange={(e) => handleFilterChange("year", e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                >
-                  <option value="">All Years</option>
-                  {Array.from({ length: 25 }, (_, i) => new Date().getFullYear() - i).map(
-                    (year) => (
-                      <option key={year} value={year.toString()}>
-                        {year}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {loading ? (
-          <div className="py-20">
-            <div className="flex flex-col items-center justify-center">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-blue-200 rounded-full"></div>
-                <div className="absolute top-0 left-0 w-16 h-16 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
-              </div>
-              <p className="mt-4 text-gray-600 font-medium">Loading premium motorcycles...</p>
-            </div>
-          </div>
-        ) : error ? (
-          <div className="py-20 text-center">
-            <div className="w-20 h-20 mx-auto mb-4 text-rose-100">
-              <svg fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Connection Error</h3>
-            <p className="text-gray-600 max-w-md mx-auto mb-6">{error}</p>
-            <button
-              onClick={fetchMotorcycles}
-              className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : motorcycles.length > 0 ? (
-          <>
-            {/* Results Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Featured Motorcycles
-                </h2>
-                <p className="text-gray-600 mt-1">
-                  Showing <span className="font-semibold">{motorcycles.length}</span> of{" "}
-                  <span className="font-semibold">{totalElements}</span> results
-                </p>
-              </div>
-              <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                <span className="text-sm text-gray-500">
-                  Page {page + 1} of {totalPages}
-                </span>
-              </div>
-            </div>
-
-            {/* Motorcycle Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {motorcycles.map((bike) => (
-                <div
-                  key={bike.id}
-                  onClick={() => router.push(`/MotorcycleDetails/${bike.id}`)}
-                  className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-200 hover:border-blue-300 cursor-pointer transform hover:-translate-y-1"
-                >
-                  {/* Image Container */}
-                  <div className="relative h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-                    {bike.imageUrls && bike.imageUrls.length > 0 ? (
-                      <>
-                        <img
-                          src={bike.imageUrls[0]}
-                          alt={`${bike.brand} ${bike.model}`}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-                      </>
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="w-12 h-12 mx-auto mb-3 text-gray-300">
-                            <svg fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <span className="text-sm text-gray-400">Image Coming Soon</span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Status Badge */}
-                    <div className="absolute top-4 right-4">
-                      <span className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${getStatusBadge(bike.status)}`}>
-                        {bike.status}
-                      </span>
-                    </div>
-                    
-                    {/* Quick View Overlay */}
-                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="flex items-center justify-center gap-2 px-4 py-2 bg-black/80 backdrop-blur-sm rounded-xl text-white text-sm">
-                        <Eye className="w-4 h-4" />
-                        <span>View Details</span>
-                      </div>
-                    </div>
+              <div className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {motorcycle.brand} {motorcycle.model}
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      {motorcycle.year} • {motorcycle.engineCapacity} cc
+                    </p>
                   </div>
+                  <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full text-sm whitespace-nowrap">
+                    {formatPrice(motorcycle.price)}
+                  </span>
+                </div>
 
-                  {/* Content */}
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-                            {bike.type}
-                          </span>
-                          <span className={`text-xs font-semibold px-2 py-1 ${getStatusBadge(bike.status)} rounded-full`}>
-                            {bike.status}
-                          </span>
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors">
-                          {bike.brand} {bike.model}
-                        </h3>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-emerald-700">
-                          {formatPrice(bike.price)}
-                        </div>
-                        <div className="text-xs text-gray-500">Negotiable</div>
-                      </div>
-                    </div>
-                    
-                    {/* Specs */}
-                    <div className="grid grid-cols-2 gap-4 mb-5">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Fuel className="w-4 h-4" />
-                        <span className="text-sm">{bike.engineCapacity}cc</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Calendar className="w-4 h-4" />
-                        <span className="text-sm">{bike.year}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        <span className="text-sm truncate">{bike.location || "N/A"}</span>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Listed {new Date(bike.createdAt).toLocaleDateString()}
-                      </div>
-                    </div>
-                    
-                    {/* Features Preview */}
-                    {bike.features && bike.features.length > 0 && (
-                      <div className="mb-4">
-                        <div className="flex flex-wrap gap-1.5">
-                          {bike.features.slice(0, 3).map((feature, idx) => (
-                            <span
-                              key={idx}
-                              className="px-2.5 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium"
-                            >
-                              {feature}
-                            </span>
-                          ))}
-                          {bike.features.length > 3 && (
-                            <span className="px-2.5 py-1 bg-gray-200 text-gray-600 text-xs rounded-full font-medium">
-                              +{bike.features.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Description Preview */}
-                    {bike.description && (
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-4">
-                        {bike.description}
-                      </p>
-                    )}
-                    
-                    {/* Action Button */}
-                    <button className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-300 group-hover:shadow-lg">
-                      View Full Details
-                    </button>
+                <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
+                  <div className="flex items-center">
+                    <Zap className="mr-2 text-blue-500 w-4 h-4" />
+                    {motorcycle.type}
+                  </div>
+                  <div className="flex items-center">
+                    <Fuel className="mr-2 text-blue-500 w-4 h-4" />
+                    {motorcycle.engineCapacity} cc
+                  </div>
+                  <div className="flex items-center">
+                    <Calendar className="mr-2 text-blue-500 w-4 h-4" />
+                    {motorcycle.year}
+                  </div>
+                  <div className="flex items-center">
+                    <MapPin className="mr-2 text-blue-500 w-4 h-4" />
+                    {motorcycle.location || "N/A"}
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Enhanced Pagination */}
-            {totalPages > 1 && (
-              <div className="mb-12">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="text-sm text-gray-600">
-                    Page {page + 1} of {totalPages} • {totalElements} total motorcycles
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <button
-                      disabled={page === 0}
-                      onClick={() => setPage(p => Math.max(p - 1, 0))}
-                      className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
-                        page === 0
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
-                      }`}
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                      Previous
-                    </button>
-                    
-                    <div className="flex items-center space-x-1">
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        const pageNumber = i;
-                        return (
-                          <button
-                            key={i}
-                            onClick={() => setPage(pageNumber)}
-                            className={`w-12 h-12 rounded-xl font-medium transition-all ${
-                              page === pageNumber
-                                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
-                                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:shadow-md"
-                            }`}
-                          >
-                            {pageNumber + 1}
-                          </button>
-                        );
-                      })}
+                {/* Features Preview */}
+                {motorcycle.features && motorcycle.features.length > 0 && (
+                  <div className="mb-3">
+                    <div className="flex flex-wrap gap-1">
+                      {motorcycle.features.slice(0, 3).map((feature, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                      {motorcycle.features.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded-full">
+                          +{motorcycle.features.length - 3}
+                        </span>
+                      )}
                     </div>
-
-                    <button
-                      disabled={page + 1 >= totalPages}
-                      onClick={() => setPage(p => p + 1)}
-                      className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
-                        page + 1 >= totalPages
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
-                      }`}
-                    >
-                      Next
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
                   </div>
+                )}
+
+                <div className="flex justify-between items-center text-xs text-gray-500 border-t pt-3">
+                  <span>Listed {new Date(motorcycle.createdAt).toLocaleDateString()}</span>
+                  <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                    View Details
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-            )}
-          </>
-        ) : (
-          /* Empty State */
-          <div className="py-20 text-center">
-            <div className="w-24 h-24 mx-auto mb-6 text-gray-200">
-              <svg fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-7.536 5.879a1 1 0 001.415 0 3 3 0 014.242 0 1 1 0 001.415-1.415 5 5 0 00-7.072 0 1 1 0 000 1.415z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">No Motorcycles Found</h3>
-            <p className="text-gray-600 max-w-md mx-auto mb-8">
-              We couldn't find any motorcycles matching your criteria. 
-              Try adjusting your filters or check back later for new listings.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={clearFilters}
-                className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-colors"
-              >
-                Clear All Filters
-              </button>
-              <button
-                onClick={() => setShowFilters(true)}
-                className="px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 font-medium transition-colors"
-              >
-                Adjust Filters
-              </button>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          ))}
+        </div>
+      )}
 
-        {/* Call to Action */}
-        {!loading && motorcycles.length > 0 && (
-          <div className="mb-12 p-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-            <div className="max-w-2xl mx-auto text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Can't Find Your Dream Bike?
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Set up a custom alert and we'll notify you when a matching motorcycle 
-                becomes available.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-colors">
-                  Create Alert
-                </button>
-                <button className="px-6 py-3 bg-white text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-50 font-medium transition-colors">
-                  Contact Sales
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Loader */}
+      {loading && !filtersApplied && (
+        <div className="flex justify-center items-center py-8">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
 
-      {/* Add custom animations */}
-      <style jsx>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out;
-        }
-      `}</style>
+      {/* Load More Button (Alternative to infinite scroll) */}
+      {hasMore && !loading && motorcycles.length > 0 && (
+        <div className="text-center py-8">
+          <button
+            onClick={() => setPage(prev => prev + 1)}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Load More Motorcycles
+          </button>
+        </div>
+      )}
     </div>
   );
-};
-
-export default MotorcycleListing;
+}
