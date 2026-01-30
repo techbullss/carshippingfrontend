@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCurrentUser } from "../Hookes/useCurrentUser";
 
 export default function AddMotorcycleForm({
   open,
@@ -13,6 +14,8 @@ export default function AddMotorcycleForm({
   onSuccess: () => void;
   motorcycleToEdit?: any | null;
 }) {
+    const { user: currentUser } = useCurrentUser();
+
   const [form, setForm] = useState({
     brand: "",
     model: "",
@@ -22,7 +25,7 @@ export default function AddMotorcycleForm({
     price: "",
     location: "",
     locationType: "Local (Kenya)",
-    owner: "",
+    owner: currentUser?.email,
     fuelType: "",
     description: "",
     year: "",
