@@ -8,11 +8,13 @@ export default function AddMotorcycleForm({
   onClose,
   onSuccess,
   motorcycleToEdit,
+  currentUserEmail,
 }: {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
   motorcycleToEdit?: any | null;
+  currentUserEmail?: string;
 }) {
     const { user: currentUser } = useCurrentUser();
 
@@ -21,20 +23,19 @@ export default function AddMotorcycleForm({
     model: "",
     type: "",
     engineCapacity: "",
-    status: "Available",
     price: "",
     location: "",
-    locationType: "Local (Kenya)",
-    owner: currentUser?.email,
-    fuelType: "",
+    owner: currentUser?.email || currentUserEmail || "",
     description: "",
     year: "",
+    status: "PENDING", // Default status for new motorcycles
   });
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [features, setFeatures] = useState<string[]>([]);
   const [customFeature, setCustomFeature] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
 
   const makes = [
     "Honda",
@@ -82,9 +83,13 @@ export default function AddMotorcycleForm({
     "Other",
   ];
 
-  const ownerTypes = ["First Owner", "Second Owner", "Third Owner", "Other"];
-  const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid"];
-  const locationTypes = ["Local (Kenya)", "Import (Abroad)"];
+  const statusOptions = ["PENDING", "APPROVED", "REJECTED"];
+  
+  // Only show status field for editing existing motorcycles (admins can change status)
+  const showStatusField = motorcycleToEdit && 
+    (currentUser?.roles?.[0] === "ADMIN" || currentUser?.roles?.[0] === "ROLE_ADMIN");
+
+  const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
 
   const availableFeatures = [
     "ABS",
@@ -98,8 +103,6 @@ export default function AddMotorcycleForm({
     "Adjustable Suspension",
   ];
 
-  const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 1990 + i);
-
   useEffect(() => {
     if (motorcycleToEdit) {
       setForm({
@@ -107,37 +110,35 @@ export default function AddMotorcycleForm({
         model: motorcycleToEdit.model || "",
         type: motorcycleToEdit.type || "",
         engineCapacity: motorcycleToEdit.engineCapacity?.toString() || "",
-        status: motorcycleToEdit.status || "Available",
+        status: motorcycleToEdit.status || "PENDING",
         price: motorcycleToEdit.price?.toString() || "",
         location: motorcycleToEdit.location || "",
-        locationType: motorcycleToEdit.locationType || "Local (Kenya)",
-        owner: motorcycleToEdit.owner || "",
-        fuelType: motorcycleToEdit.fuelType || "",
+        owner: motorcycleToEdit.owner || currentUser?.email || currentUserEmail || "",
         description: motorcycleToEdit.description || "",
         year: motorcycleToEdit.year?.toString() || "",
       });
       setFeatures(motorcycleToEdit.features || []);
       setPreviews(motorcycleToEdit.imageUrls || []);
+      setImages([]); // Clear images for edit (backend will handle existing images)
     } else {
       setForm({
         brand: "",
         model: "",
         type: "",
         engineCapacity: "",
-        status: "Available",
+        status: "PENDING",
         price: "",
         location: "",
-        locationType: "Local (Kenya)",
-        owner: "",
-        fuelType: "",
+        owner: currentUser?.email || currentUserEmail || "",
         description: "",
         year: "",
       });
       setFeatures([]);
       setPreviews([]);
+      setImages([]);
     }
-    setImages([]);
-  }, [motorcycleToEdit, open]);
+    setError("");
+  }, [motorcycleToEdit, open, currentUser, currentUserEmail]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -151,13 +152,26 @@ export default function AddMotorcycleForm({
   const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const files = Array.from(e.target.files);
-    setImages((prev) => [...prev, ...files]);
-    setPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+    
+    // Validate file size (max 5MB per file)
+    const validFiles = files.filter(file => file.size <= 5 * 1024 * 1024);
+    
+    if (validFiles.length !== files.length) {
+      setError("Some files exceed 5MB size limit and were ignored.");
+    }
+    
+    setImages((prev) => [...prev, ...validFiles]);
+    setPreviews((prev) => [...prev, ...validFiles.map((f) => URL.createObjectURL(f))]);
   };
 
   const removePreview = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
-    setPreviews((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => {
+      const newPreviews = [...prev];
+      URL.revokeObjectURL(newPreviews[index]); // Clean up object URL
+      newPreviews.splice(index, 1);
+      return newPreviews;
+    });
   };
 
   const addFeature = (feature: string) => {
@@ -180,41 +194,81 @@ export default function AddMotorcycleForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
+
+    // Validate required fields
+    if (!form.brand || !form.model || !form.price || !form.year) {
+      setError("Please fill in all required fields: Brand, Model, Price, and Year");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const payload = {
-        ...form,
+      // Prepare DTO object matching your backend MotorcycleRequestDTO
+      const motorcycleData = {
+        brand: form.brand,
+        model: form.model,
+        type: form.type || null,
         engineCapacity: form.engineCapacity ? Number(form.engineCapacity) : null,
-        price: form.price ? Number(form.price) : null,
-        features,
+        status: form.status,
+        price: Number(form.price),
+        location: form.location || null,
+        owner: form.owner,
+        description: form.description || null,
+        year: Number(form.year),
+        features: features.length > 0 ? features : null,
       };
 
       const fd = new FormData();
+      
+      // Append motorcycle data as JSON
       fd.append(
         "motorcycle",
-        new Blob([JSON.stringify(payload)], { type: "application/json" })
+        new Blob([JSON.stringify(motorcycleData)], { type: "application/json" })
       );
-      images.forEach((f) => fd.append("images", f));
+      
+      // Append images if any
+      images.forEach((file) => {
+        fd.append("images", file);
+      });
 
       const url = motorcycleToEdit
         ? `https://api.f-carshipping.com/api/motorcycles/${motorcycleToEdit.id}`
         : "https://api.f-carshipping.com/api/motorcycles";
+      
       const method = motorcycleToEdit ? "PUT" : "POST";
+
+      console.log("Submitting motorcycle data:", motorcycleData);
+      console.log("Images count:", images.length);
 
       const res = await fetch(url, {
         method,
         body: fd,
         credentials: "include",
+      
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Failed to save motorcycle");
+        const errorText = await res.text();
+        console.error("Server response error:", errorText);
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.message || errorData.error || `HTTP ${res.status}: ${res.statusText}`);
+        } catch {
+          throw new Error(errorText || `HTTP ${res.status}: ${res.statusText}`);
+        }
       }
 
+      const response = await res.json();
+      console.log("Success response:", response);
+      
       onSuccess();
       onClose();
+      
     } catch (err: any) {
-      alert(err.message || "Something went wrong");
+      console.error("Form submission error:", err);
+      setError(err.message || "Failed to save motorcycle. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -223,6 +277,13 @@ export default function AddMotorcycleForm({
   const modelOptions = form.brand
     ? modelsByMake[form.brand] || ["Other"]
     : [];
+
+  // Clean up object URLs on unmount
+  useEffect(() => {
+    return () => {
+      previews.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [previews]);
 
   return (
     <AnimatePresence>
@@ -251,6 +312,7 @@ export default function AddMotorcycleForm({
               <button
                 className="text-gray-500 hover:text-gray-800"
                 onClick={() => !loading && onClose()}
+                disabled={loading}
               >
                 ✕
               </button>
@@ -260,101 +322,181 @@ export default function AddMotorcycleForm({
               onSubmit={handleSubmit}
               className="p-6 flex-1 overflow-y-auto space-y-6"
             >
-              {/* Selectors */}
+              {/* Error Message */}
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
+
+              {/* User Info Display */}
+              {currentUser && (
+                <div className="p-3 bg-blue-50 rounded-md">
+                  <p className="text-sm text-blue-700">
+                    <span className="font-medium">Logged in as:</span> {currentUser.email}
+                    {currentUser.roles && (
+                      <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                        {currentUser.roles[0]}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
+
+              {/* Status Field (only for admins editing) */}
+              {showStatusField && (
+                <div>
+                  <label className="block text-sm font-medium mb-1">Status</label>
+                  <select
+                    name="status"
+                    value={form.status}
+                    onChange={handleChange}
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                  >
+                    {statusOptions.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Required Fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Make */}
-                <select
-                  name="brand"
-                  value={form.brand}
-                  onChange={handleChange}
-                  className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Make</option>
-                  {makes.map((m) => (
-                    <option key={m}>{m}</option>
-                  ))}
-                </select>
+                {/* Make (Required) */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Make <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="brand"
+                    value={form.brand}
+                    onChange={handleChange}
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="">Select Make</option>
+                    {makes.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
 
-                {/* Model */}
-                <select
-                  name="model"
-                  value={form.model}
-                  onChange={handleChange}
-                  className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                  disabled={!form.brand}
-                >
-                  <option value="">Select Model</option>
-                  {modelOptions.map((model) => (
-                    <option key={model}>{model}</option>
-                  ))}
-                </select>
+                {/* Model (Required) */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Model <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="model"
+                    value={form.model}
+                    onChange={handleChange}
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    disabled={!form.brand}
+                    required
+                  >
+                    <option value="">Select Model</option>
+                    {modelOptions.map((model) => (
+                      <option key={model} value={model}>{model}</option>
+                    ))}
+                  </select>
+                </div>
 
-                <select
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Type</option>
-                  {types.map((t) => (
-                    <option key={t}>{t}</option>
-                  ))}
-                </select>
+                {/* Type */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">Type</label>
+                  <select
+                    name="type"
+                    value={form.type}
+                    onChange={handleChange}
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select Type</option>
+                    {types.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
 
-                <select
-                  name="fuelType"
-                  value={form.fuelType}
-                  onChange={handleChange}
-                  className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Fuel Type</option>
-                  {fuelTypes.map((f) => (
-                    <option key={f}>{f}</option>
-                  ))}
-                </select>
+                {/* Year (Required) */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Year <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="year"
+                    value={form.year}
+                    onChange={handleChange}
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="">Select Year</option>
+                    {years.map((y) => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </select>
+                </div>
 
-                <select
+                {/* Engine Capacity */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">Engine Capacity (cc)</label>
+                  <input
+                    name="engineCapacity"
+                    type="number"
+                    value={form.engineCapacity}
+                    onChange={handleChange}
+                    placeholder="e.g., 650"
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    min="0"
+                  />
+                </div>
+
+                {/* Price (Required) */}
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Price (KES) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name="price"
+                    type="number"
+                    value={form.price}
+                    onChange={handleChange}
+                    placeholder="e.g., 450000"
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    min="0"
+                    step="1000"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Location</label>
+                <input
+                  name="location"
+                  value={form.location}
+                  onChange={handleChange}
+                  placeholder="e.g., Nairobi, Mombasa"
+                  className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Owner (Read-only if logged in) */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Owner</label>
+                <input
                   name="owner"
                   value={form.owner}
                   onChange={handleChange}
-                  className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Ownership</option>
-                  {ownerTypes.map((o) => (
-                    <option key={o}>{o}</option>
-                  ))}
-                </select>
-
-                <select
-                  name="year"
-                  value={form.year}
-                  onChange={handleChange}
-                  className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Year</option>
-                  {years.map((y) => (
-                    <option key={y}>{y}</option>
-                  ))}
-                </select>
-
-                <input
-                  name="engineCapacity"
-                  value={form.engineCapacity}
-                  onChange={handleChange}
-                  placeholder="Engine CC"
-                  className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                  placeholder="Owner email"
+                  className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                  readOnly={!!currentUser}
                 />
-
-                <select
-                  name="locationType"
-                  value={form.locationType}
-                  onChange={handleChange}
-                  className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                >
-                  {locationTypes.map((lt) => (
-                    <option key={lt}>{lt}</option>
-                  ))}
-                </select>
+                {currentUser && (
+                  <p className="text-xs text-gray-500 mt-1">Owner is automatically set to your account</p>
+                )}
               </div>
 
               {/* Features Section */}
@@ -385,6 +527,7 @@ export default function AddMotorcycleForm({
                     placeholder="Add custom feature"
                     value={customFeature}
                     onChange={(e) => setCustomFeature(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleCustomFeatureAdd())}
                     className="border rounded-md px-3 py-2 flex-1"
                   />
                   <button
@@ -415,44 +558,33 @@ export default function AddMotorcycleForm({
                 </div>
               </div>
 
-              {/* Description & Price */}
-              <textarea
-                name="description"
-                value={form.description}
-                onChange={handleChange}
-                placeholder="Description"
-                className="w-full border rounded-md px-3 py-2 h-28 focus:ring-2 focus:ring-blue-500"
-              />
-
-              <input
-                name="price"
-                type="number"
-                value={form.price}
-                onChange={handleChange}
-                placeholder="Price (KES)"
-                className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              />
-
-              <input
-                name="location"
-                value={form.location}
-                onChange={handleChange}
-                placeholder="Location (e.g. Nairobi)"
-                className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              />
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  placeholder="Describe the motorcycle's condition, history, and any other details..."
+                  className="w-full border rounded-md px-3 py-2 h-28 focus:ring-2 focus:ring-blue-500"
+                  rows={4}
+                />
+              </div>
 
               {/* Images */}
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-800">
-                  Images
+                  Images (Max 5MB each)
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={handleFiles}
-                  className="block w-full text-sm"
+                  className="block w-full text-sm border rounded-md p-2"
                 />
+                <p className="text-xs text-gray-500 mt-1">Upload clear photos of the motorcycle</p>
+                
                 <div className="mt-3 grid grid-cols-3 gap-3">
                   {previews.map((src, i) => (
                     <div
@@ -476,20 +608,35 @@ export default function AddMotorcycleForm({
                 </div>
               </div>
 
+              {/* Form Status */}
+              <div className="text-sm text-gray-600">
+                <p>Status: New motorcycles will be marked as <span className="font-medium">PENDING</span> for admin approval.</p>
+                {motorcycleToEdit && (
+                  <p className="mt-1">Editing motorcycle ID: {motorcycleToEdit.id}</p>
+                )}
+              </div>
+
               {/* Footer */}
               <div className="flex justify-end gap-3 pt-4 border-t">
                 <button
                   type="button"
                   className="px-4 py-2 rounded-md border hover:bg-gray-100"
                   onClick={() => !loading && onClose()}
+                  disabled={loading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                  className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
                 >
+                  {loading && (
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  )}
                   {loading
                     ? "Saving..."
                     : motorcycleToEdit
