@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 interface Motorcycle {
   id: string;
   brand: string;
@@ -15,13 +16,14 @@ interface Motorcycle {
   description: string;
   imageUrls: string[];
   createdAt: string;
+  year: number;
 }
 
 const MotorcycleListing = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
   const [filters, setFilters] = useState({
-    make: "",
+    brand: "", // Changed from "make" to "brand"
     type: "",
     priceRange: "",
     year: "",
@@ -29,6 +31,8 @@ const MotorcycleListing = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const [error, setError] = useState<string>("");
 
   const motorcycleTypes = [
     "Adventure",
@@ -41,7 +45,7 @@ const MotorcycleListing = () => {
     "Off-Road",
   ];
   
-  const motorcycleMakes = [
+  const motorcycleBrands = [ // Changed from makes to brands
     "Triumph",
     "BMW",
     "Royal Enfield",
@@ -51,21 +55,27 @@ const MotorcycleListing = () => {
     "Honda",
     "Suzuki",
     "KTM",
+    "Bajaj",
+    "TVS",
+    "Hero",
   ];
 
   const priceRanges = [
     { value: "", label: "All Prices" },
-    { value: "low", label: "Under KES 600,000" },
-    { value: "medium", label: "KES 600,000 - 1,000,000" },
-    { value: "high", label: "Over KES 1,000,000" },
+    { value: "0-300000", label: "Under KES 300,000" },
+    { value: "300000-600000", label: "KES 300,000 - 600,000" },
+    { value: "600000-1000000", label: "KES 600,000 - 1,000,000" },
+    { value: "1000000-9999999", label: "Over KES 1,000,000" },
   ];
 
   const fetchMotorcycles = async () => {
     try {
       setLoading(true);
+      setError("");
       const params = new URLSearchParams();
 
-      if (filters.make) params.append("make", filters.make);
+      // Use correct parameter names matching backend
+      if (filters.brand) params.append("brand", filters.brand);
       if (filters.type) params.append("type", filters.type);
       if (filters.priceRange) params.append("priceRange", filters.priceRange);
       if (filters.year) params.append("year", filters.year);
@@ -73,22 +83,52 @@ const MotorcycleListing = () => {
       params.append("page", page.toString());
       params.append("size", "9");
 
-      const res = await fetch(
-        `https://api.f-carshipping.com/api/motorcycles/filter?${params.toString()}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      // Use the PUBLIC endpoint instead of /filter
+      const endpoint = "/api/motorcycles/public";
+      const url = `https://api.f-carshipping.com${endpoint}?${params.toString()}`;
+      
+      console.log("Fetching from:", url); // Debug log
 
-      if (!res.ok) throw new Error("Failed to fetch motorcycles");
+      const res = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
       const data = await res.json();
+      console.log("API Response:", data); // Debug log
 
-      setMotorcycles(data.content || []);
-      setTotalPages(data.totalPages || 0);
-    } catch (err) {
+      // Handle response format
+      if (data.content !== undefined) {
+        // Spring Page response
+        setMotorcycles(Array.isArray(data.content) ? data.content : []);
+        setTotalPages(data.totalPages || 0);
+        setTotalElements(data.totalElements || 0);
+      } else if (Array.isArray(data)) {
+        // Direct array response
+        setMotorcycles(data);
+        setTotalPages(1);
+        setTotalElements(data.length);
+      } else {
+        console.warn("Unexpected response format:", data);
+        setMotorcycles([]);
+        setTotalPages(0);
+        setTotalElements(0);
+      }
+
+    } catch (err: any) {
       console.error("Error fetching motorcycles:", err);
+      setError(err.message || "Failed to load motorcycles");
+      setMotorcycles([]);
+      setTotalPages(0);
+      setTotalElements(0);
     } finally {
       setLoading(false);
     }
@@ -106,25 +146,70 @@ const MotorcycleListing = () => {
   const clearFilters = () => {
     setPage(0);
     setFilters({
-      make: "",
+      brand: "",
       type: "",
       priceRange: "",
       year: "",
     });
   };
 
+  // Test function to check backend data
+  const testEndpoints = async () => {
+    console.log("Testing endpoints...");
+    
+    const endpoints = [
+      "/api/motorcycles/public",
+      "/api/motorcycles",
+      "/api/motorcycles/filter"
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        const res = await fetch(`https://api.f-carshipping.com${endpoint}`, {
+          credentials: "include",
+          headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        console.log(`${endpoint}:`, data);
+      } catch (err) {
+        console.error(`${endpoint} error:`, err);
+      }
+    }
+  };
+
+  // Get motorcycle count text
+  const getCountText = () => {
+    if (loading) return "Loading...";
+    if (error) return "Error loading data";
+    if (motorcycles.length === 0) return "No motorcycles found";
+    return `${motorcycles.length} of ${totalElements} motorcycles found`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-2">
       <div className="container mx-auto px-4 max-w-7xl">
-      
+        
+        {/* Debug Button (remove in production) */}
+        <button
+          onClick={testEndpoints}
+          className="mb-4 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm hover:bg-yellow-200"
+        >
+          Test Backend Endpoints
+        </button>
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
 
         {/* Filters Section */}
-        <div className=" p-2 mb-2">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 ">
+        <div className="p-2 mb-2">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
             <div>
-              
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">Motorcycles For Sale</h1>
               <p className="text-sm text-gray-600">
-                {motorcycles.length} motorcycles found
+                {getCountText()}
               </p>
             </div>
             
@@ -136,20 +221,20 @@ const MotorcycleListing = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Manufacturer
+                Brand
               </label>
               <select
-                value={filters.make}
-                onChange={(e) => handleFilterChange("make", e.target.value)}
+                value={filters.brand}
+                onChange={(e) => handleFilterChange("brand", e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
               >
-                <option value="">All Manufacturers</option>
-                {motorcycleMakes.map((make) => (
-                  <option key={make} value={make}>
-                    {make}
+                <option value="">All Brands</option>
+                {motorcycleBrands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
                   </option>
                 ))}
               </select>
@@ -200,7 +285,7 @@ const MotorcycleListing = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
               >
                 <option value="">All Years</option>
-                {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(
+                {Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - i).map(
                   (year) => (
                     <option key={year} value={year.toString()}>
                       {year}
@@ -227,7 +312,7 @@ const MotorcycleListing = () => {
                 <div
                   key={bike.id}
                   onClick={() => router.push(`/MotorcycleDetails/${bike.id}`)}
-                  className=" hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-200 hover:border-gray-300"
+                  className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-200 hover:border-gray-300 cursor-pointer"
                 >
                   {/* Image Container */}
                   <div className="relative h-40 bg-gray-100 overflow-hidden">
@@ -240,19 +325,21 @@ const MotorcycleListing = () => {
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-200">
                         <div className="text-center">
-                          <div className="w-8 h-8 mx-auto  text-gray-300">
+                          <div className="w-8 h-8 mx-auto mb-2 text-gray-300">
                             <svg fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <span className="text-sm">No Image Available</span>
+                          <span className="text-sm">No Image</span>
                         </div>
                       </div>
                     )}
                     <div className="absolute top-4 right-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        bike.status === 'Available' 
+                        bike.status === 'APPROVED' 
                           ? 'bg-green-100 text-green-800' 
+                          : bike.status === 'PENDING'
+                          ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}>
                         {bike.status}
@@ -261,33 +348,33 @@ const MotorcycleListing = () => {
                   </div>
 
                   {/* Content */}
-                  <div className="p-2">
-                    <div className="flex justify-between items-center">
-                      <div className="justify-content-fit items-center"><div>
-                        <h3 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
                           {bike.brand} {bike.model}
                         </h3>
-                        </div>
-                        <div>
-                             <p className="text-gray-600 items-center  text-sm mt-1">
+                        <p className="text-gray-600 text-sm mt-1">
                           {bike.type} • {bike.engineCapacity}cc
                         </p>
-                        </div>
-                       
                       </div>
                       <div className="text-right">
                         <div className="text-green-700 font-bold text-lg">
-                          {bike.price
-                            ? `KES ${bike.price.toLocaleString()}`
-                            : "Price on Request"}
+                          KES {bike.price?.toLocaleString()}
                         </div>
+                        <div className="text-xs text-gray-500">{bike.year}</div>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                      <span className="text-xs text-gray-500">
-                        Added {new Date(bike.createdAt).toLocaleDateString()}
-                      </span>
-                      
+                    
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500">
+                          {bike.location || "Location not specified"}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {new Date(bike.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -295,55 +382,57 @@ const MotorcycleListing = () => {
             </div>
 
             {/* Pagination */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
-              <div className="text-sm text-gray-600">
-                Showing page {page + 1} of {totalPages}
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <button
-                  disabled={page === 0}
-                  onClick={() => setPage((p) => Math.max(p - 1, 0))}
-                  className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
-                    page === 0
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400"
-                  }`}
-                >
-                  Previous
-                </button>
-                <div className="flex space-x-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const pageNumber = i;
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => setPage(pageNumber)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                          page === pageNumber
-                            ? "bg-blue-600 text-white"
-                            : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        {pageNumber + 1}
-                      </button>
-                    );
-                  })}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
+                <div className="text-sm text-gray-600">
+                  Showing page {page + 1} of {totalPages}
                 </div>
+                
+                <div className="flex items-center space-x-2">
+                  <button
+                    disabled={page === 0}
+                    onClick={() => setPage((p) => Math.max(p - 1, 0))}
+                    className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
+                      page === 0
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  <div className="flex space-x-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      const pageNumber = i;
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => setPage(pageNumber)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            page === pageNumber
+                              ? "bg-blue-600 text-white"
+                              : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          {pageNumber + 1}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-                <button
-                  disabled={page + 1 >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
-                    page + 1 >= totalPages
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400"
-                  }`}
-                >
-                  Next
-                </button>
+                  <button
+                    disabled={page + 1 >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 ${
+                      page + 1 >= totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </>
         ) : (
           !loading && (
@@ -354,9 +443,15 @@ const MotorcycleListing = () => {
                 </svg>
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">No motorcycles found</h3>
-              <p className="text-gray-600 max-w-md mx-auto">
-                Try adjusting your filters or search criteria to find more results.
+              <p className="text-gray-600 max-w-md mx-auto mb-4">
+                {error || "Try adjusting your filters or search criteria to find more results."}
               </p>
+              <button
+                onClick={testEndpoints}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Test API Connection
+              </button>
             </div>
           )
         )}
