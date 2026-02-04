@@ -27,6 +27,7 @@ export type Seller = {
   id: number;
   firstName: string;
   lastName: string;
+  role:string;
   email: string;
   phone: string;
   streetAddress?: string;
@@ -145,7 +146,7 @@ const MotorcycleDetails = () => {
       // Fetch seller profile using email from admin endpoint
       // Note: You might need to adjust authentication/authorization
       const response = await fetch(
-        `https://api.f-carshipping.com/api/admin/users/email/${encodeURIComponent(sellerEmail)}`,
+        `https://api.f-carshipping.com/api/admin/users/${encodeURIComponent(sellerEmail)}`,
         {
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -158,6 +159,7 @@ const MotorcycleDetails = () => {
         
         // Transform to Seller type
         const normalizedSeller: Seller = {
+          role:sellerData.role,
           id: sellerData.id,
           firstName: sellerData.firstName || "",
           lastName: sellerData.lastName || "",
@@ -187,6 +189,7 @@ const MotorcycleDetails = () => {
           id: 0,
           firstName: sellerEmail.split('@')[0] || "Seller",
           lastName: "",
+          role:"",
           email: sellerEmail,
           phone: "",
           isVerified: false,
@@ -203,6 +206,7 @@ const MotorcycleDetails = () => {
         id: 0,
         firstName: "Private",
         lastName: "Seller",
+        role:"",
         email: sellerEmail,
         phone: "Contact for details",
         isVerified: false,
@@ -364,13 +368,21 @@ const MotorcycleDetails = () => {
               {motorcycle.engineCapacity} cc
             </span>
           </div>
-
-          <div className="space-y-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+          { seller?.role!="ADMIN" &&(
+            
+                  <div className="space-y-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
             <h3 className="font-semibold text-yellow-800 text-sm">⚠️ Disclaimer</h3>
             <p className="text-gray-700 text-sm leading-relaxed">
               The Vehicle information has been provided by the seller. It's always best to check details with them before you buy.
             </p>
           </div>
+            
+          )
+
+
+          }
+
+      
 
           {/* Seller Info Section */}
           <div className="border-t border-gray-200 pt-4 space-y-4">
@@ -476,14 +488,7 @@ const MotorcycleDetails = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 pt-2">
-                  <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg text-xs transition duration-200">
-                    Contact Seller
-                  </button>
-                  <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 rounded-lg text-xs transition duration-200">
-                    View Profile
-                  </button>
-                </div>
+              
               </>
             ) : (
               <div className="text-center p-4 border border-gray-200 rounded-lg">
@@ -494,7 +499,7 @@ const MotorcycleDetails = () => {
         </div>
       </div>
 
-      {/* ... Rest of your existing component remains the same below ... */}
+      
       <div className="space-y-10">
         {/* Key details inline */}
         <div>
