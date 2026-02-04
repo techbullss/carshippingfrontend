@@ -55,7 +55,7 @@ export type Vehicle = {
   description: string;
   location: string;
   ownerType: string;
-  owner: string; // Seller's email
+  seller: string; // Seller's email
   features: string[]; // parsed from comma-separated string
   customSpecs: { key: string; value: string }[]; // parsed from JSON string
   imageUrls: string[];
@@ -218,8 +218,8 @@ const VehicleDetails = () => {
         setVehicle(normalizedVehicle);
 
         // Fetch seller info using owner email
-        if (normalizedVehicle.owner) {
-          await fetchSellerInfo(normalizedVehicle.owner);
+        if (normalizedVehicle.seller) {
+          await fetchSellerInfo(normalizedVehicle.seller);
         }
 
         // Fetch similar vehicles
