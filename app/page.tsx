@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { FaCarSide, FaSearch, FaChevronRight, FaShieldAlt } from 'react-icons/fa';
 import CarSearchHero from "./components/CarSearchHero";
-import { CheckBadgeIcon, GlobeAltIcon, ShieldCheckIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
+import { Car, Package, CreditCard, HandshakeIcon } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
 import {  FaRegHeart, FaCar, FaGasPump, FaTachometerAlt } from 'react-icons/fa';
@@ -172,8 +172,8 @@ export default function Home() {
   <div className="container mx-auto px-6 lg:px-12 relative">
     {/* FULL-WIDTH TITLE */}
     <div className="w-full text-center mb-10">
-      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 tracking-tight">
-        Drive Your Dream Car from <span className="text-blue-600">UK to Kenya</span>
+      <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 tracking-tight">
+        Drive Your Dream Vehicle 
       </h1>
       <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-green-500 mx-auto rounded-full"></div>
       <p className="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">
@@ -191,33 +191,35 @@ export default function Home() {
           <strong className="text-blue-600"> we handle everything for you</strong> with speed, transparency, 
           and unbeatable pricing.
         </p>
-
-        <ul className="space-y-4 text-gray-800">
-          <li className="flex items-start gap-3">
-            <div className="bg-blue-100 p-2 rounded-full mt-1">
-              <span className="text-blue-300 font-bold">🚗</span>
-            </div>
-            <span><strong className="text-green-700">Verified UK Listings</strong> – Browse a curated selection of quality vehicles ready for export.</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <div className="bg-green-100 p-2 rounded-full mt-1">
-              <span className="text-green-600 font-bold">📦</span>
-            </div>
-            <span><strong className="text-green-700">End-to-End Shipping</strong> – From purchase to port clearance, we manage every step.</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <div className="bg-yellow-100 p-2 rounded-full mt-1">
-              <span className="text-yellow-600 font-bold">💳</span>
-            </div>
-            <span><strong className="text-green-700">Flexible Payment</strong> – Secure transactions with no hidden fees.</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <div className="bg-blue-100 p-2 rounded-full mt-1">
-              <span className="text-blue-600 font-bold">🤝</span>
-            </div>
-            <span><strong className="text-green-700">Kenya-Focused Support</strong> – Local team assistance for customs and delivery.</span>
-          </li>
-        </ul>
+<ul className="space-y-4 text-gray-800">
+  <li className="flex items-start gap-3 group">
+    <div className="bg-blue-100 p-2 rounded-full mt-1 group-hover:bg-blue-200 transition-colors duration-300">
+      <Car className="w-5 h-5 text-blue-600" />
+    </div>
+    <span><strong className="text-green-700">Verified UK Listings</strong> – Browse a curated selection of quality vehicles ready for export.</span>
+  </li>
+  
+  <li className="flex items-start gap-3 group">
+    <div className="bg-green-100 p-2 rounded-full mt-1 group-hover:bg-green-200 transition-colors duration-300">
+      <Package className="w-5 h-5 text-green-600" />
+    </div>
+    <span><strong className="text-green-700">End-to-End Shipping</strong> – From purchase to port clearance, we manage every step.</span>
+  </li>
+  
+  <li className="flex items-start gap-3 group">
+    <div className="bg-yellow-100 p-2 rounded-full mt-1 group-hover:bg-yellow-200 transition-colors duration-300">
+      <CreditCard className="w-5 h-5 text-yellow-600" />
+    </div>
+    <span><strong className="text-green-700">Flexible Payment</strong> – Secure transactions with no hidden fees.</span>
+  </li>
+  
+  <li className="flex items-start gap-3 group">
+    <div className="bg-blue-100 p-2 rounded-full mt-1 group-hover:bg-blue-200 transition-colors duration-300">
+      <HandshakeIcon className="w-5 h-5 text-blue-600" />
+    </div>
+    <span><strong className="text-green-700">Kenya-Focused Support</strong> – Local team assistance for customs and delivery.</span>
+  </li>
+</ul>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
           <button
@@ -262,8 +264,8 @@ export default function Home() {
   </div>
 </section>
 
- <section className="bg-gradient-to-b from-gray-50 to-white  px-4">
-  <div className="max-w-7xl mx-auto">
+ <section className="bg-gradient-to-b from-gray-200 to-white  px-4">
+  <div className="max-w-7xl ">
     {/* Section Header */}
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -368,12 +370,16 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
                  
                   <button
-                    onClick={() => handleCarClick(car.id)}
-                    className="flex-1 px-4 py-2 bg-emerald-500 text-white font-semibold rounded-lg 
-                               hover:bg-emerald-600 transition-colors duration-300"
-                  >
-                    View Details
-                  </button>
+  onClick={() => handleCarClick(car.id)}
+  className="flex-1 px-4 py-2 text-emerald-600 font-semibold 
+             hover:text-emerald-700 transition-colors duration-300 
+             relative group"
+>
+  View Details
+  <span className="absolute bottom-1 left-1/2 transform -translate-x-1/2 
+                   w-0 h-0.5 bg-emerald-500 group-hover:w-12 
+                   transition-all duration-300"></span>
+</button>
                 </div>
               )}
             </div>
