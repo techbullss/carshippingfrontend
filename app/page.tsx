@@ -185,7 +185,7 @@ export default function Home() {
       {/* Text / Selling Column */}
       <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
         <p className="text-gray-800 max-w-lg leading-relaxed text-lg">
-          We connect Kenyan car buyers to the best deals in the UK—whether you are 
+          We connect Kenyan car buyers to the best deals in the world—whether you are 
           purchasing a luxury ride, a family SUV, or a workhorse van.  
           From sourcing and inspection to shipping and final delivery in Kenya, 
           <strong className="text-blue-600"> we handle everything for you</strong> with speed, transparency, 
@@ -195,7 +195,7 @@ export default function Home() {
         <ul className="space-y-4 text-gray-800">
           <li className="flex items-start gap-3">
             <div className="bg-blue-100 p-2 rounded-full mt-1">
-              <span className="text-blue-600 font-bold">🚗</span>
+              <span className="text-blue-300 font-bold">🚗</span>
             </div>
             <span><strong className="text-green-700">Verified UK Listings</strong> – Browse a curated selection of quality vehicles ready for export.</span>
           </li>
@@ -262,7 +262,7 @@ export default function Home() {
   </div>
 </section>
 
- <section className="bg-gradient-to-b from-gray-50 to-white py-4 px-4">
+ <section className="bg-gradient-to-b from-gray-50 to-white  px-4">
   <div className="max-w-7xl mx-auto">
     {/* Section Header */}
     <motion.div
@@ -273,7 +273,7 @@ export default function Home() {
       className="text-center mb-16"
     >
       <span className="inline-block bg-blue-100 text-white text-sm font-semibold px-5 py-1.5 rounded-full mb-2 shadow-sm border-b-2 bg-emerald-500 border-yellow-500">
-        🚘 Fresh Stock
+        <FaCarSide className="mr-2" /> Latest Arrivals
       </span>
       {usingFallback && (
         <div className=" bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md max-w-md mx-auto">
