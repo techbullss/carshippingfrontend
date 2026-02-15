@@ -172,7 +172,7 @@ export default function Home() {
   <div className="container mx-auto px-6 lg:px-12 relative">
     {/* FULL-WIDTH TITLE */}
     <div className="w-full text-center mb-10">
-      <h1 className="text-2xl md:text-3xl lg:text-6xl font-bold text-gray-900 mb-4 tracking-tight">
+      <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold text-gray-900 mb-4 tracking-tight">
         Drive Your Dream Vehicle 
       </h1>
       <div className="w-48 h-1 bg-gradient-to-r from-blue-400 to-green-500 mx-auto rounded-full"></div>
