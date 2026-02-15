@@ -272,9 +272,7 @@ export default function Home() {
       viewport={{ once: true }}
       className="text-center mb-16"
     >
-      <span className="inline-block bg-blue-100 text-white text-sm font-semibold px-5 py-1.5 rounded-full mb-2 shadow-sm border-b-2 bg-emerald-500 border-yellow-500">
-        <FaCarSide className="mr-2" /> Latest Arrivals
-      </span>
+    
       {usingFallback && (
         <div className=" bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md max-w-md mx-auto">
           <div className="flex">
@@ -300,7 +298,7 @@ export default function Home() {
       </div>
     ) : (
       /* Cars Grid */
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {latestArrivals.map((car) => (
           <motion.div
             key={car.id}
