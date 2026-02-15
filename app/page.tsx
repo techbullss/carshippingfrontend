@@ -172,10 +172,10 @@ export default function Home() {
   <div className="container mx-auto px-6 lg:px-12 relative">
     {/* FULL-WIDTH TITLE */}
     <div className="w-full text-center mb-10">
-      <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 tracking-tight">
+      <h1 className="text-2xl md:text-3xl lg:text-6xl font-bold text-gray-900 mb-4 tracking-tight">
         Drive Your Dream Vehicle 
       </h1>
-      <div className="w-24 h-1 bg-gradient-to-r from-yellow-400 to-green-500 mx-auto rounded-full"></div>
+      <div className="w-48 h-1 bg-gradient-to-r from-blue-400 to-green-500 mx-auto rounded-full"></div>
       <p className="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">
         Seamless vehicle import solutions with trusted expertise
       </p>
@@ -264,15 +264,15 @@ export default function Home() {
   </div>
 </section>
 
- <section className="bg-gradient-to-b from-gray-200 to-white  px-4">
-  <div className="max-w-7xl ">
+ <section className="bg-gradient-to-b from-gray-100 to-white  px-4">
+  <div className=" ">
     {/* Section Header */}
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.5 }}
       viewport={{ once: true }}
-      className="text-center mb-16"
+      className="text-center mb-4"
     >
     
       {usingFallback && (
