@@ -222,12 +222,7 @@ export default function Home() {
 </ul>
 
         <div className="flex flex-col sm:flex-row gap-4 pt-4">
-          <button
-            onClick={() => window.location.href = "/Vehicles"}
-            className="px-8 py-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 font-bold rounded-full shadow-lg hover:from-yellow-500 hover:to-yellow-600 transition-all duration-300 transform hover:scale-105"
-          >
-            Browse Vehicles
-          </button>
+         
           
          
         </div>
