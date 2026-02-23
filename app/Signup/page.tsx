@@ -278,17 +278,10 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       <div className="min-h-screen flex">
         {/* Left side - Form */}
-        <div className="flex-1 flex flex-col justify-center py-8 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+        <div className=" flex flex-col justify-center py-8 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-2xl">
             <div>
-              <div className="flex items-center">
-                <div className="bg-blue-700 rounded-lg w-10 h-10 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <h2 className="ml-4 text-2xl font-bold text-gray-900">UK2KE Shipping</h2>
-              </div>
+              
               
               <h2 className="mt-8 text-3xl font-extrabold text-gray-900">Create your account</h2>
               <p className="mt-2 text-sm text-gray-600">
@@ -712,7 +705,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                       <button
                         type="button"
                         onClick={nextStep}
-                        className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        className="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                       >
                         Next
                       </button>
@@ -740,7 +733,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
         </div>
 
-        {/* Right side - Image/Banner */}
+     
        
       </div>
     </>
