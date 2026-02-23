@@ -276,10 +276,9 @@ const handleSubmit = async (e: React.FormEvent) => {
     <>
       
 
-      <div className="min-h-screen flex">
-        {/* Left side - Form */}
-        <div className=" flex flex-col justify-center py-8 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-          <div className="mx-auto w-full max-w-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+  <div className="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-xl">
+    <div className="mx-auto w-full max-w-2xl">
             <div>
               
               
