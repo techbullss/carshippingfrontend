@@ -20,31 +20,42 @@ const LoginPage = () => {
   setError('');
 
   try {
-    if (!email || !password) {
-      throw new Error('Please fill in all fields');
-    }
-
-    const response = await fetch("https://api.f-carshipping.com/api/auth/login", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', 
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(errorData || 'Invalid email or password');
-    }
-
-    const data = await response.json();
-    
-    window.location.href = '/dashboard';
-
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'An error occurred during login');
-  } finally {
-    setIsLoading(false);
+  if (!email || !password) {
+    throw new Error("Please fill in all fields");
   }
+
+  const response = await fetch(
+    "https://api.f-carshipping.com/api/auth/login",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message ||
+      errorData.error ||
+      "Invalid email or password"
+    );
+  }
+
+  await response.json();
+
+  window.location.href = "/dashboard";
+
+} catch (err) {
+  setError(
+    err instanceof Error
+      ? err.message
+      : "An error occurred during login"
+  );
+} finally {
+  setIsLoading(false);
+}
 };
 
 
