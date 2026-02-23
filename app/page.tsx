@@ -297,17 +297,9 @@ export default function Home() {
       /* Cars Grid */
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {latestArrivals.map((car) => (
-          <motion.div
+          <div
             key={car.id}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-15% 0px -15% 0px" }}
-            variants={{
-              hidden: { opacity: 0, y: 50 },
-              visible: { opacity: 1, y: 0 },
-            }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            whileHover={{ scale: 1.02 }}
+            
             className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl border-r-6 border-emerald-500 transition-all duration-300"
           >
             {/* Image with tags */}
@@ -378,7 +370,7 @@ export default function Home() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     )}
