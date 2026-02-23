@@ -66,38 +66,12 @@ const LoginPage = () => {
         {/* Left side - Form */}
         <div className=" flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
-  <div className="mt-8">
-  <div className="relative">
-    <div className="absolute inset-0 flex items-center">
-      <div className="w-full border-t border-gray-300" />
-    </div>
-    <div className="relative flex justify-center text-sm">
-      <span className="px-2 bg-white text-gray-500">
-        Don’t have an account?
-      </span>
-    </div>
-  </div>
-
-  <div className="mt-6 grid grid-cols-1 gap-3">
-    
-    {/* Guest Signup */}
-    <Link
-      href="/Signup"
-      className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-blue-500 text-blue-600 font-medium hover:bg-blue-50 transition-all duration-200"
-    >
-      Create Guest Account
-    </Link>
-
-    {/* Seller Signup */}
-    <Link
-      href="/Seller"
-      className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-green-500 text-green-600 font-medium hover:bg-green-50 transition-all duration-200"
-    >
-      Create Seller Account
-    </Link>
-
-  </div>
-</div>
+            <div>
+              <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+                Sign in to your account
+              </h2>
+              </div>
+ 
 
             <div className="mt-8">
               {error && (
@@ -213,15 +187,31 @@ const LoginPage = () => {
                     <span className="px-2 bg-white text-gray-500">New to our platform?</span>
                   </div>
                 </div>
+                 <div className="mt-8">
 
-                <div className="mt-6">
-                  <Link
-                    href="/Signup"
-                    className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                  >
-                    Create account
-                  </Link>
-                </div>
+
+  <div className="mt-6 grid grid-cols-1 gap-3">
+    
+    {/* Guest Signup */}
+    <Link
+      href="/Signup"
+      className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-blue-500 text-blue-600 font-medium hover:bg-blue-50 transition-all duration-200"
+    >
+      Create Guest Account
+    </Link>
+
+    {/* Seller Signup */}
+    <Link
+      href="/Seller"
+      className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-green-500 text-green-600 font-medium hover:bg-green-50 transition-all duration-200"
+    >
+      Create Seller Account
+    </Link>
+
+  </div>
+</div>
+
+           
               </div>
             </div>
           </div>
