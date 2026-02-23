@@ -190,20 +190,20 @@ const LoginPage = () => {
                  <div className="mt-8">
 
 
-  <div className="mt-6 grid grid-cols-1 gap-3">
+  <div className="mt-2 grid grid-cols-1 gap-3">
     
     {/* Guest Signup */}
     <Link
-      href="/Signup"
-      className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-blue-500 text-blue-600 font-medium hover:bg-blue-50 transition-all duration-200"
+      href="/GuestSignupPage"
+      className="w-full flex items-center justify-center py-1 px-1 rounded-lg border border-blue-500 text-blue-600 font-medium hover:bg-blue-50 transition-all duration-200"
     >
       Create Guest Account
     </Link>
 
     {/* Seller Signup */}
     <Link
-      href="/Seller"
-      className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-green-500 text-green-600 font-medium hover:bg-green-50 transition-all duration-200"
+      href="/Signup"
+      className="w-full flex items-center justify-center  px-2 rounded-lg border border-green-500 text-green-600 font-medium hover:bg-green-50 transition-all duration-200"
     >
       Create Seller Account
     </Link>
