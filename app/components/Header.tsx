@@ -8,7 +8,6 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import AutoTraderTwoTier from "./AutoTraderTwoTier";
 
-
 interface SubmenuItem {
   href: string;
   label: string;
@@ -23,9 +22,8 @@ interface MenuItem {
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
-const [isLoggedIn, setIsLoggedIn] = useState(false);
- const [loading, setLoading] = useState(true);
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const pathname = usePathname();
 
   const links: MenuItem[] = [
@@ -56,31 +54,26 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
         { href: "/Motocycle?location=local", label: "Locally Available" },
       ],
     },
-    
     { href: "/AuxiallyShipping", label: "Auxiliary shipping" },
     { href: "/SellWithUs", label: "Sell With Us" },
     { href: "/AboutUs", label: "About Us" },
   ];
 
-  // Use backend cookie to validate login status
- 
   const handleSubmenuToggle = (index: number) => {
     setOpenSubmenu(openSubmenu === index ? null : index);
   };
 
-  //  Logout through backend
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const res = await fetch("https://api.f-carshipping.com/api/auth/validate", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (res.ok) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
+        const res = await fetch(
+          "https://api.f-carshipping.com/api/auth/validate",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        setIsLoggedIn(res.ok);
       } catch (error) {
         console.error("Auth check failed:", error);
       }
@@ -88,31 +81,62 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
     checkAuthStatus();
   }, []);
 
- 
-
- 
-
   return (
     <div className="flex-col bg-gradient-to-b from-white to-blue-50 shadow-lg w-full">
-      {/* Navigation (Always visible) */}
       <nav className="bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-md">
-        <div className="px-2">
+        <div className="px-4">
           <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center">
+            {/* Logo */}
+            <Link href="/" className="flex items-center py-4">
               <div className="text-2xl font-bold">
-                <span className="text-white font-italic">FCar</span>
+                <span className="text-white italic">FCar</span>
                 <span className="text-yellow-300">Shipping</span>
               </div>
             </Link>
 
+            {/* Hamburger Button */}
+            <button
+              className="md:hidden text-white focus:outline-none"
+              onClick={() => setOpen(!open)}
+            >
+              <svg
+                className="w-7 h-7"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {open ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+
+            {/* Desktop Menu */}
             <div className="hidden md:flex items-center flex-1 justify-end">
               {links.map((link, index) => (
                 <div key={index} className="relative group">
                   <div
-                    className="flex items-center py-4 px-2 hover:bg-blue-500 cursor-pointer transition-colors rounded-t-lg"
-                    onClick={() => link.submenu && handleSubmenuToggle(index)}
+                    className="flex items-center py-4 px-3 hover:bg-blue-500 cursor-pointer transition-colors rounded-t-lg"
+                    onClick={() =>
+                      link.submenu && handleSubmenuToggle(index)
+                    }
                   >
-                    <Link href={link.href} className="px-1 font-medium text-sm md:text-md">
+                    <Link
+                      href={link.href}
+                      className="px-1 font-medium text-sm md:text-md"
+                    >
                       {link.label}
                     </Link>
                     {link.submenu && (
@@ -139,14 +163,14 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
                 </div>
               ))}
 
-              {/* ✅ Dynamic Auth Links */}
-              {isLoggedIn && (
-                <Link href="/dashboard" className="ml-4 font-semibold hover:underline">
+              {isLoggedIn ? (
+                <Link
+                  href="/dashboard"
+                  className="ml-4 font-semibold hover:underline"
+                >
                   Dashboard
                 </Link>
-              )}
-
-              {!isLoggedIn && (
+              ) : (
                 <Link href="/Login" className="ml-4 hover:underline">
                   Login
                 </Link>
@@ -163,6 +187,80 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {open && (
+          <div className="md:hidden bg-white text-blue-800 px-4 py-4 space-y-3 shadow-lg">
+            {links.map((link, index) => (
+              <div key={index}>
+                <div
+                  className="flex justify-between items-center py-2 cursor-pointer"
+                  onClick={() =>
+                    link.submenu
+                      ? handleSubmenuToggle(index)
+                      : setOpen(false)
+                  }
+                >
+                  <Link href={link.href} className="font-medium">
+                    {link.label}
+                  </Link>
+
+                  {link.submenu && (
+                    <ChevronDown
+                      size={18}
+                      className={`transition-transform ${
+                        openSubmenu === index ? "rotate-180" : ""
+                      }`}
+                    />
+                  )}
+                </div>
+
+                {link.submenu && openSubmenu === index && (
+                  <div className="pl-4 space-y-2">
+                    {link.submenu.map((subItem, subIndex) => (
+                      <Link
+                        key={subIndex}
+                        href={subItem.href}
+                        className="block py-1 text-sm hover:text-blue-600"
+                        onClick={() => setOpen(false)}
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <div className="pt-3 border-t">
+              {isLoggedIn ? (
+                <Link
+                  href="/dashboard"
+                  className="block py-2 font-semibold"
+                  onClick={() => setOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/Login"
+                  className="block py-2"
+                  onClick={() => setOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
+
+              <Link
+                href="/ContactUs"
+                className="block mt-3 bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded-lg text-center"
+                onClick={() => setOpen(false)}
+              >
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
     </div>
   );
