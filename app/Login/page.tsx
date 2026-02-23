@@ -66,47 +66,37 @@ const LoginPage = () => {
         {/* Left side - Form */}
         <div className=" flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
-           <div>
-  <h2 className="mt-8 text-3xl font-extrabold text-gray-900">
-    Sign in to your account
-  </h2>
+  <div className="mt-8">
+  <div className="relative">
+    <div className="absolute inset-0 flex items-center">
+      <div className="w-full border-t border-gray-300" />
+    </div>
+    <div className="relative flex justify-center text-sm">
+      <span className="px-2 bg-white text-gray-500">
+        Don’t have an account?
+      </span>
+    </div>
+  </div>
 
-  <p className="mt-2 text-sm text-gray-600">
-    Choose your account type to create a new account
-  </p>
-
-  {/* Account Type Links */}
-  <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-
+  <div className="mt-6 grid grid-cols-1 gap-3">
+    
     {/* Guest Signup */}
     <Link
       href="/Signup"
-      className="p-4 rounded-xl border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200"
+      className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-blue-500 text-blue-600 font-medium hover:bg-blue-50 transition-all duration-200"
     >
-      <h3 className="text-lg font-semibold text-gray-900">
-        Guest Account
-      </h3>
-      <p className="text-sm text-gray-600 mt-1">
-        Browse vehicles and make inquiries.
-      </p>
+      Create Guest Account
     </Link>
 
     {/* Seller Signup */}
     <Link
       href="/Seller"
-      className="p-4 rounded-xl border-2 border-gray-300 hover:border-green-500 hover:bg-green-50 transition-all duration-200"
+      className="w-full flex items-center justify-center py-3 px-4 rounded-lg border border-green-500 text-green-600 font-medium hover:bg-green-50 transition-all duration-200"
     >
-      <h3 className="text-lg font-semibold text-gray-900">
-        Seller Account
-      </h3>
-      <p className="text-sm text-gray-600 mt-1">
-        List and manage your vehicles for sale.
-      </p>
+      Create Seller Account
     </Link>
 
   </div>
-
-  
 </div>
 
             <div className="mt-8">
