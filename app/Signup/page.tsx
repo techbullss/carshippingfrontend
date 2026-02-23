@@ -77,6 +77,8 @@ interface AuthResponse {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.f-carshipping.com/api';
 
+const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
 const RegisterPage = () => {
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
@@ -250,7 +252,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     const response = await handleSignup();
 
-    console.log('✅ Registration successful:', response);
+   
 
     // Redirect to verification page
     router.push(`/VerifyEmail?email=${formData.email}`);
@@ -272,10 +274,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   return (
     <>
-      <Head>
-        <title>Register | UK to Kenya Vehicle Shipping</title>
-        <meta name="description" content="Create your account to start shipping vehicles from UK to Kenya" />
-      </Head>
+      
 
       <div className="min-h-screen flex">
         {/* Left side - Form */}
@@ -404,40 +403,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       </div>
 
 
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <div>
-                        <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
-                          Date of Birth *
-                        </label>
-                        <input
-                          type="date"
-                          id="dateOfBirth"
-                          name="dateOfBirth"
-                          required
-                          value={formData.dateOfBirth}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
-                          Gender
-                        </label>
-                        <select
-                          id="gender"
-                          name="gender"
-                          value={formData.gender}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        >
-                          <option value="">Select Gender</option>
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="other">Other</option>
-                          <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                      </div>
-                    </div>
+                    
                   </div>
                 )}
 
@@ -571,80 +537,131 @@ const handleSubmit = async (e: React.FormEvent) => {
 )}
 
                 {/* Step 3: Account Information */}
-                {currentStep === 3 && (
-                  <div className="space-y-6">
-                    <div>
-                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                        Password *
-                      </label>
-                      <div className="mt-1 relative">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          id="password"
-                          name="password"
-                          required
-                          minLength={8}
-                          value={formData.password}
-                          onChange={handleInputChange}
-                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? (
-                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                          ) : (
-                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                            </svg>
-                          )}
-                        </button>
-                      </div>
-                      <p className="mt-1 text-xs text-gray-500">Password must be at least 8 characters long</p>
-                    </div>
+              {currentStep === 3 && (
+  <div className="space-y-6">
+    {/* PASSWORD FIELD */}
+    <div>
+      <label
+        htmlFor="password"
+        className="block text-sm font-medium text-gray-700"
+      >
+        Password *
+      </label>
 
-                    <div>
-                      <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                        Confirm Password *
-                      </label>
-                      <div className="mt-1 relative">
-                        <input
-                          type={showConfirmPassword ? "text" : "password"}
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          required
-                          value={formData.confirmPassword}
-                          onChange={handleInputChange}
-                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        >
-                          {showConfirmPassword ? (
-                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                          ) : (
-                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                            </svg>
-                          )}
-                        </button>
-                      </div>
-                      {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                        <p className="mt-1 text-xs text-red-600">Passwords do not match</p>
-                      )}
-                    </div>
-                  </div>
-                )}
+      <div className="mt-1 relative">
+        <input
+          type={showPassword ? "text" : "password"}
+          id="password"
+          name="password"
+          required
+          minLength={8}
+          pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+          title="Must contain 8+ characters, 1 uppercase, 1 number, and 1 special character."
+          value={formData.password}
+          onChange={handleInputChange}
+          className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none sm:text-sm ${
+            formData.password && !passwordRegex.test(formData.password)
+              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+              : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          }`}
+        />
+
+        <button
+          type="button"
+          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? "🙈" : "👁️"}
+        </button>
+      </div>
+
+      {/* PASSWORD REQUIREMENTS CHECKLIST */}
+      <div className="mt-2 text-xs space-y-1">
+        <p
+          className={
+            formData.password.length >= 8
+              ? "text-green-600"
+              : "text-gray-500"
+          }
+        >
+          ✔ At least 8 characters
+        </p>
+        <p
+          className={
+            /[A-Z]/.test(formData.password)
+              ? "text-green-600"
+              : "text-gray-500"
+          }
+        >
+          ✔ One uppercase letter
+        </p>
+        <p
+          className={
+            /\d/.test(formData.password)
+              ? "text-green-600"
+              : "text-gray-500"
+          }
+        >
+          ✔ One number
+        </p>
+        <p
+          className={
+            /[@$!%*?&]/.test(formData.password)
+              ? "text-green-600"
+              : "text-gray-500"
+          }
+        >
+          ✔ One special character (@$!%*?&)
+        </p>
+      </div>
+    </div>
+
+    {/* CONFIRM PASSWORD */}
+    <div>
+      <label
+        htmlFor="confirmPassword"
+        className="block text-sm font-medium text-gray-700"
+      >
+        Confirm Password *
+      </label>
+
+      <div className="mt-1 relative">
+        <input
+          type={showConfirmPassword ? "text" : "password"}
+          id="confirmPassword"
+          name="confirmPassword"
+          required
+          value={formData.confirmPassword}
+          onChange={handleInputChange}
+          className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none sm:text-sm ${
+            formData.confirmPassword &&
+            formData.password !== formData.confirmPassword
+              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+              : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+          }`}
+        />
+
+        <button
+          type="button"
+          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          onClick={() =>
+            setShowConfirmPassword(!showConfirmPassword)
+          }
+        >
+          {showConfirmPassword ? "🙈" : "👁️"}
+        </button>
+      </div>
+
+      {formData.password &&
+        formData.confirmPassword &&
+        formData.password !== formData.confirmPassword && (
+          <p className="mt-1 text-xs text-red-600">
+            ❌ Passwords do not match
+          </p>
+        )}
+    </div>
+  </div>
+)}
 
                 {/* Step 4: Preferences */}
                 {currentStep === 4 && (
@@ -724,38 +741,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         </div>
 
         {/* Right side - Image/Banner */}
-        <div className="hidden lg:block relative w-0 flex-1">
-          <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-900 to-indigo-900">
-            <div className="h-full w-full flex items-center justify-center p-12">
-              <div className="text-center text-white max-w-lg">
-                <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/20">
-                  <h3 className="text-2xl font-bold mb-4">Start Your Shipping Journey</h3>
-                  <p className="mb-6">Join thousands of customers who trust us for reliable UK to Kenya vehicle shipping</p>
-                  <div className="space-y-4 text-left">
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Real-time shipment tracking</span>
-                    </div>
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Competitive pricing</span>
-                    </div>
-                    <div className="flex items-center">
-                      <svg className="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span>Expert customer support</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+       
       </div>
     </>
   );
