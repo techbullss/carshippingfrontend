@@ -80,20 +80,7 @@ const [verificationSuccess, setVerificationSuccess] = useState(false);
 
           {step === 'verify' ? (
             <form onSubmit={handleVerify} className="space-y-4">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Input
-                type="text"
-                placeholder="Enter verification code"
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
+              
 
               {error && <p className="text-red-500 text-sm">{error}</p>}
               {message && <p className="text-green-600 text-sm">{message}</p>}

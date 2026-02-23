@@ -22,7 +22,7 @@ const VerificationSuccess: React.FC = () => {
 
         {/* Main Message */}
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-          Welcome to the F-CarShipping Family! 🎉
+          Welcome to the F-CarShipping Family
         </h1>
         
         <p className="text-lg text-gray-600 mb-8 leading-relaxed">
@@ -98,17 +98,12 @@ const VerificationSuccess: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-8">
+         
           <button 
-            onClick={() => window.location.href = '/dashboard'}
-            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold transition duration-200"
-          >
-            Go to Dashboard
-          </button>
-          <button 
-            onClick={() => window.location.href = '/services'}
+            onClick={() => window.location.href = '/Vehicles'}
             className="flex-1 border border-blue-500 text-blue-500 hover:bg-blue-50 py-3 px-6 rounded-lg font-semibold transition duration-200"
           >
-            Explore Services
+            Explore Our Listing
           </button>
         </div>
       </div>
