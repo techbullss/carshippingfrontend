@@ -172,7 +172,7 @@ const RegisterPage = () => {
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        return !!(formData.firstName && formData.lastName && formData.email && formData.phone && formData.dateOfBirth);
+        return !!(formData.firstName && formData.lastName && formData.email && formData.phone );
       case 2:
         return !!(formData.streetAddress && formData.city && formData.state && formData.postalCode && formData.country);
       case 3:
