@@ -449,12 +449,10 @@ export default function Home() {
 
         {/* CTA Section */}
   <div className="mt-8 mb-8 relative overflow-hidden">
-  {/* Hand-drawn style border - imperfect like real life */}
-  <div className="absolute inset-0 border-2 border-gray-200 rounded-3xl rotate-[0.5deg] scale-[0.99] opacity-50"></div>
-  <div className="absolute inset-0 border-2 border-gray-100 rounded-3xl -rotate-[0.3deg] scale-[1.01] opacity-30"></div>
-  
+ 
+ 
   {/* Content - with organic spacing */}
-  <div className="relative px-6 md:px-10 py-12 bg-white rounded-3xl">
+  <div className=" px-1 md:px-1 py-1 bg-white ">
     {/* Handwritten-style label */}
     <div className="flex justify-center mb-8">
       <span className="inline-block px-4 py-1.5 bg-gray-50 text-gray-500 text-xs font-mono tracking-wide rounded-full border border-gray-200 shadow-[2px_2px_0_rgba(0,0,0,0.02)]">
@@ -463,7 +461,7 @@ export default function Home() {
     </div>
 
     {/* Main heading - conversational */}
-    <h3 className="text-4xl md:text-5xl font-normal text-gray-900 mb-4 text-center leading-tight max-w-3xl mx-auto">
+    <h3 className="text-2xl md:text-2xl font-normal text-gray-900 mb-4 text-center leading-tight max-w-3xl mx-auto">
       Looking for something 
       <span className="relative whitespace-nowrap">
         <span className="relative z-10 px-2">specific?</span>
@@ -471,7 +469,6 @@ export default function Home() {
       </span>
     </h3>
     
-    {/* Human-centered copy */}
     <div className="max-w-2xl mx-auto mb-10 text-center">
       <p className="text-gray-600 text-lg md:text-xl mb-6 leading-relaxed">
         We get it — sometimes the perfect car isn't sitting in our lot. 
@@ -500,7 +497,7 @@ export default function Home() {
         </div>
         
         {/* Real talk */}
-        <p className="text-xs text-gray-300 mt-2">
+        <p className="text-xs text-blackmt-2">
           *or your money back. no questions asked.
         </p>
       </div>
