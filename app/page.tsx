@@ -168,94 +168,46 @@ export default function Home() {
         </div>
       </div>
     </section>
-<section className="relative bg-gradient-to-b from-blue-50 to-green-50 py-16">
-  <div className="container mx-auto px-6 lg:px-12 relative">
-    {/* FULL-WIDTH TITLE */}
-    <div className="w-full text-center mb-10">
-      <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold text-gray-900 mb-4 tracking-tight">
-        Drive Your Dream Vehicle 
+<section className="bg-white py-16">
+  <div className="max-w-6xl mx-auto px-6 lg:px-8">
+
+    {/* Header */}
+    <div className="text-center mb-12">
+      <h1 className="text-3xl md:text-4xl font-semibold text-gray-900">
+        Quality Vehicles. Local & Imported.
       </h1>
-      <div className="w-48 h-1 bg-gradient-to-r from-blue-400 to-green-500 mx-auto rounded-full"></div>
-      <p className="text-lg text-gray-600 mt-4 max-w-3xl mx-auto">
-        Seamless vehicle import solutions with trusted expertise
+      <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
+        We sell cars, commercial vehicles, and motorcycles sourced both locally and internationally.
+        Reliable options. Transparent pricing. Professional service.
       </p>
     </div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-      {/* Text / Selling Column */}
-      <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
-        <p className="text-gray-800 max-w-lg leading-relaxed text-lg">
-          We connect Kenyan car buyers to the best deals in the world—whether you are 
-          purchasing a luxury ride, a family SUV, or a workhorse van.  
-          From sourcing and inspection to shipping and final delivery in Kenya, 
-          <strong className="text-blue-600"> we handle everything for you</strong> with speed, transparency, 
-          and unbeatable pricing.
+      
+      {/* Left Content */}
+      <div>
+        <p className="text-gray-700 leading-relaxed mb-6">
+          Whether you’re looking for a personal car, a commercial work vehicle, or a motorcycle,
+          we provide carefully selected units to meet your needs. Our team handles sourcing,
+          inspection, importation, and delivery with professionalism and efficiency.
         </p>
-<ul className="space-y-4 text-gray-800">
-  <li className="flex items-start gap-3 group">
-    <div className="bg-blue-100 p-2 rounded-full mt-1 group-hover:bg-blue-200 transition-colors duration-300">
-      <Car className="w-5 h-5 text-blue-600" />
-    </div>
-    <span><strong className="text-green-700">Verified UK Listings</strong> – Browse a curated selection of quality vehicles ready for export.</span>
-  </li>
-  
-  <li className="flex items-start gap-3 group">
-    <div className="bg-green-100 p-2 rounded-full mt-1 group-hover:bg-green-200 transition-colors duration-300">
-      <Package className="w-5 h-5 text-green-600" />
-    </div>
-    <span><strong className="text-green-700">End-to-End Shipping</strong> – From purchase to port clearance, we manage every step.</span>
-  </li>
-  
-  <li className="flex items-start gap-3 group">
-    <div className="bg-yellow-100 p-2 rounded-full mt-1 group-hover:bg-yellow-200 transition-colors duration-300">
-      <CreditCard className="w-5 h-5 text-yellow-600" />
-    </div>
-    <span><strong className="text-green-700">Flexible Payment</strong> – Secure transactions with no hidden fees.</span>
-  </li>
-  
-  <li className="flex items-start gap-3 group">
-    <div className="bg-blue-100 p-2 rounded-full mt-1 group-hover:bg-blue-200 transition-colors duration-300">
-      <HandshakeIcon className="w-5 h-5 text-blue-600" />
-    </div>
-    <span><strong className="text-green-700">Kenya-Focused Support</strong> – Local team assistance for customs and delivery.</span>
-  </li>
-</ul>
 
-        <div className="flex flex-col sm:flex-row gap-4 pt-4">
-         
-          
-         
+        <ul className="space-y-3 text-gray-700">
+          <li>• Cars – Sedans, SUVs, and Luxury Vehicles</li>
+          <li>• Commercial – Vans, Pickups, Trucks</li>
+          <li>• Motorcycles – Local and Imported Models</li>
+          <li>• Direct Imports & Ready Local Stock</li>
+        </ul>
+      </div>
+
+      {/* Right Image */}
+      <div>
+        <div className="w-full h-80 bg-[url('/key.jpg')] bg-cover bg-center rounded-lg border border-gray-200">
         </div>
       </div>
 
-      {/* Image / Hero Column */}
-      <div className="relative">
-        <div className="w-full h-80 md:h-[420px] rounded-2xl shadow-2xl bg-[url('/key.jpg')] bg-cover bg-center relative overflow-hidden flex items-center justify-center transform hover:scale-105 transition-transform duration-700">
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/70 via-transparent to-transparent"></div>
-          
-          {/* Decorative elements */}
-          <div className="absolute top-4 right-4 w-16 h-16 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute bottom-4 left-4 w-12 h-12 bg-green-500 rounded-full opacity-20 animate-bounce"></div>
-          
-          <span className="absolute bottom-6 left-6 text-white text-lg font-bold bg-gradient-to-r from-blue-600 to-green-600 px-6 py-3 rounded-full shadow-lg">
-            UK Cars • Bikes • Parts
-          </span>
-        </div>
-        
-        {/* Floating stats */}
-        <div className="absolute -bottom-5 -right-5 bg-white rounded-xl shadow-xl p-4 border border-blue-200">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">500+</div>
-            <div className="text-sm text-gray-600">Vehicles Shipped</div>
-          </div>
-        </div>
-      </div>
     </div>
 
-    {/* Floating decorative elements */}
-    <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-10 animate-pulse"></div>
-    <div className="absolute bottom-20 right-20 w-16 h-16 bg-green-400 rounded-full opacity-10 animate-bounce delay-1000"></div>
   </div>
 </section>
 
