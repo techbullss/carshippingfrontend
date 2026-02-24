@@ -168,42 +168,84 @@ export default function Home() {
         </div>
       </div>
     </section>
-<section className="bg-white py-16">
-  <div className="max-w-6xl mx-auto px-6 lg:px-8">
+<section className="bg-white py-20">
+  <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
     {/* Header */}
-    <div className="text-center mb-12">
-      <h1 className="text-3xl md:text-4xl font-semibold text-gray-900">
-        Quality Vehicles. Local & Imported.
+    <div className="text-center mb-16">
+      <h1 className="text-4xl font-bold text-gray-900">
+        Trusted Vehicle Dealership
       </h1>
-      <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-        We sell cars, commercial vehicles, and motorcycles sourced both locally and internationally.
-        Reliable options. Transparent pricing. Professional service.
+      <div className="w-16 h-1 bg-red-600 mx-auto mt-4"></div>
+      <p className="mt-6 text-gray-600 max-w-2xl mx-auto text-lg">
+        We supply quality cars, commercial vehicles, and motorcycles —
+        available locally and through direct international import.
       </p>
     </div>
 
+    {/* Main Grid */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-      
-      {/* Left Content */}
-      <div>
-        <p className="text-gray-700 leading-relaxed mb-6">
-          Whether you’re looking for a personal car, a commercial work vehicle, or a motorcycle,
-          we provide carefully selected units to meet your needs. Our team handles sourcing,
-          inspection, importation, and delivery with professionalism and efficiency.
-        </p>
 
-        <ul className="space-y-3 text-gray-700">
-          <li>• Cars – Sedans, SUVs, and Luxury Vehicles</li>
-          <li>• Commercial – Vans, Pickups, Trucks</li>
-          <li>• Motorcycles – Local and Imported Models</li>
-          <li>• Direct Imports & Ready Local Stock</li>
-        </ul>
+      {/* Left Image */}
+      <div>
+        <div className="w-full h-[420px] bg-[url('/key.jpg')] bg-cover bg-center rounded-md border border-gray-200"></div>
       </div>
 
-      {/* Right Image */}
+      {/* Right Content */}
       <div>
-        <div className="w-full h-80 bg-[url('/key.jpg')] bg-cover bg-center rounded-lg border border-gray-200">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+          Our Vehicle Categories
+        </h2>
+
+        <div className="space-y-6">
+
+          <div>
+            <h3 className="font-semibold text-gray-900">Passenger Vehicles</h3>
+            <p className="text-gray-600 text-sm">
+              Sedans, SUVs, and family vehicles ready for immediate purchase or import.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-900">Commercial Vehicles</h3>
+            <p className="text-gray-600 text-sm">
+              Pickups, vans, trucks, and fleet solutions for business and logistics.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-900">Motorcycles</h3>
+            <p className="text-gray-600 text-sm">
+              Reliable local stock and international imports.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-900">Direct Imports</h3>
+            <p className="text-gray-600 text-sm">
+              We manage sourcing, inspection, shipping, and clearance from start to finish.
+            </p>
+          </div>
+
         </div>
+
+        {/* CTA */}
+        <div className="flex flex-col sm:flex-row gap-4 mt-10">
+          <button
+            onClick={() => window.location.href = "/Vehicles"}
+            className="px-8 py-3 bg-red-600 text-white text-sm font-semibold uppercase tracking-wide hover:bg-red-700 transition"
+          >
+            Browse Inventory
+          </button>
+
+          <button
+            onClick={() => window.location.href = "/ContactUs"}
+            className="px-8 py-3 border border-red-600 text-red-600 text-sm font-semibold uppercase tracking-wide hover:bg-red-600 hover:text-white transition"
+          >
+            Contact Sales
+          </button>
+        </div>
+
       </div>
 
     </div>
