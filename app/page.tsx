@@ -448,99 +448,65 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-  <div className="mt-8 mb-8 relative overflow-hidden">
- 
- 
-  {/* Content - with organic spacing */}
-  <div className=" px-1 md:px-1 py-1 bg-white ">
-    {/* Handwritten-style label */}
+ <div className="w-full bg-black text-white py-24">
+
+  <div className="w-full text-center">
+
+    {/* Gold Accent Line */}
     <div className="flex justify-center mb-8">
-      <span className="inline-block px-4 py-1.5 bg-gray-50 text-gray-500 text-xs font-mono tracking-wide rounded-full border border-gray-200 shadow-[2px_2px_0_rgba(0,0,0,0.02)]">
-        ✦ for the ones we don't have ✦
-      </span>
+      <div className="w-16 h-[2px] bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600"></div>
     </div>
 
-    {/* Main heading - conversational */}
-    <h3 className="text-2xl md:text-2xl font-normal text-gray-900 mb-4 text-center leading-tight max-w-3xl mx-auto">
-      Looking for something 
-      <span className="relative whitespace-nowrap">
-        <span className="relative z-10 px-2">specific?</span>
-        <span className="absolute bottom-2 left-0 w-full h-3 bg-yellow-100 -rotate-1"></span>
-      </span>
-    </h3>
-    
-    <div className="max-w-2xl mx-auto mb-10 text-center">
-      <p className="text-gray-600 text-lg md:text-xl mb-6 leading-relaxed">
-        We get it — sometimes the perfect car isn't sitting in our lot. 
-        <span className="block mt-2 text-gray-500">Maybe it's parked in Tokyo, Dubai, or Berlin.</span>
-      </p>
-      
-      <p className="text-gray-500 italic mb-8 text-base">
-        (We'll go find it for you. No extra markup. Just the car you actually want.)
-      </p>
-      
-      {/* Human elements - unscripted */}
-      <div className="flex flex-col items-center gap-3">
-        <div className="flex items-center gap-4 text-sm text-gray-400">
-          <span className="flex items-center gap-1.5">
-            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-            we inspect everything
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-            door-to-door shipping
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-            14 days to fall in love
-          </span>
-        </div>
-        
-        {/* Real talk */}
-        <p className="text-xs text-blackmt-2">
-          *or your money back. no questions asked.
-        </p>
-      </div>
+    {/* Heading */}
+    <h2 className="text-4xl md:text-5xl font-light tracking-wide mb-6">
+      Bespoke Vehicle Sourcing
+    </h2>
+
+    {/* Subheading */}
+    <p className="max-w-3xl mx-auto text-gray-300 text-lg md:text-xl leading-relaxed mb-10">
+      When excellence is not on the lot, we source it worldwide.
+      Our team locates, inspects, and delivers the exact vehicle you desire —
+      discreetly, professionally, without compromise.
+    </p>
+
+    {/* Divider */}
+    <div className="flex justify-center mb-12">
+      <div className="w-24 h-px bg-gray-700"></div>
     </div>
 
-    {/* Action area - personal, not corporate */}
-    <div className="flex flex-col sm:flex-row items-center justify-center gap-5 max-w-lg mx-auto">
-      <button 
+    {/* Features */}
+    <div className="flex flex-col sm:flex-row justify-center items-center gap-10 text-sm tracking-widest uppercase text-gray-400 mb-14">
+      <span>Global Sourcing</span>
+      <span>Comprehensive Inspection</span>
+      <span>Door-to-Door Delivery</span>
+    </div>
+
+    {/* Buttons */}
+    <div className="flex flex-col sm:flex-row justify-center gap-6">
+
+      <button
         onClick={() => window.location.href = "/Vehicles"}
-        className="group relative px-8 py-4 bg-gray-900 text-white text-sm tracking-wide rounded-full hover:bg-gray-800 transition-all duration-300 shadow-[4px_4px_0_rgba(0,0,0,0.1)] hover:shadow-[2px_2px_0_rgba(0,0,0,0.1)] hover:translate-x-[2px] hover:translate-y-[2px] w-full sm:w-auto"
+        className="px-12 py-4 bg-white text-black text-sm tracking-widest uppercase hover:bg-gray-200 transition duration-300"
       >
-        <span className="flex items-center justify-center gap-2">
-          <FaSearch className="text-xs opacity-70" />
-          see what we've got
-        </span>
+        Explore Inventory
       </button>
-      
-      <span className="text-gray-300 text-sm hidden sm:block">or</span>
-      
-      <button 
+
+      <button
         onClick={() => window.location.href = "/ContactUs"}
-        className="group relative px-8 py-4 bg-transparent text-gray-700 text-sm tracking-wide rounded-full border border-gray-200 hover:border-gray-300 transition-all duration-300 w-full sm:w-auto"
+        className="px-12 py-4 border border-gray-600 text-white text-sm tracking-widest uppercase hover:border-white hover:bg-white hover:text-black transition duration-300"
       >
-        <span className="flex items-center justify-center gap-2">
-          <span className="text-lg opacity-50">✎</span>
-          tell us what you want
-        </span>
+        Request a Vehicle
       </button>
+
     </div>
 
-    {/* Personal touch - like a handwritten note */}
-    <div className="mt-10 text-center">
-      <div className="inline-flex items-center gap-2 text-xs text-gray-300 border-t border-gray-100 pt-6 px-8">
-        <span className="font-mono">PS</span>
-        <span>— we reply within 2 hours. sometimes faster if we're not driving.</span>
-      </div>
+    {/* Signature Line */}
+    <div className="mt-16 text-xs tracking-[0.3em] text-gray-500 uppercase">
+      Precision. Luxury. Delivered.
     </div>
 
-    {/* Quirky detail - like a secret message */}
-    <div className="absolute bottom-3 right-3 opacity-5 hover:opacity-20 transition-opacity">
-      <span className="text-4xl rotate-12 inline-block">🚗</span>
-    </div>
   </div>
+
 </div>
       </div>
     </section>
