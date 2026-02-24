@@ -448,7 +448,7 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
- <div className="w-full bg-gray-100 text-black py-2">
+ <div className="w-full bg-gray-50 text-black py-2">
 
   <div className="w-full text-center">
 
@@ -459,11 +459,11 @@ export default function Home() {
 
     {/* Heading */}
     <h2 className="text-4xl md:text-5xl font-light tracking-wide mb-6">
-      Best Vehicle Sourcing
+       Vehicle Sourcing
     </h2>
 
     {/* Subheading */}
-    <p className="max-w-3xl mx-auto text-gray-300 text-lg md:text-xl leading-relaxed mb-10">
+    <p className="max-w-3xl mx-auto text-black text-lg md:text-xl leading-relaxed mb-10">
       When excellence is not on the lot, we source it worldwide.
       Our team locates, inspects, and delivers the exact vehicle you desire —
       discreetly, professionally, without compromise.
@@ -475,7 +475,7 @@ export default function Home() {
     </div>
 
     {/* Features */}
-    <div className="flex flex-col sm:flex-row justify-center items-center gap-10 text-sm tracking-widest uppercase text-gray-400 mb-14">
+    <div className="flex flex-col sm:flex-row justify-center items-center gap-10 text-sm tracking-widest uppercase text-white mb-14">
       <span>Global Sourcing</span>
       <span>Comprehensive Inspection</span>
       <span>Door-to-Door Delivery</span>
@@ -501,7 +501,7 @@ export default function Home() {
     </div>
 
     {/* Signature Line */}
-    <div className="mt-16 text-xs tracking-[0.3em] text-gray-500 uppercase">
+    <div className="mt-16 text-xs tracking-[0.3em] text-white uppercase">
       Precision. Luxury. Delivered.
     </div>
 
