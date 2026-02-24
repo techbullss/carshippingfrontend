@@ -296,83 +296,79 @@ export default function Home() {
     ) : (
       /* Cars Grid */
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {latestArrivals.map((car) => (
-          <div
-            key={car.id}
-            
-            className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl border-r-6 border-emerald-500 transition-all duration-300"
-          >
-            {/* Image with tags */}
-            <div className="relative">
-              <img
-                src={car.imageUrls?.[0] || "/car-placeholder.jpg"}
-                alt={`${car.brand} ${car.model}`}
-                className="w-full h-64 object-cover"
-              />
+  {latestArrivals.map((car) => (
+    <div
+      key={car.id}
+      className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition duration-200"
+    >
+      {/* Image */}
+      <div className="relative">
+        <img
+          src={car.imageUrls?.[0] || "/car-placeholder.jpg"}
+          alt={`${car.brand} ${car.model}`}
+          className="w-full h-56 object-cover"
+        />
 
-              {/* Favorite button */}
-              <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full backdrop-blur-sm hover:bg-red-100 transition-colors">
-                <FaRegHeart className="text-red-500 text-xl" />
-              </button>
+        {/* Favorite */}
+        <button className="absolute top-3 right-3 p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-100 transition">
+          <FaRegHeart className="text-gray-600 text-sm" />
+        </button>
 
-              {/* NEW badge */}
-              {car.isNew && (
-                <span className="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                  NEW
-                </span>
-              )}
-            </div>
-
-            {/*  Car Details */}
-            <div className="p-6 space-y-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {car.brand} {car.model}
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    {car.yearOfManufacture} • {car.mileage} km
-                  </p>
-                </div>
-                <span className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full text-sm shadow-sm">
-                  KES {car.priceKes.toLocaleString()}
-                </span>
-              </div>
-
-              {/* Features */}
-              <div className="grid grid-cols-3 gap-3 text-gray-600 text-sm">
-                <div className="flex items-center">
-                  <FaCar className="mr-2 text-blue-500" /> {car.bodyType}
-                </div>
-                <div className="flex items-center">
-                  <FaGasPump className="mr-2 text-blue-500" /> {car.fuelType}
-                </div>
-                <div className="flex items-center">
-                  <FaTachometerAlt className="mr-2 text-blue-500" /> {car.transmission}
-                </div>
-              </div>
-
-              {/* CTA Buttons */}
-              {!usingFallback && (
-                <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                 
-                  <button
-  onClick={() => handleCarClick(car.id)}
-  className="flex-1 px-4 py-2 text-emerald-600 font-semibold 
-             hover:text-emerald-700 transition-colors duration-300 
-             relative group"
->
-  View Details
-  <span className="absolute bottom-1 left-1/2 transform -translate-x-1/2 
-                   w-0 h-0.5 bg-emerald-500 group-hover:w-12 
-                   transition-all duration-300"></span>
-</button>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
+        {/* New Badge */}
+        {car.isNew && (
+          <span className="absolute top-3 left-3 bg-black text-white text-xs px-2 py-1 rounded">
+            NEW
+          </span>
+        )}
       </div>
+
+      {/* Details */}
+      <div className="p-4 space-y-3">
+        {/* Title + Price */}
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="text-base font-semibold text-gray-900">
+              {car.brand} {car.model}
+            </h3>
+            <p className="text-sm text-gray-500">
+              {car.yearOfManufacture} • {car.mileage} km
+            </p>
+          </div>
+
+          <span className="text-sm font-semibold text-gray-900">
+            KES {car.priceKes.toLocaleString()}
+          </span>
+        </div>
+
+        {/* Features */}
+        <div className="flex justify-between text-xs text-gray-600">
+          <div className="flex items-center gap-1">
+            <FaCar className="text-gray-400" />
+            {car.bodyType}
+          </div>
+          <div className="flex items-center gap-1">
+            <FaGasPump className="text-gray-400" />
+            {car.fuelType}
+          </div>
+          <div className="flex items-center gap-1">
+            <FaTachometerAlt className="text-gray-400" />
+            {car.transmission}
+          </div>
+        </div>
+
+        {/* Button */}
+        {!usingFallback && (
+          <button
+            onClick={() => handleCarClick(car.id)}
+            className="w-full mt-3 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition"
+          >
+            View Details
+          </button>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
     )}
 
     {/* Footer CTA */}
