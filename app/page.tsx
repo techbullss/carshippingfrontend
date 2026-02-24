@@ -233,14 +233,14 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row gap-4 mt-10">
           <button
             onClick={() => window.location.href = "/Vehicles"}
-            className="px-8 py-3 bg-red-600 text-white text-sm font-semibold uppercase tracking-wide hover:bg-red-700 transition"
+            className="px-8 py-3 bg-white text-black text-sm font-semibold uppercase tracking-wide hover:bg-red-700 transition"
           >
             Browse Inventory
           </button>
 
           <button
             onClick={() => window.location.href = "/ContactUs"}
-            className="px-8 py-3 border border-red-600 text-red-600 text-sm font-semibold uppercase tracking-wide hover:bg-red-600 hover:text-white transition"
+            className="px-8 py-3 border border-green-600 text-green-600 text-sm font-semibold uppercase tracking-wide hover:bg-green-700 hover:text-white transition"
           >
             Contact Sales
           </button>
