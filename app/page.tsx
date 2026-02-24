@@ -448,71 +448,102 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-8 mb-8 bg-[#F5F7FA] border border-gray-200 rounded-xl p-8 relative overflow-hidden shadow-sm">
-  {/* Subtle car pattern overlay */}
-  <div className="absolute inset-0 opacity-[0.02]" 
-       style={{
-         backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20 L25 20 L27 25 L33 25 L35 20 L40 20 L45 30 L45 35 L40 35 L38 38 L22 38 L20 35 L15 35 L15 30 L20 20 Z' fill='none' stroke='%23999' stroke-width='1'/%3E%3C/svg%3E")`,
-         backgroundSize: '60px 60px'
-       }}>
-  </div>
+  <div className="mt-8 mb-8 relative overflow-hidden">
+  {/* Hand-drawn style border - imperfect like real life */}
+  <div className="absolute inset-0 border-2 border-gray-200 rounded-3xl rotate-[0.5deg] scale-[0.99] opacity-50"></div>
+  <div className="absolute inset-0 border-2 border-gray-100 rounded-3xl -rotate-[0.3deg] scale-[1.01] opacity-30"></div>
   
-  {/* Content */}
- <div className="relative z-10">
-  {/* Top section - completely plain */}
-  <div className="flex items-center justify-center gap-3 mb-6">
-    <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">
-      Special Order
-    </span>
-    <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">
-      Direct Import
-    </span>
-  </div>
+  {/* Content - with organic spacing */}
+  <div className="relative px-6 md:px-10 py-12 bg-white rounded-3xl">
+    {/* Handwritten-style label */}
+    <div className="flex justify-center mb-8">
+      <span className="inline-block px-4 py-1.5 bg-gray-50 text-gray-500 text-xs font-mono tracking-wide rounded-full border border-gray-200 shadow-[2px_2px_0_rgba(0,0,0,0.02)]">
+        ✦ for the ones we don't have ✦
+      </span>
+    </div>
 
-  {/* Main heading - plain */}
-  <h3 className="text-3xl md:text-4xl font-light text-gray-900 mb-3 tracking-tight">
-    Model Not in Stock?
-  </h3>
-  
-  {/* Subtext - plain */}
-  <div className="max-w-2xl mx-auto mb-8">
-    <p className="text-gray-500 text-lg mb-4 font-light">
-      We source vehicles directly from all auctions and dealers
-    </p>
-    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-400">
-      <span>Japan-grade inspections</span>
-      <span>Shipping included</span>
-      <span>14-day guarantee</span>
+    {/* Main heading - conversational */}
+    <h3 className="text-4xl md:text-5xl font-normal text-gray-900 mb-4 text-center leading-tight max-w-3xl mx-auto">
+      Looking for something 
+      <span className="relative whitespace-nowrap">
+        <span className="relative z-10 px-2">specific?</span>
+        <span className="absolute bottom-2 left-0 w-full h-3 bg-yellow-100 -rotate-1"></span>
+      </span>
+    </h3>
+    
+    {/* Human-centered copy */}
+    <div className="max-w-2xl mx-auto mb-10 text-center">
+      <p className="text-gray-600 text-lg md:text-xl mb-6 leading-relaxed">
+        We get it — sometimes the perfect car isn't sitting in our lot. 
+        <span className="block mt-2 text-gray-500">Maybe it's parked in Tokyo, Dubai, or Berlin.</span>
+      </p>
+      
+      <p className="text-gray-500 italic mb-8 text-base">
+        (We'll go find it for you. No extra markup. Just the car you actually want.)
+      </p>
+      
+      {/* Human elements - unscripted */}
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex items-center gap-4 text-sm text-gray-400">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+            we inspect everything
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+            door-to-door shipping
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+            14 days to fall in love
+          </span>
+        </div>
+        
+        {/* Real talk */}
+        <p className="text-xs text-gray-300 mt-2">
+          *or your money back. no questions asked.
+        </p>
+      </div>
+    </div>
+
+    {/* Action area - personal, not corporate */}
+    <div className="flex flex-col sm:flex-row items-center justify-center gap-5 max-w-lg mx-auto">
+      <button 
+        onClick={() => window.location.href = "/Vehicles"}
+        className="group relative px-8 py-4 bg-gray-900 text-white text-sm tracking-wide rounded-full hover:bg-gray-800 transition-all duration-300 shadow-[4px_4px_0_rgba(0,0,0,0.1)] hover:shadow-[2px_2px_0_rgba(0,0,0,0.1)] hover:translate-x-[2px] hover:translate-y-[2px] w-full sm:w-auto"
+      >
+        <span className="flex items-center justify-center gap-2">
+          <FaSearch className="text-xs opacity-70" />
+          see what we've got
+        </span>
+      </button>
+      
+      <span className="text-gray-300 text-sm hidden sm:block">or</span>
+      
+      <button 
+        onClick={() => window.location.href = "/ContactUs"}
+        className="group relative px-8 py-4 bg-transparent text-gray-700 text-sm tracking-wide rounded-full border border-gray-200 hover:border-gray-300 transition-all duration-300 w-full sm:w-auto"
+      >
+        <span className="flex items-center justify-center gap-2">
+          <span className="text-lg opacity-50">✎</span>
+          tell us what you want
+        </span>
+      </button>
+    </div>
+
+    {/* Personal touch - like a handwritten note */}
+    <div className="mt-10 text-center">
+      <div className="inline-flex items-center gap-2 text-xs text-gray-300 border-t border-gray-100 pt-6 px-8">
+        <span className="font-mono">PS</span>
+        <span>— we reply within 2 hours. sometimes faster if we're not driving.</span>
+      </div>
+    </div>
+
+    {/* Quirky detail - like a secret message */}
+    <div className="absolute bottom-3 right-3 opacity-5 hover:opacity-20 transition-opacity">
+      <span className="text-4xl rotate-12 inline-block">🚗</span>
     </div>
   </div>
-
-  {/* Action buttons - plain, no colors */}
-  <div className="flex flex-col sm:flex-row justify-center gap-3 max-w-lg mx-auto">
-    <button 
-      onClick={() => window.location.href = "/Vehicles"}
-      className="px-6 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-200"
-    >
-      <span className="flex items-center justify-center gap-2">
-        <FaSearch className="text-sm" />
-        View Current Stock
-      </span>
-    </button>
-    
-    <span className="hidden sm:inline text-gray-300 self-center">/</span>
-    
-    <button 
-      onClick={() => window.location.href = "/ContactUs"}
-      className="px-6 py-3 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-200"
-    >
-      Request Vehicle
-    </button>
-  </div>
-
-  {/* Reference number - very subtle */}
-  <div className="mt-8 text-xs text-gray-300 font-mono tracking-wider">
-    REF: EU-SPEC-{new Date().getFullYear()}-{(Math.floor(Math.random() * 9000) + 1000)}
-  </div>
-</div>
 </div>
       </div>
     </section>
