@@ -448,32 +448,79 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          viewport={{ once: false}}
-          className="mt-8 mb-8 bg-gradient-to-r from-blue-700 to-indigo-700 rounded-2xl p-8 text-center relative overflow-hidden"
-        >
-          <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full"></div>
-          <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-white/10 rounded-full"></div>
-          <div className="relative z-10">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">Can't Find Your Preferred Brand?</h3>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              We source vehicles directly from Europe. Contact us for special requests.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
-               onClick={() => window.location.href = "/Vehicles"}>
-                <FaSearch className="mr-2" /> View what we have in Model
-              </button>
-              <button className="bg-transparent border-2 border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors duration-300"
-               onClick={() => window.location.href = "/ContactUs"}>
-                Contact Us for more inquiries.
-              </button>
-            </div>
-          </div>
-        </motion.div>
+        <div className="mt-8 mb-8 bg-[#F5F7FA] border border-gray-200 rounded-xl p-8 relative overflow-hidden shadow-sm">
+  {/* Subtle car pattern overlay */}
+  <div className="absolute inset-0 opacity-[0.02]" 
+       style={{
+         backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20 L25 20 L27 25 L33 25 L35 20 L40 20 L45 30 L45 35 L40 35 L38 38 L22 38 L20 35 L15 35 L15 30 L20 20 Z' fill='none' stroke='%23999' stroke-width='1'/%3E%3C/svg%3E")`,
+         backgroundSize: '60px 60px'
+       }}>
+  </div>
+  
+  {/* Content */}
+  <div className="relative z-10">
+    {/* Top section with auction-style label */}
+    <div className="flex items-center justify-center gap-3 mb-6">
+      <span className="bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider">
+        Special Order
+      </span>
+      <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+        Direct Import
+      </span>
+    </div>
+
+    {/* Main heading - auction style */}
+    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+      Model Not in Stock?
+    </h3>
+    
+    {/* Subtext with technical details */}
+    <div className="max-w-2xl mx-auto mb-8">
+      <p className="text-gray-600 text-lg mb-2">
+        We source vehicles directly from All auctions and dealers
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500 mt-3">
+        <span className="flex items-center gap-1">
+          <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+          Japan-grade inspections
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+          Shipping included
+        </span>
+        <span className="flex items-center gap-1">
+          <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+          14-day guarantee
+        </span>
+      </div>
+    </div>
+
+    {/* Action buttons - auction style */}
+    <div className="flex flex-col sm:flex-row justify-center gap-4 max-w-lg mx-auto">
+      <button 
+        onClick={() => window.location.href = "/Vehicles"}
+        className="flex-1 bg-gray-900 text-white font-medium px-6 py-3.5 rounded-lg hover:bg-gray-800 transition-colors duration-200 text-sm uppercase tracking-wider shadow-sm"
+      >
+        <span className="flex items-center justify-center gap-2">
+          <FaSearch className="text-base" />
+          View Current Stock
+        </span>
+      </button>
+      
+      <button 
+        onClick={() => window.location.href = "/ContactUs"}
+        className="flex-1 bg-white text-gray-900 font-medium px-6 py-3.5 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm uppercase tracking-wider border border-gray-300"
+      >
+        Request Vehicle
+      </button>
+    </div>
+
+    {/* Auction reference number */}
+    <div className="mt-6 text-xs text-gray-400 font-mono">
+      REF: EU-SPEC-{new Date().getFullYear()}-{(Math.floor(Math.random() * 9000) + 1000)}
+    </div>
+  </div>
+</div>
       </div>
     </section>
    </div>
