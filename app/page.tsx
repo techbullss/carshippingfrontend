@@ -394,7 +394,7 @@ export default function Home() {
         <EuropeanCarsHero />
       </div>
 </section>
-    <section className=" bg-gradient-to-b from-gray-50 to-white px-4">
+    <section className=" bg-gradient-to-b from-gray-50 to-white ">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -448,7 +448,7 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
- <div className="w-full bg-black text-white py-24">
+ <div className="w-full bg-gray-900 text-white py-2">
 
   <div className="w-full text-center">
 
@@ -459,7 +459,7 @@ export default function Home() {
 
     {/* Heading */}
     <h2 className="text-4xl md:text-5xl font-light tracking-wide mb-6">
-      Bespoke Vehicle Sourcing
+      Best Vehicle Sourcing
     </h2>
 
     {/* Subheading */}
