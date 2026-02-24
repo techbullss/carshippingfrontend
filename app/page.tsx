@@ -168,15 +168,15 @@ export default function Home() {
         </div>
       </div>
     </section>
-<section className="bg-white py-20">
+<section className="bg-white py-4">
   <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
     {/* Header */}
-    <div className="text-center mb-16">
-      <h1 className="text-4xl font-bold text-gray-900">
+    <div className="text-center mb-4">
+      <h1 className="text-2xl font-bold text-gray-900">
         Trusted Vehicle Dealership
       </h1>
-      <div className="w-16 h-1 bg-red-600 mx-auto mt-4"></div>
+      <div className="w-24 h-1 bg-green-600 mx-auto mt-4"></div>
       <p className="mt-6 text-gray-600 max-w-2xl mx-auto text-lg">
         We supply quality cars, commercial vehicles, and motorcycles —
         available locally and through direct international import.
@@ -231,12 +231,7 @@ export default function Home() {
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-4 mt-10">
-          <button
-            onClick={() => window.location.href = "/Vehicles"}
-            className="px-8 py-3 bg-white text-black text-sm font-semibold uppercase tracking-wide hover:bg-red-700 transition"
-          >
-            Browse Inventory
-          </button>
+        
 
           <button
             onClick={() => window.location.href = "/ContactUs"}
