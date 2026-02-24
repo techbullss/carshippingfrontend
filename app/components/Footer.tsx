@@ -2,7 +2,6 @@ export default function Footer() {
   return (
    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-white pt-16 pb-8 relative">
   {/* Decorative top border */}
-  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-sky-400"></div>
   
   <div className="container mx-auto px-4 lg:px-8">
     {/* Main Footer Content */}

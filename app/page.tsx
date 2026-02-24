@@ -448,7 +448,7 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
- <div className="w-full bg-gray-900 text-white py-2">
+ <div className="w-full bg-gray-100 text-black py-2">
 
   <div className="w-full text-center">
 
