@@ -471,11 +471,11 @@ export default function Home() {
 
     {/* Divider */}
     <div className="flex justify-center mb-12">
-      <div className="w-24 h-px bg-gray-700"></div>
+      <div className="w-24 h-px bg-black"></div>
     </div>
 
     {/* Features */}
-    <div className="flex flex-col sm:flex-row justify-center items-center gap-10 text-sm tracking-widest uppercase text-white mb-14">
+    <div className="flex flex-col sm:flex-row justify-center items-center gap-10 text-sm tracking-widest uppercase text-black mb-14">
       <span>Global Sourcing</span>
       <span>Comprehensive Inspection</span>
       <span>Door-to-Door Delivery</span>
@@ -493,7 +493,7 @@ export default function Home() {
 
       <button
         onClick={() => window.location.href = "/ContactUs"}
-        className="px-12 py-4 border border-gray-600 text-white text-sm tracking-widest uppercase hover:border-white hover:bg-white hover:text-black transition duration-300"
+        className="px-12 py-4 border border-gray-600 text-black text-sm tracking-widest uppercase hover:border-white hover:bg-white hover:text-black transition duration-300"
       >
         Request a Vehicle
       </button>
@@ -501,7 +501,7 @@ export default function Home() {
     </div>
 
     {/* Signature Line */}
-    <div className="mt-16 text-xs tracking-[0.3em] text-white uppercase">
+    <div className="mt-16 text-xs tracking-[0.3em] text-black uppercase">
       Precision. Luxury. Delivered.
     </div>
 
