@@ -751,7 +751,7 @@ const VehicleDetails = () => {
                   <>
                     <h2 className="text-xl font-bold mb-4">Ownership & History</h2>
                     <p className="text-gray-700">
-                      ✅ Basic history check completed.  
+                      Basic history check completed.  
                       <br />• 5 checks passed successfully.  
                       <br />• No outstanding finance.  
                       <br />• No theft or write-off records.  
@@ -977,9 +977,9 @@ const VehicleDetails = () => {
               "https://api.f-carshipping.com/api/reviews/save",
               {
                 method: "POST",
+                credentials: "include",
                 headers: {
-                  "Content-Type": "application/json",
-                  
+                  "Content-Type": "application/json",  
                 },
                
                 body: JSON.stringify({
