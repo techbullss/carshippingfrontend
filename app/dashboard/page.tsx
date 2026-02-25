@@ -212,74 +212,62 @@ const { user } = useCurrentUser();
         )}
 
         {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+ <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
 
   {/* Cars */}
   <div
     onClick={() => router.push('/dashboard/Cars')}
-    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer p-6 border border-gray-100"
+    className="cursor-pointer"
   >
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-sm text-gray-500">Total Cars</p>
-        <h2 className="text-3xl font-bold mt-2">{stats.totalCars}</h2>
-      </div>
-      <div className="p-3 bg-blue-50 rounded-xl">
-        <Car className="w-6 h-6 text-blue-600" />
-      </div>
+    <div className="flex items-center gap-3">
+      <Car className="w-5 h-5 text-gray-600" />
+      <p className="text-sm text-gray-500">Total Cars</p>
     </div>
-    <p className="text-xs text-green-600 mt-4">Inventory Overview</p>
+    <h2 className="text-3xl font-semibold mt-2">
+      {stats.totalCars}
+    </h2>
   </div>
 
   {/* Commercial Vehicles */}
   <div
     onClick={() => router.push('/dashboard/HeavyCommercialVehicle')}
-    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer p-6 border border-gray-100"
+    className="cursor-pointer"
   >
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-sm text-gray-500">Commercial Vehicles</p>
-        <h2 className="text-3xl font-bold mt-2">{stats.totalCommercialVehicles}</h2>
-      </div>
-      <div className="p-3 bg-green-50 rounded-xl">
-        <Truck className="w-6 h-6 text-green-600" />
-      </div>
+    <div className="flex items-center gap-3">
+      <Truck className="w-5 h-5 text-gray-600" />
+      <p className="text-sm text-gray-500">Commercial Vehicles</p>
     </div>
-    <p className="text-xs text-gray-500 mt-4">Heavy & Utility Fleet</p>
+    <h2 className="text-3xl font-semibold mt-2">
+      {stats.totalCommercialVehicles}
+    </h2>
   </div>
 
   {/* Motorcycles */}
   <div
     onClick={() => router.push('/dashboard/Motocycle')}
-    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer p-6 border border-gray-100"
+    className="cursor-pointer"
   >
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-sm text-gray-500">Motorcycles</p>
-        <h2 className="text-3xl font-bold mt-2">{stats.totalMotorcycles}</h2>
-      </div>
-      <div className="p-3 bg-purple-50 rounded-xl">
-        <Bike className="w-6 h-6 text-purple-600" />
-      </div>
+    <div className="flex items-center gap-3">
+      <Bike className="w-5 h-5 text-gray-600" />
+      <p className="text-sm text-gray-500">Motorcycles</p>
     </div>
-    <p className="text-xs text-gray-500 mt-4">Two-Wheel Inventory</p>
+    <h2 className="text-3xl font-semibold mt-2">
+      {stats.totalMotorcycles}
+    </h2>
   </div>
 
   {/* Users */}
   <div
     onClick={() => router.push('/dashboard/Users')}
-    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer p-6 border border-gray-100"
+    className="cursor-pointer"
   >
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-sm text-gray-500">Total Users</p>
-        <h2 className="text-3xl font-bold mt-2">{stats.totalUsers}</h2>
-      </div>
-      <div className="p-3 bg-orange-50 rounded-xl">
-        <Users className="w-6 h-6 text-orange-600" />
-      </div>
+    <div className="flex items-center gap-3">
+      <Users className="w-5 h-5 text-gray-600" />
+      <p className="text-sm text-gray-500">Total Users</p>
     </div>
-    <p className="text-xs text-gray-500 mt-4">Platform Accounts</p>
+    <h2 className="text-3xl font-semibold mt-2">
+      {stats.totalUsers}
+    </h2>
   </div>
 
 </div>
