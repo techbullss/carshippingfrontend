@@ -973,16 +973,14 @@ const VehicleDetails = () => {
           }
 
           try {
-            const response = await fetch(
-              "https://api.f-carshipping.com/api/reviews/save",
+            const response = await fetch(`https://api.f-carshipping.com/api/reviews/save`,
               {
-                method: "POST",
-                credentials: "include",
+                method: 'POST',
+                credentials: 'include',
                 headers: {
-                  "Content-Type": "application/json",  
+                  'Content-Type': 'application/json',
                 },
-               
-                
+             
               }
             );
 
