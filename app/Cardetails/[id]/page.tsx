@@ -981,7 +981,7 @@ const VehicleDetails = () => {
                   "Content-Type": "application/json",
                   
                 },
-                credentials: "include",
+               
                 body: JSON.stringify({
                   vehicleId: vehicle.id,
                   sellerId: seller.id,
