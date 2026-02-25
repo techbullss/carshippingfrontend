@@ -976,7 +976,7 @@ const VehicleDetails = () => {
             const response = await fetch(`https://api.f-carshipping.com/api/reviews/save`,
               {
                 method: 'POST',
-                credentials: 'include',
+                
                 headers: {
                   'Content-Type': 'application/json',
                 },
