@@ -974,7 +974,7 @@ const VehicleDetails = () => {
 
           try {
             const response = await fetch(
-              "https://api.f-carshipping.com/api/reviews",
+              "https://api.f-carshipping.com/api/reviews/save",
               {
                 method: "POST",
                 headers: {
