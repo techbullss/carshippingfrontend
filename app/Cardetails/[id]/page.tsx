@@ -979,8 +979,9 @@ const VehicleDetails = () => {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  credentials: "include",
+                  
                 },
+                credentials: "include",
                 body: JSON.stringify({
                   vehicleId: vehicle.id,
                   sellerId: seller.id,
