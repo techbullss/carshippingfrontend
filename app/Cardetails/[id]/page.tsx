@@ -976,13 +976,17 @@ const VehicleDetails = () => {
             const response = await fetch(`https://api.f-carshipping.com/api/reviews/save`,
               {
                 method: 'POST',
-                
                 headers: {
                   'Content-Type': 'application/json',
                 },
              credentials: 'include',
-              }
-            );
+                body: JSON.stringify({
+                  sellerId: seller.id,
+                  rating,
+                  comment: reviewText,
+                  reviewerName: "Anonymous",
+                }),
+              });
 
             if (response.ok) {
               alert("Review submitted successfully! Awaiting approval.");
