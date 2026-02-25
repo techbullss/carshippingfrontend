@@ -194,11 +194,11 @@ const { user } = useCurrentUser();
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+        <div className="mb-2">
+          
           <p className="text-gray-600 mt-2">
             Welcome to your vehicle management dashboard
           </p>
@@ -212,36 +212,77 @@ const { user } = useCurrentUser();
         )}
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            title="Total Cars"
-            value={stats.totalCars}
-            icon={Car}
-            color="hover:border-blue-200"
-            onClick={() => router.push('/dashboard/Cars')}
-          />
-          <StatCard
-            title="Commercial Vehicles"
-            value={stats.totalCommercialVehicles}
-            icon={Truck}
-            color="hover:border-green-200"
-            onClick={() => router.push('/dashboard/HeavyCommercialVehicle')}
-          />
-          <StatCard
-            title="Motorcycles"
-            value={stats.totalMotorcycles}
-            icon={Bike}
-            color="hover:border-purple-200"
-            onClick={() => router.push('/dashboard/Motocycle')}
-          />
-          <StatCard
-            title="Total Users"
-            value={stats.totalUsers}
-            icon={Users}
-            color="hover:border-orange-200"
-            onClick={() => router.push('/dashboard/Users')}
-          />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+
+  {/* Cars */}
+  <div
+    onClick={() => router.push('/dashboard/Cars')}
+    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer p-6 border border-gray-100"
+  >
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-sm text-gray-500">Total Cars</p>
+        <h2 className="text-3xl font-bold mt-2">{stats.totalCars}</h2>
+      </div>
+      <div className="p-3 bg-blue-50 rounded-xl">
+        <Car className="w-6 h-6 text-blue-600" />
+      </div>
+    </div>
+    <p className="text-xs text-green-600 mt-4">Inventory Overview</p>
+  </div>
+
+  {/* Commercial Vehicles */}
+  <div
+    onClick={() => router.push('/dashboard/HeavyCommercialVehicle')}
+    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer p-6 border border-gray-100"
+  >
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-sm text-gray-500">Commercial Vehicles</p>
+        <h2 className="text-3xl font-bold mt-2">{stats.totalCommercialVehicles}</h2>
+      </div>
+      <div className="p-3 bg-green-50 rounded-xl">
+        <Truck className="w-6 h-6 text-green-600" />
+      </div>
+    </div>
+    <p className="text-xs text-gray-500 mt-4">Heavy & Utility Fleet</p>
+  </div>
+
+  {/* Motorcycles */}
+  <div
+    onClick={() => router.push('/dashboard/Motocycle')}
+    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer p-6 border border-gray-100"
+  >
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-sm text-gray-500">Motorcycles</p>
+        <h2 className="text-3xl font-bold mt-2">{stats.totalMotorcycles}</h2>
+      </div>
+      <div className="p-3 bg-purple-50 rounded-xl">
+        <Bike className="w-6 h-6 text-purple-600" />
+      </div>
+    </div>
+    <p className="text-xs text-gray-500 mt-4">Two-Wheel Inventory</p>
+  </div>
+
+  {/* Users */}
+  <div
+    onClick={() => router.push('/dashboard/Users')}
+    className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer p-6 border border-gray-100"
+  >
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-sm text-gray-500">Total Users</p>
+        <h2 className="text-3xl font-bold mt-2">{stats.totalUsers}</h2>
+      </div>
+      <div className="p-3 bg-orange-50 rounded-xl">
+        <Users className="w-6 h-6 text-orange-600" />
+      </div>
+    </div>
+    <p className="text-xs text-gray-500 mt-4">Platform Accounts</p>
+  </div>
+
+</div>
 
         {/* Recent Items Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
