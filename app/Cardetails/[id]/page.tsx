@@ -982,13 +982,7 @@ const VehicleDetails = () => {
                   "Content-Type": "application/json",  
                 },
                
-                body: JSON.stringify({
-                  vehicleId: vehicle.id,
-                  sellerId: seller.id,
-                  rating: rating,
-                  comment: reviewText,
-                  reviewerName: "Anonymous",
-                }),
+                
               }
             );
 
