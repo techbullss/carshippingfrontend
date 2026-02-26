@@ -979,7 +979,7 @@ const VehicleDetails = () => {
                 headers: {
                   'Content-Type': 'application/json',
                 },
-             credentials: 'include',
+             
                 body: JSON.stringify({
                   sellerId: seller.id,
                   rating,
