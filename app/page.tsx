@@ -33,7 +33,7 @@ type Motorcycle = {
   engineSize: string;
   type: string;
   imageUrls: string[];
-  priceKes: number;
+  price: number;
   isNew: boolean;
 };
 
@@ -112,7 +112,7 @@ export default function Home() {
       brand: "Honda",
       model: "CBR 600RR",
       imageUrls: ["/motor1.jpg"],
-      priceKes: 850000,
+      price: 850000,
       yearOfManufacture: "2023",
       mileage: "500",
       engineSize: "600cc",
@@ -124,7 +124,7 @@ export default function Home() {
       brand: "Yamaha",
       model: "MT-07",
       imageUrls: ["/motor2.jpg"],
-      priceKes: 720000,
+      price: 720000,
       yearOfManufacture: "2022",
       mileage: "2,500",
       engineSize: "700cc",
@@ -136,7 +136,7 @@ export default function Home() {
       brand: "Suzuki",
       model: "V-Strom 650",
       imageUrls: ["/motor3.jpg"],
-      priceKes: 780000,
+      price: 780000,
       yearOfManufacture: "2023",
       mileage: "800",
       engineSize: "650cc",
@@ -148,7 +148,7 @@ export default function Home() {
       brand: "Kawasaki",
       model: "Ninja 400",
       imageUrls: ["/motor4.jpg"],
-      priceKes: 550000,
+      price: 550000,
       yearOfManufacture: "2022",
       mileage: "3,200",
       engineSize: "400cc",
@@ -653,7 +653,7 @@ export default function Home() {
                 </div>
 
                 <span className="text-sm font-semibold text-gray-900">
-                  KES {motorcycle.priceKes.toLocaleString()}
+                  KES {motorcycle.price.toLocaleString()||0}
                 </span>
               </div>
 
