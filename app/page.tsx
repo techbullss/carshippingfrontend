@@ -383,7 +383,7 @@ export default function Home() {
         <EuropeanCarsHero />
       </div>
 </section>*/}
-    <section className=" bg-gradient-to-b from-gray-50 to-white ">
+    <section className=" bg-gradient-to-b from-gray-50 py-8 to-white ">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
       { /**  <motion.div
