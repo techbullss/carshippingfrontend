@@ -607,39 +607,7 @@ const handleTabChange = (tab: string) => {
           )}
 
           {/* Enhanced CTA for New Request */}
-          <div className="relative bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-3xl p-10 overflow-hidden">
-            <div className="absolute inset-0 bg-grid-white/10"></div>
-            <div className="relative max-w-3xl mx-auto text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-8">
-                <ShoppingCart className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-3xl font-bold text-white mb-4">
-                Need Something From Europe?
-              </h3>
-              <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-                Whether it's electronics, fashion, or specialty items, we'll source and ship it securely to your doorstep in East Africa.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.a
-                  href="/dashboard/RequestItemPage"
-                  className="group bg-white text-green-700 px-8 py-4 rounded-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center gap-3"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Plus size={22} className="group-hover:rotate-90 transition-transform" />
-                  Request Item Now
-                </motion.a>
-                <motion.a
-                  href="#reviews"
-                  className="bg-transparent backdrop-blur-sm border-2 border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition-all duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  See Success Stories
-                </motion.a>
-              </div>
-            </div>
-          </div>
+         
         </div>
       </section>
 
