@@ -169,7 +169,7 @@ export default function Home() {
       </div>
     </section>
 <section className="bg-white py-4">
-  <div className="max-w-7xl mx-auto px-6 lg:px-2">
+  <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
     {/* Header */}
     <div className="text-center mb-4">
@@ -188,7 +188,7 @@ export default function Home() {
 
       {/* Left Image */}
       <div>
-        <div className="w-full h-[520px] bg-[url('/merced.jpg')] bg-cover bg-center "></div>
+        <div className="w-full h-[520px] bg-[url('/merced.jpg')]"></div>
       </div>
 
       {/* Right Content */}
