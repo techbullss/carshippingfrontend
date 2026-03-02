@@ -169,7 +169,7 @@ export default function Home() {
       </div>
     </section>
 <section className="bg-white py-4">
-  <div className="max-w-7xl mx-auto px-6 lg:px-8">
+  <div className="max-w-7xl mx-auto px-6 lg:px-2">
 
     {/* Header */}
     <div className="text-center mb-4">
@@ -184,11 +184,11 @@ export default function Home() {
     </div>
 
     {/* Main Grid */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
       {/* Left Image */}
       <div>
-        <div className="w-full h-[420px] bg-[url('/merced.jpg')] bg-cover bg-center rounded-md border border-gray-200"></div>
+        <div className="w-full h-[520px] bg-[url('/merced.jpg')] bg-cover bg-center "></div>
       </div>
 
       {/* Right Content */}
