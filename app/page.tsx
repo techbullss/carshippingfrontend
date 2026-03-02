@@ -437,9 +437,23 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
- <div className="w-full bg-gray-50 text-black py-2">
+<div className="relative w-full text-white py-24 overflow-hidden">
 
-  <div className="w-full text-center">
+  {/* Background Video */}
+  <video
+    className="absolute top-0 left-0 w-full h-full object-cover"
+    src="/241574_medium.mp4"
+    autoPlay
+    loop
+    muted
+    playsInline
+  />
+
+  {/* Dark Overlay for readability */}
+  <div className="absolute top-0 left-0 w-full h-full bg-black/60"></div>
+
+  {/* Content */}
+  <div className="relative z-10 w-full text-center px-6">
 
     {/* Gold Accent Line */}
     <div className="flex justify-center mb-8">
@@ -448,11 +462,11 @@ export default function Home() {
 
     {/* Heading */}
     <h2 className="text-4xl md:text-5xl font-light tracking-wide mb-6">
-       Vehicle Sourcing
+      Vehicle Sourcing
     </h2>
 
     {/* Subheading */}
-    <p className="max-w-3xl mx-auto text-black text-lg md:text-xl leading-relaxed mb-10">
+    <p className="max-w-3xl mx-auto text-gray-200 text-lg md:text-xl leading-relaxed mb-10">
       When excellence is not on the lot, we source it worldwide.
       Our team locates, inspects, and delivers the exact vehicle you desire —
       discreetly, professionally, without compromise.
@@ -460,11 +474,11 @@ export default function Home() {
 
     {/* Divider */}
     <div className="flex justify-center mb-12">
-      <div className="w-24 h-px bg-black"></div>
+      <div className="w-24 h-px bg-white"></div>
     </div>
 
     {/* Features */}
-    <div className="flex flex-col sm:flex-row justify-center items-center gap-10 text-sm tracking-widest uppercase text-black mb-14">
+    <div className="flex flex-col sm:flex-row justify-center items-center gap-10 text-sm tracking-widest uppercase text-gray-200 mb-14">
       <span>Global Sourcing</span>
       <span>Comprehensive Inspection</span>
       <span>Door-to-Door Delivery</span>
@@ -482,7 +496,7 @@ export default function Home() {
 
       <button
         onClick={() => window.location.href = "/ContactUs"}
-        className="px-12 py-4 border border-gray-600 text-black text-sm tracking-widest uppercase hover:border-white hover:bg-white hover:text-black transition duration-300"
+        className="px-12 py-4 border border-white text-white text-sm tracking-widest uppercase hover:bg-white hover:text-black transition duration-300"
       >
         Request a Vehicle
       </button>
@@ -490,12 +504,11 @@ export default function Home() {
     </div>
 
     {/* Signature Line */}
-    <div className="mt-16 text-xs tracking-[0.3em] text-black uppercase">
+    <div className="mt-16 text-xs tracking-[0.3em] uppercase text-gray-300">
       Precision. Luxury. Delivered.
     </div>
 
   </div>
-
 </div>
       </div>
     </section>
