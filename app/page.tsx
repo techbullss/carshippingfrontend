@@ -378,15 +378,15 @@ export default function Home() {
     )}
   </div>
 </section>
-<section>
+{/**<section>
       <div className="border-t border-gray-200 my-12">
         <EuropeanCarsHero />
       </div>
-</section>
+</section>*/}
     <section className=" bg-gradient-to-b from-gray-50 to-white ">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <motion.div
+      { /**  <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -397,10 +397,10 @@ export default function Home() {
             <FaCarSide className="mr-2" /> Premium Selection
           </span>
         
-        </motion.div>
+        </motion.div> */}
 
         {/* Brands Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+       {/**  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
           {europeanBrands.map((brand, index) => (
             <motion.div
               key={brand.name}
@@ -434,7 +434,7 @@ export default function Home() {
               </div>
             </motion.div>
           ))}
-        </div>
+        </div> */}
 
         {/* CTA Section */}
 <div className="relative w-full text-white py-24 overflow-hidden">
@@ -462,7 +462,7 @@ export default function Home() {
 
     {/* Heading */}
     <h2 className="text-4xl md:text-5xl font-light tracking-wide mb-6">
-      Vehicle Sourcing
+      How we  Source
     </h2>
 
     {/* Subheading */}
