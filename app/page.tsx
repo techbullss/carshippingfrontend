@@ -187,9 +187,13 @@ export default function Home() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
       {/* Left Image */}
-      <div>
-        <div className="w-full h-[520px] bg-[url('/merced.jpg')]"></div>
-      </div>
+     <div className="w-full h-[520px] flex items-center justify-center">
+  <img
+    src="/merced.jpg"
+    alt="Mercedes"
+    className="max-h-full max-w-full object-contain"
+  />
+</div>
 
       {/* Right Content */}
       <div>
