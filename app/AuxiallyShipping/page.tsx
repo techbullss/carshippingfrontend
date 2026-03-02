@@ -309,103 +309,88 @@ const handleTabChange = (tab: string) => {
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div className="lg:w-1/2">
-              <motion.h1
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="text-5xl md:text-6xl font-bold mb-6 leading-tight"
-              >
-                Global Shipping &<br />
-                <span className="bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">
-                  Sourcing Made Easy
-                </span>
-              </motion.h1>
-              <p className="text-xl text-white/90 mb-8 font-light leading-relaxed">
-                Seamlessly connect Europe to East Africa. From product sourcing to doorstep delivery, 
-                we handle everything with transparency and care.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <motion.a
-                  href="/dashboard/RequestItemPage"
-                  className="group bg-white text-green-700 px-8 py-4 rounded-xl font-bold shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center gap-3 hover:scale-105"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Plus size={22} className="group-hover:rotate-90 transition-transform" />
-                  Request New Item
-                </motion.a>
-                <motion.a
-                  href="#products"
-                  className="bg-transparent backdrop-blur-sm border-2 border-white/30 text-white px-8 py-4 rounded-xl font-bold hover:bg-white/10 transition-all duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Track Shipments →
-                </motion.a>
-              </div>
-            </div>
-            
-            {/* Enhanced Stats Card */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 lg:w-2/5 border border-white/20 shadow-2xl"
-            >
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 bg-white/20 rounded-2xl">
-                  <TrendingUp className="w-6 h-6" />
-                </div>
-                <h3 className="text-2xl font-bold">Real-time Dashboard</h3>
-              </div>
-              
-              {loading.stats ? (
-                <div className="space-y-8">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div className="h-4 bg-white/20 rounded-full w-32 animate-pulse"></div>
-                      <div className="h-10 bg-white/20 rounded-xl w-16 animate-pulse"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : stats ? (
-                <div className="space-y-8">
-                  {[
-                    { label: "Active Shipments", value: stats.activeShipments, icon: Truck, color: "text-cyan-300" },
-                    { label: "Total Requests", value: stats.totalRequests, icon: Package, color: "text-emerald-300" },
-                    { label: "Pending", value: stats.pendingRequests, icon: Clock, color: "text-amber-300" },
-                    { label: "Avg Rating", value: stats.averageRating.toFixed(1), icon: Star, color: "text-yellow-300" }
-                  ].map((stat, i) => {
-                    const Icon = stat.icon;
-                    return (
-                      <div key={i} className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={`p-2 rounded-xl bg-white/10 ${stat.color}`}>
-                            <Icon size={20} />
-                          </div>
-                          <span className="text-white/80 font-medium">{stat.label}</span>
-                        </div>
-                        <span className="text-3xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">
-                          {stat.value}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-white/60">
-                  Failed to load statistics
-                </div>
-              )}
-            </motion.div>
-          </div>
+      <section className="bg-white text-gray-900 py-24">
+  <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+      {/* Left Content */}
+      <div>
+        <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-6">
+          Global Shipping & Sourcing
+        </h1>
+
+        <p className="text-lg text-gray-600 leading-relaxed mb-8 max-w-xl">
+          We connect Europe to East Africa through reliable sourcing and
+          professional shipping solutions. From request to delivery,
+          everything is handled with precision and transparency.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <a
+            href="/dashboard/RequestItemPage"
+            className="px-8 py-3 bg-black text-white text-sm uppercase tracking-wider hover:bg-gray-800 transition"
+          >
+            Request Item
+          </a>
+
+          <a
+            href="#products"
+            className="px-8 py-3 border border-gray-400 text-gray-700 text-sm uppercase tracking-wider hover:bg-gray-100 transition"
+          >
+            Track Shipment
+          </a>
         </div>
-      </section>
+      </div>
+
+      {/* Right Stats Card */}
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-8">
+        <h3 className="text-xl font-semibold mb-8">
+          Live Overview
+        </h3>
+
+        {loading.stats ? (
+          <div className="space-y-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex justify-between">
+                <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
+                <div className="h-6 bg-gray-200 rounded w-12 animate-pulse"></div>
+              </div>
+            ))}
+          </div>
+        ) : stats ? (
+          <div className="space-y-6 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Active Shipments</span>
+              <span className="font-semibold">{stats.activeShipments}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-gray-600">Total Requests</span>
+              <span className="font-semibold">{stats.totalRequests}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-gray-600">Pending</span>
+              <span className="font-semibold">{stats.pendingRequests}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-gray-600">Average Rating</span>
+              <span className="font-semibold">
+                {stats.averageRating?.toFixed(1)}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="text-gray-500 text-sm">
+            Unable to load statistics
+          </div>
+        )}
+      </div>
+
+    </div>
+  </div>
+</section>
 
       {/* Active Products/Shipments Section */}
       <section id="products" className="py-20">

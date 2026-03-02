@@ -453,7 +453,7 @@ export default function Home() {
   <div className="absolute top-0 left-0 w-full h-full bg-black/60"></div>
 
   {/* Content */}
-  <div className="relative z-10 w-full text-center px-6">
+  <div className="relative z-10 w-full text-center ">
 
     {/* Gold Accent Line */}
     <div className="flex justify-center mb-8">
