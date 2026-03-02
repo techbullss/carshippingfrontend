@@ -188,7 +188,7 @@ export default function Home() {
 
       {/* Left Image */}
       <div>
-        <div className="w-full h-[420px] bg-[url('/key.jpg')] bg-cover bg-center rounded-md border border-gray-200"></div>
+        <div className="w-full h-[420px] bg-[url('/merced.jpg')] bg-cover bg-center rounded-md border border-gray-200"></div>
       </div>
 
       {/* Right Content */}
