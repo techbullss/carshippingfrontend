@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image";
-import { FaCarSide, FaSearch, FaChevronRight, FaShieldAlt } from 'react-icons/fa';
+import { FaCarSide, FaSearch, FaChevronRight, FaShieldAlt, FaMotorcycle, FaTruck } from 'react-icons/fa';
 import CarSearchHero from "./components/CarSearchHero";
 import { Car, Package, CreditCard, HandshakeIcon } from 'lucide-react';
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import {  FaRegHeart, FaCar, FaGasPump, FaTachometerAlt } from 'react-icons/fa';
 import EuropeanCarsHero from "./components/EuropeanCarsHero";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 type Car = {
   isNew: any;
   yearOfManufacture: string;
@@ -22,13 +23,44 @@ type Car = {
   imageUrls: string[];
   priceKes: number;
 };
+
+type Motorcycle = {
+  id: number;
+  brand: string;
+  model: string;
+  yearOfManufacture: string;
+  mileage: string;
+  engineSize: string;
+  type: string;
+  imageUrls: string[];
+  priceKes: number;
+  isNew: boolean;
+};
+
+type CommercialVehicle = {
+  id: number;
+  brand: string;
+  model: string;
+  yearOfManufacture: string;
+  mileage: string;
+  fuelType: string;
+  transmission: string;
+  bodyType: string;
+  loadCapacity: string;
+  imageUrls: string[];
+  priceKes: number;
+  isNew: boolean;
+};
+
 export default function Home() {
    const router = useRouter(); 
   const [latestArrivals, setLatestArrivals] = useState<Car[]>([]);
-
- const [loading, setLoading] = useState(true); 
-
-   const [usingFallback, setUsingFallback] = useState(false);
+  const [latestMotorcycles, setLatestMotorcycles] = useState<Motorcycle[]>([]);
+  const [latestCommercial, setLatestCommercial] = useState<CommercialVehicle[]>([]);
+  const [loading, setLoading] = useState(true); 
+  const [loadingMotorcycles, setLoadingMotorcycles] = useState(true);
+  const [loadingCommercial, setLoadingCommercial] = useState(true);
+  const [usingFallback, setUsingFallback] = useState(false);
 
   // Sample fallback vehicles
   const fallbackVehicles: Car[] = [
@@ -73,41 +105,207 @@ export default function Home() {
     }
   ];
 
+  // Sample fallback motorcycles
+  const fallbackMotorcycles: Motorcycle[] = [
+    {
+      id: 101,
+      brand: "Honda",
+      model: "CBR 600RR",
+      imageUrls: ["/motor1.jpg"],
+      priceKes: 850000,
+      yearOfManufacture: "2023",
+      mileage: "500",
+      engineSize: "600cc",
+      type: "Sport",
+      isNew: true
+    },
+    {
+      id: 102,
+      brand: "Yamaha",
+      model: "MT-07",
+      imageUrls: ["/motor2.jpg"],
+      priceKes: 720000,
+      yearOfManufacture: "2022",
+      mileage: "2,500",
+      engineSize: "700cc",
+      type: "Naked",
+      isNew: false
+    },
+    {
+      id: 103,
+      brand: "Suzuki",
+      model: "V-Strom 650",
+      imageUrls: ["/motor3.jpg"],
+      priceKes: 780000,
+      yearOfManufacture: "2023",
+      mileage: "800",
+      engineSize: "650cc",
+      type: "Adventure",
+      isNew: true
+    },
+    {
+      id: 104,
+      brand: "Kawasaki",
+      model: "Ninja 400",
+      imageUrls: ["/motor4.jpg"],
+      priceKes: 550000,
+      yearOfManufacture: "2022",
+      mileage: "3,200",
+      engineSize: "400cc",
+      type: "Sport",
+      isNew: false
+    }
+  ];
+
+  // Sample fallback commercial vehicles
+  const fallbackCommercial: CommercialVehicle[] = [
+    {
+      id: 201,
+      brand: "Toyota",
+      model: "Hilux Double Cabin",
+      imageUrls: ["/commercial1.jpg"],
+      priceKes: 3800000,
+      yearOfManufacture: "2023",
+      mileage: "10,000",
+      fuelType: "Diesel",
+      transmission: "Manual",
+      bodyType: "Pickup",
+      loadCapacity: "1 ton",
+      isNew: true
+    },
+    {
+      id: 202,
+      brand: "Isuzu",
+      model: "NPR 300",
+      imageUrls: ["/commercial2.jpg"],
+      priceKes: 5200000,
+      yearOfManufacture: "2022",
+      mileage: "25,000",
+      fuelType: "Diesel",
+      transmission: "Manual",
+      bodyType: "Truck",
+      loadCapacity: "3.5 tons",
+      isNew: false
+    },
+    {
+      id: 203,
+      brand: "Mitsubishi",
+      model: "L200",
+      imageUrls: ["/commercial3.jpg"],
+      priceKes: 3200000,
+      yearOfManufacture: "2023",
+      mileage: "8,500",
+      fuelType: "Diesel",
+      transmission: "Automatic",
+      bodyType: "Pickup",
+      loadCapacity: "1 ton",
+      isNew: true
+    },
+    {
+      id: 204,
+      brand: "Nissan",
+      model: "Navara",
+      imageUrls: ["/commercial4.jpg"],
+      priceKes: 3500000,
+      yearOfManufacture: "2022",
+      mileage: "15,000",
+      fuelType: "Diesel",
+      transmission: "Automatic",
+      bodyType: "Pickup",
+      loadCapacity: "1 ton",
+      isNew: false
+    }
+  ];
+
   useEffect(() => {
-    const fetchLatest = async () => {
-      try {
-        const res = await fetch("https://api.f-carshipping.com/api/cars/latest",{
-          method: 'GET',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        
-        const data = await res.json();
-        
-        if (data && data.length > 0) {
-          setLatestArrivals(data);
-          setUsingFallback(false);
-        } else {
-          // If API returns empty array, use fallback
-          setLatestArrivals(fallbackVehicles);
-          setUsingFallback(true);
-        }
-      } catch (error) {
-        console.error("Error fetching latest arrivals:", error);
-        // Use fallback vehicles on error
+    fetchLatestCars();
+    fetchLatestMotorcycles();
+    fetchLatestCommercial();
+  }, []);
+
+  const fetchLatestCars = async () => {
+    try {
+      const res = await fetch("https://api.f-carshipping.com/api/cars/latest",{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (data && data.length > 0) {
+        setLatestArrivals(data);
+        setUsingFallback(false);
+      } else {
         setLatestArrivals(fallbackVehicles);
         setUsingFallback(true);
-      } finally {
-        setLoading(false);
       }
-    };
-    
-    fetchLatest();
-  }, []);
+    } catch (error) {
+      console.error("Error fetching latest arrivals:", error);
+      setLatestArrivals(fallbackVehicles);
+      setUsingFallback(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchLatestMotorcycles = async () => {
+    try {
+      const res = await fetch("https://api.f-carshipping.com/api/motorcycles/latest",{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (data && data.length > 0) {
+        setLatestMotorcycles(data);
+      } else {
+        setLatestMotorcycles(fallbackMotorcycles);
+      }
+    } catch (error) {
+      console.error("Error fetching latest motorcycles:", error);
+      setLatestMotorcycles(fallbackMotorcycles);
+    } finally {
+      setLoadingMotorcycles(false);
+    }
+  };
+
+  const fetchLatestCommercial = async () => {
+    try {
+      const res = await fetch("https://api.f-carshipping.com/api/vehicles/latest",{
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (data && data.length > 0) {
+        setLatestCommercial(data);
+      } else {
+        setLatestCommercial(fallbackCommercial);
+      }
+    } catch (error) {
+      console.error("Error fetching latest commercial vehicles:", error);
+      setLatestCommercial(fallbackCommercial);
+    } finally {
+      setLoadingCommercial(false);
+    }
+  };
 
   const europeanBrands = [
     { name: "BMW", logo: "/bmwlogo.png" },
@@ -122,8 +320,17 @@ export default function Home() {
   function handleCarClick(id: number): void {
     router.push(`/Cardetails/${id}`);
   }
+
+  function handleMotorcycleClick(id: number): void {
+    router.push(`/motorcycle/${id}`);
+  }
+
+  function handleCommercialClick(id: number): void {
+    router.push(`/commercial/${id}`);
+  }
+
    const [backgroundImage, setBackgroundImage] = useState('/used1.jpg'); // fallback
-  const BACKEND_URL = 'https://api.f-carshipping.com/api'; // Your Spring Boot backend URL
+  const BACKEND_URL = 'https://api.f-carshipping.com/api'; // Spring Boot backend URL
   
   useEffect(() => {
     fetchCurrentImage();
@@ -148,6 +355,7 @@ export default function Home() {
       // Keep using fallback image
     }
   };
+  
   return (
    <div>
   <section
@@ -252,6 +460,7 @@ export default function Home() {
   </div>
 </section>
 
+{/* CARS SECTION */}
  <section className="bg-gradient-to-b from-gray-100 to-white  px-4">
   <div className=" ">
     {/* Section Header */}
@@ -262,9 +471,10 @@ export default function Home() {
       viewport={{ once: true }}
       className="text-center mb-4"
     >
-    
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">Latest Cars</h2>
+      <div className="w-24 h-1 bg-blue-600 mx-auto"></div>
       {usingFallback && (
-        <div className=" bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md max-w-md mx-auto">
+        <div className="mt-4 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md max-w-md mx-auto">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -281,7 +491,7 @@ export default function Home() {
       )}
     </motion.div>
 
-    {/*  Spinner while loading */}
+    {/* Spinner while loading */}
     {loading ? (
       <div className="flex justify-center items-center py-20">
         <div className="w-12 h-12 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
@@ -350,14 +560,12 @@ export default function Home() {
         </div>
 
         {/* Button */}
-        {!usingFallback && (
-          <button
-            onClick={() => handleCarClick(car.id)}
-            className="w-full mt-3 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition"
-          >
-            View Details
-          </button>
-        )}
+        <button
+          onClick={() => handleCarClick(car.id)}
+          className="w-full mt-3 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition"
+        >
+          View Details
+        </button>
       </div>
     </div>
   ))}
@@ -369,73 +577,239 @@ export default function Home() {
       <div className="text-center mt-14">
         <button
           onClick={() => window.location.href = "/Vehicles"}
-          className="px-8 py-3  text-black border border-green-600  border-b-4 font-semibold rounded-full shadow-md 
+          className="px-8 py-3 text-black border border-green-600 border-b-4 font-semibold rounded-full shadow-md 
                      hover:bg-yellow-700 hover:shadow-lg transition-all duration-300"
         >
-          Browse All Vehicles
+          Browse All Cars
         </button>
       </div>
     )}
   </div>
 </section>
-{/**<section>
-      <div className="border-t border-gray-200 my-12">
-        <EuropeanCarsHero />
+
+{/* MOTORCYCLES SECTION */}
+<section className="bg-gradient-to-b from-gray-50 to-white px-4 py-12">
+  <div className="max-w-7xl mx-auto">
+    {/* Section Header */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1.5 }}
+      viewport={{ once: true }}
+      className="text-center mb-8"
+    >
+      <div className="flex justify-center mb-3">
+        <FaMotorcycle className="text-4xl text-red-600" />
       </div>
-</section>*/}
-    <section className=" bg-gradient-to-b from-gray-50 py-8 to-white ">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-      { /**  <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <span className="inline-flex items-center bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-2 rounded-full mb-4">
-            <FaCarSide className="mr-2" /> Premium Selection
-          </span>
-        
-        </motion.div> */}
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">Latest Motorcycles</h2>
+      <div className="w-24 h-1 bg-red-600 mx-auto"></div>
+    </motion.div>
 
-        {/* Brands Grid */}
-       {/**  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {europeanBrands.map((brand, index) => (
-            <motion.div
-              key={brand.name}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              viewport={{ once: false, margin: "-50px" }}
-              whileHover={{ y: -5 }}
-              className="group"
-            >
-              <div className="flex flex-col items-center bg-white p-6 rounded-2xl  hover:shadow-xl transition-all duration-300 border border-gray-100 h-full">
-                <div className="relative w-24 h-24 mb-4">
-                  <img
-                    src={brand.logo}
-                    alt={brand.name}
-                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    {/* Spinner while loading */}
+    {loadingMotorcycles ? (
+      <div className="flex justify-center items-center py-20">
+        <div className="w-12 h-12 border-4 border-red-300 border-t-red-600 rounded-full animate-spin"></div>
+      </div>
+    ) : (
+      /* Motorcycles Grid */
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {latestMotorcycles.map((motorcycle) => (
+          <div
+            key={motorcycle.id}
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition duration-200"
+          >
+            {/* Image */}
+            <div className="relative">
+              <img
+                src={motorcycle.imageUrls?.[0] || "/motor-placeholder.jpg"}
+                alt={`${motorcycle.brand} ${motorcycle.model}`}
+                className="w-full h-56 object-cover"
+              />
+
+              {/* Favorite */}
+              <button className="absolute top-3 right-3 p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-100 transition">
+                <FaRegHeart className="text-gray-600 text-sm" />
+              </button>
+
+              {/* New Badge */}
+              {motorcycle.isNew && (
+                <span className="absolute top-3 left-3 bg-red-600 text-white text-xs px-2 py-1 rounded">
+                  NEW
+                </span>
+              )}
+            </div>
+
+            {/* Details */}
+            <div className="p-4 space-y-3">
+              {/* Title + Price */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900">
+                    {motorcycle.brand} {motorcycle.model}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {motorcycle.yearOfManufacture} • {motorcycle.mileage} km
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">{brand.name}</h3>
-                
-                <Link
-  href={{
-    pathname: "/Vehicles",       // Your VehicleListPage route
-    query: { brand: brand.name } // send model name
-  }}
-  className="flex items-center text-sm text-blue-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300"
->
-  View Models <FaChevronRight className="ml-1 text-xs" />
-</Link>
-              </div>
-            </motion.div>
-          ))}
-        </div> */}
 
+                <span className="text-sm font-semibold text-gray-900">
+                  KES {motorcycle.priceKes.toLocaleString()}
+                </span>
+              </div>
+
+              {/* Features */}
+              <div className="flex justify-between text-xs text-gray-600">
+                <div className="flex items-center gap-1">
+                  <span className="font-medium">Engine:</span> {motorcycle.engineSize}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="font-medium">Type:</span> {motorcycle.type}
+                </div>
+              </div>
+
+              {/* Button */}
+              <button
+                onClick={() => handleMotorcycleClick(motorcycle.id)}
+                className="w-full mt-3 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Footer CTA */}
+    {!loadingMotorcycles && (
+      <div className="text-center mt-14">
+        <button
+          onClick={() => window.location.href = "/motorcycles"}
+          className="px-8 py-3 text-black border border-red-600 border-b-4 font-semibold rounded-full shadow-md 
+                     hover:bg-red-600 hover:text-white hover:shadow-lg transition-all duration-300"
+        >
+          Browse All Motorcycles
+        </button>
+      </div>
+    )}
+  </div>
+</section>
+
+{/* COMMERCIAL VEHICLES SECTION */}
+<section className="bg-gradient-to-b from-gray-100 to-white px-4 py-12">
+  <div className="max-w-7xl mx-auto">
+    {/* Section Header */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1.5 }}
+      viewport={{ once: true }}
+      className="text-center mb-8"
+    >
+      <div className="flex justify-center mb-3">
+        <FaTruck className="text-4xl text-green-600" />
+      </div>
+      <h2 className="text-3xl font-bold text-gray-900 mb-2">Latest Commercial Vehicles</h2>
+      <div className="w-24 h-1 bg-green-600 mx-auto"></div>
+    </motion.div>
+
+    {/* Spinner while loading */}
+    {loadingCommercial ? (
+      <div className="flex justify-center items-center py-20">
+        <div className="w-12 h-12 border-4 border-green-300 border-t-green-600 rounded-full animate-spin"></div>
+      </div>
+    ) : (
+      /* Commercial Vehicles Grid */
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {latestCommercial.map((vehicle) => (
+          <div
+            key={vehicle.id}
+            className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition duration-200"
+          >
+            {/* Image */}
+            <div className="relative">
+              <img
+                src={vehicle.imageUrls?.[0] || "/commercial-placeholder.jpg"}
+                alt={`${vehicle.brand} ${vehicle.model}`}
+                className="w-full h-56 object-cover"
+              />
+
+              {/* Favorite */}
+              <button className="absolute top-3 right-3 p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-100 transition">
+                <FaRegHeart className="text-gray-600 text-sm" />
+              </button>
+
+              {/* New Badge */}
+              {vehicle.isNew && (
+                <span className="absolute top-3 left-3 bg-green-600 text-white text-xs px-2 py-1 rounded">
+                  NEW
+                </span>
+              )}
+            </div>
+
+            {/* Details */}
+            <div className="p-4 space-y-3">
+              {/* Title + Price */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900">
+                    {vehicle.brand} {vehicle.model}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {vehicle.yearOfManufacture} • {vehicle.mileage} km
+                  </p>
+                </div>
+
+                <span className="text-sm font-semibold text-gray-900">
+                  KES {vehicle.priceKes.toLocaleString()}
+                </span>
+              </div>
+
+              {/* Features */}
+              <div className="flex flex-wrap justify-between text-xs text-gray-600">
+                <div className="flex items-center gap-1">
+                  <FaCar className="text-gray-400" />
+                  {vehicle.bodyType}
+                </div>
+                <div className="flex items-center gap-1">
+                  <FaGasPump className="text-gray-400" />
+                  {vehicle.fuelType}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="font-medium">Load:</span> {vehicle.loadCapacity}
+                </div>
+              </div>
+
+              {/* Button */}
+              <button
+                onClick={() => handleCommercialClick(vehicle.id)}
+                className="w-full mt-3 py-2 text-sm font-medium border border-gray-300 rounded hover:bg-gray-50 transition"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Footer CTA */}
+    {!loadingCommercial && (
+      <div className="text-center mt-14">
+        <button
+          onClick={() => window.location.href = "/commercial"}
+          className="px-8 py-3 text-black border border-green-600 border-b-4 font-semibold rounded-full shadow-md 
+                     hover:bg-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
+        >
+          Browse All Commercial Vehicles
+        </button>
+      </div>
+    )}
+  </div>
+</section>
+
+    <section className="py-8 rounded-lg"> 
+      <div className="max-w-7xl mx-auto">
         {/* CTA Section */}
 <div className="relative w-full text-white py-24 overflow-hidden">
 
@@ -462,7 +836,7 @@ export default function Home() {
 
     {/* Heading */}
     <h2 className="text-4xl md:text-5xl font-light tracking-wide mb-6">
-      How we  Source
+      How we Source
     </h2>
 
     {/* Subheading */}
