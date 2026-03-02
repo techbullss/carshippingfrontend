@@ -322,11 +322,11 @@ export default function Home() {
   }
 
   function handleMotorcycleClick(id: number): void {
-    router.push(`/motorcycle/${id}`);
+    router.push(`/MotorcycleDetails/${id}`);
   }
 
   function handleCommercialClick(id: number): void {
-    router.push(`/commercial/${id}`);
+    router.push(`/CommercialVehicleDetails/${id}`);
   }
 
    const [backgroundImage, setBackgroundImage] = useState('/used1.jpg'); // fallback
@@ -684,7 +684,7 @@ export default function Home() {
     {!loadingMotorcycles && (
       <div className="text-center mt-14">
         <button
-          onClick={() => window.location.href = "/motorcycles"}
+          onClick={() => window.location.href = "/Motocycle"}
           className="px-8 py-3 text-black border border-red-600 border-b-4 font-semibold rounded-full shadow-md 
                      hover:bg-red-600 hover:text-white hover:shadow-lg transition-all duration-300"
         >
@@ -797,7 +797,7 @@ export default function Home() {
     {!loadingCommercial && (
       <div className="text-center mt-14">
         <button
-          onClick={() => window.location.href = "/commercial"}
+          onClick={() => window.location.href = "/CommercialVehicles"}
           className="px-8 py-3 text-black border border-green-600 border-b-4 font-semibold rounded-full shadow-md 
                      hover:bg-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
         >
