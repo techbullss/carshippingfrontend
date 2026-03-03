@@ -84,7 +84,7 @@ export default function Header() {
  return (
   <header className="w-full bg-white/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-50">
     <nav className="max-w-7xl mx-auto px-6">
-      <div className="flex items-center justify-between h-20">
+      <div className="flex items-center justify-between h-14">
         
         {/* Logo */}
         <Link href="/" className="text-xl font-semibold tracking-tight text-black">
