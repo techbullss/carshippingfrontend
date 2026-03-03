@@ -81,187 +81,186 @@ export default function Header() {
     checkAuthStatus();
   }, []);
 
-  return (
-    <div className="flex-col bg-gradient-to-b from-white to-blue-50 shadow-lg w-full">
-      <nav className="bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-md">
-        <div className="px-4">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <Link href="/" className="flex items-center py-4">
-              <div className="text-2xl font-bold">
-                <span className="text-white italic">FCar</span>
-                <span className="text-yellow-300">Shipping</span>
-              </div>
-            </Link>
+ return (
+  <header className="w-full bg-white/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-50">
+    <nav className="max-w-7xl mx-auto px-6">
+      <div className="flex items-center justify-between h-20">
+        
+        {/* Logo */}
+        <Link href="/" className="text-xl font-semibold tracking-tight text-black">
+          FCar<span className="font-light">Shipping</span>
+        </Link>
 
-            {/* Hamburger Button */}
-            <button
-              className="md:hidden text-white focus:outline-none"
-              onClick={() => setOpen(!open)}
-            >
-              <svg
-                className="w-7 h-7"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                {open ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center space-x-8">
+          {links.map((link, index) => (
+            <div key={index} className="relative group">
+              <div className="flex items-center gap-1 cursor-pointer">
+                <Link
+                  href={link.href}
+                  className="text-sm text-gray-700 hover:text-black transition-colors"
+                >
+                  {link.label}
+                </Link>
+
+                {link.submenu && (
+                  <ChevronDown
+                    size={14}
+                    className="text-gray-400 group-hover:text-black transition-transform group-hover:rotate-180"
                   />
                 )}
-              </svg>
-            </button>
-
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center flex-1 justify-end">
-              {links.map((link, index) => (
-                <div key={index} className="relative group">
-                  <div
-                    className="flex items-center py-4 px-3 hover:bg-blue-500 cursor-pointer transition-colors rounded-t-lg"
-                    onClick={() =>
-                      link.submenu && handleSubmenuToggle(index)
-                    }
-                  >
-                    <Link
-                      href={link.href}
-                      className="px-1 font-medium text-sm md:text-md"
-                    >
-                      {link.label}
-                    </Link>
-                    {link.submenu && (
-                      <ChevronDown
-                        size={16}
-                        className="ml-1 group-hover:rotate-180 transition-transform"
-                      />
-                    )}
-                  </div>
-
-                  {link.submenu && (
-                    <div className="absolute left-0 mt-0 w-48 bg-white text-blue-800 shadow-lg rounded-b-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10 border border-blue-200">
-                      {link.submenu.map((subItem, subIndex) => (
-                        <Link
-                          key={subIndex}
-                          href={subItem.href}
-                          className="block px-4 py-3 hover:bg-blue-100 transition-colors border-b border-blue-50 last:border-b-0"
-                        >
-                          {subItem.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {isLoggedIn ? (
-                <Link
-                  href="/dashboard"
-                  className="ml-4 font-semibold hover:underline"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <Link href="/Login" className="ml-4 hover:underline">
-                  Login
-                </Link>
-              )}
-
-              <div className="ml-4">
-                <Link
-                  href="/ContactUs"
-                  className="bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-6 rounded-full shadow-md transition-colors transform hover:scale-105"
-                >
-                  Contact Us
-                </Link>
               </div>
+
+              {link.submenu && (
+                <div className="absolute left-0 mt-4 w-56 bg-white border border-black/5 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.06)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                  {link.submenu.map((subItem, subIndex) => (
+                    <Link
+                      key={subIndex}
+                      href={subItem.href}
+                      className="block px-5 py-3 text-sm text-gray-600 hover:text-black hover:bg-gray-50 transition"
+                    >
+                      {subItem.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
+          ))}
+
+          {isLoggedIn ? (
+            <Link
+              href="/dashboard"
+              className="text-sm text-gray-700 hover:text-black transition"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/Login"
+              className="text-sm text-gray-700 hover:text-black transition"
+            >
+              Login
+            </Link>
+          )}
+
+          {/* Clean CTA */}
+          <Link
+            href="/ContactUs"
+            className="ml-2 px-5 py-2 rounded-full bg-black text-white text-sm font-medium hover:opacity-90 transition"
+          >
+            Contact
+          </Link>
         </div>
 
-        {/* Mobile Menu */}
-        {open && (
-          <div className="md:hidden bg-white text-blue-800 px-4 py-4 space-y-3 shadow-lg">
-            {links.map((link, index) => (
-              <div key={index}>
-                <div
-                  className="flex justify-between items-center py-2 cursor-pointer"
-                  onClick={() =>
-                    link.submenu
-                      ? handleSubmenuToggle(index)
-                      : setOpen(false)
-                  }
+        {/* Mobile Toggle */}
+        <button
+          className="md:hidden text-black"
+          onClick={() => setOpen(!open)}
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            {open ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            )}
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    {/* Mobile Menu */}
+    {open && (
+      <div className="md:hidden border-t border-black/5 bg-white">
+        <div className="px-6 py-6 space-y-4">
+          {links.map((link, index) => (
+            <div key={index}>
+              <div
+                className="flex justify-between items-center cursor-pointer"
+                onClick={() =>
+                  link.submenu
+                    ? handleSubmenuToggle(index)
+                    : setOpen(false)
+                }
+              >
+                <Link
+                  href={link.href}
+                  className="text-base text-gray-800"
                 >
-                  <Link href={link.href} className="font-medium">
-                    {link.label}
-                  </Link>
+                  {link.label}
+                </Link>
 
-                  {link.submenu && (
-                    <ChevronDown
-                      size={18}
-                      className={`transition-transform ${
-                        openSubmenu === index ? "rotate-180" : ""
-                      }`}
-                    />
-                  )}
-                </div>
-
-                {link.submenu && openSubmenu === index && (
-                  <div className="pl-4 space-y-2">
-                    {link.submenu.map((subItem, subIndex) => (
-                      <Link
-                        key={subIndex}
-                        href={subItem.href}
-                        className="block py-1 text-sm hover:text-blue-600"
-                        onClick={() => setOpen(false)}
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
-                  </div>
+                {link.submenu && (
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform ${
+                      openSubmenu === index ? "rotate-180" : ""
+                    }`}
+                  />
                 )}
               </div>
-            ))}
 
-            <div className="pt-3 border-t">
-              {isLoggedIn ? (
-                <Link
-                  href="/dashboard"
-                  className="block py-2 font-semibold"
-                  onClick={() => setOpen(false)}
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <Link
-                  href="/Login"
-                  className="block py-2"
-                  onClick={() => setOpen(false)}
-                >
-                  Login
-                </Link>
+              {link.submenu && openSubmenu === index && (
+                <div className="mt-2 pl-4 space-y-2">
+                  {link.submenu.map((subItem, subIndex) => (
+                    <Link
+                      key={subIndex}
+                      href={subItem.href}
+                      className="block text-sm text-gray-500"
+                      onClick={() => setOpen(false)}
+                    >
+                      {subItem.label}
+                    </Link>
+                  ))}
+                </div>
               )}
+            </div>
+          ))}
 
+          <div className="pt-4 border-t border-black/5">
+            {isLoggedIn ? (
               <Link
-                href="/ContactUs"
-                className="block mt-3 bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded-lg text-center"
+                href="/dashboard"
+                className="block py-2 text-gray-800"
                 onClick={() => setOpen(false)}
               >
-                Contact Us
+                Dashboard
               </Link>
-            </div>
+            ) : (
+              <Link
+                href="/Login"
+                className="block py-2 text-gray-800"
+                onClick={() => setOpen(false)}
+              >
+                Login
+              </Link>
+            )}
+
+            <Link
+              href="/ContactUs"
+              className="block mt-4 bg-black text-white py-3 rounded-full text-center text-sm font-medium"
+              onClick={() => setOpen(false)}
+            >
+              Contact
+            </Link>
           </div>
-        )}
-      </nav>
-    </div>
-  );
+        </div>
+      </div>
+    )}
+  </header>
+);
 }
