@@ -358,35 +358,64 @@ export default function Home() {
   
   return (
    <div>
-<section className="w-full min-h-screen relative bg-white overflow-hidden">
-  <div className="flex min-h-screen">
+<section 
+  className="w-full min-h-screen relative overflow-hidden bg-cover bg-center bg-fixed"
+  style={{ backgroundImage: "url('/white-minimal-background_1393-354.jpg')" }}
+>
+  {/* Premium overlay for depth */}
+  <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20" />
+  
+  <div className="flex min-h-screen relative z-10">
 
-    {/* LEFT — Floating Search */}
-    <div className="w-full lg:w-1/2 flex items-center justify-center px-8 lg:px-20 relative z-20">
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-3xl p-10 border border-white/20">
-        <CarSearchHero />
+    {/* LEFT — Floating Search - Enhanced premium styling */}
+    <div className="w-full lg:w-1/2 flex items-center justify-center px-6 lg:px-20 relative z-20">
+      <div className="w-full max-w-md">
+        {/* Premium glass-morphism container with refined blur */}
+        <div className="backdrop-blur-xl bg-white/30 rounded-3xl p-[1px] shadow-[0_30px_50px_-15px_rgba(0,0,0,0.3)]">
+          <div className="bg-white/40 backdrop-blur-xl rounded-3xl p-10 border border-white/50 shadow-inner">
+            <CarSearchHero />
+          </div>
+        </div>
+        
+        {/* Subtle floating accent */}
+        <div className="absolute -z-10 w-64 h-64 bg-white/20 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
       </div>
     </div>
 
-    {/* RIGHT — Full Image */}
+    {/* RIGHT — Full Image with premium overlays */}
     <div className="hidden lg:block lg:w-1/2 relative">
       <Image
         src={backgroundImage}
-        alt="Vehicle"
+        alt="Luxury vehicle"
         fill
         priority
         quality={100}
         className="object-cover"
+        sizes="(max-width: 1024px) 0px, 50vw"
       />
 
-      {/* Soft cinematic glow / fade */}
-      <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/30" />
+      {/* Premium gradient layers for depth */}
+      <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/5 to-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
+      
+      {/* Subtle light leak effect */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-white/5 to-transparent" />
+      
+      {/* Premium corner accent */}
+      <div className="absolute bottom-8 right-8 w-24 h-24 border-r-2 border-b-2 border-white/30 rounded-br-3xl" />
+      <div className="absolute top-8 left-8 w-24 h-24 border-l-2 border-t-2 border-white/30 rounded-tl-3xl" />
     </div>
 
   </div>
 
-  {/* Optional subtle horizontal glow between sections */}
-  <div className="absolute left-1/2 top-0 h-full w-16 bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
+  {/* Premium horizontal glow between sections */}
+  <div className="absolute left-1/2 top-0 h-full w-32 bg-gradient-to-l from-white/30 via-white/10 to-transparent blur-sm pointer-events-none transform -translate-x-1/2" />
+  
+  {/* Bottom fade for elegance */}
+  <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/20 to-transparent pointer-events-none" />
+  
+  {/* Top light accent */}
+  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent" />
 </section>
 
 
