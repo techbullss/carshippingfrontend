@@ -365,14 +365,14 @@ export default function Home() {
   <div className="flex min-h-screen relative z-10">
 
     {/* LEFT — Floating Search */}
-    <div className="w-full  flex items-center justify-center px-2 lg:px-2 relative z-20">
+    <div className="w-full lg:w-1/2 flex items-center justify-center px-4 lg:px-2 relative z-20">
       <div className="w-full max-w-md">
         <CarSearchHero />
       </div>
     </div>
 
     {/* RIGHT — Full Image */}
-    <div className="hidden lg:block  relative">
+    <div className="hidden lg:block lg:w-1/2 relative">
       <Image
         src={backgroundImage}
         alt="Vehicle"
