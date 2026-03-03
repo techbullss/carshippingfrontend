@@ -1,190 +1,159 @@
 "use client";
 
-import { FaCar, FaGlobe, FaShieldAlt, FaShippingFast, FaHandshake } from "react-icons/fa";
-import { CheckBadgeIcon, RocketLaunchIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { motion } from "framer-motion";
 
 export default function AboutUs() {
   return (
-    <section className="bg-gray-50">
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-800 via-emerald-700 to-green-700 text-white py-24">
-        <div className="max-w-6xl mx-auto text-center px-6">
+    <section className="bg-white text-gray-900">
+
+      {/* Hero */}
+      <div className="min-h-[70vh] flex items-center">
+        <div className="max-w-5xl mx-auto px-6 text-center">
           <motion.h1
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-extrabold mb-4"
+            className="text-4xl md:text-6xl font-light tracking-tight leading-tight"
           >
-            Redefining Vehicle Imports in Kenya
+            Bringing European Automotive Excellence
+            <br />
+            <span className="font-medium">to Kenyan Roads</span>
           </motion.h1>
-          <p className="text-lg md:text-xl font-light max-w-3xl mx-auto">
-            Authentic European vehicles, transparent import processes, and unmatched reliability — bringing luxury and performance closer to Kenyan roads.
+
+          <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            We specialize in sourcing and importing authentic European vehicles —
+            combining transparency, experience, and care to make your journey seamless from start to finish.
           </p>
         </div>
       </div>
 
-      {/* Purpose & Difference */}
-      <div className="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-10">
+      {/* Our Story */}
+      <div className="max-w-4xl mx-auto px-6 py-24">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-          className="bg-white rounded-2xl p-10 shadow-md border border-gray-100"
+          transition={{ duration: 0.6 }}
+          className="space-y-10"
         >
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center mb-4">
-            <FaCar className="text-green-600 mr-3" /> Our Purpose
-          </h2>
-          <p className="text-gray-700 leading-relaxed">
-            To transform how Kenyans import vehicles by offering <strong>authentic European quality</strong>,
-            full transparency, and professional after-sales care — making each purchase seamless, secure, and satisfying.
-          </p>
-        </motion.div>
+          <h2 className="text-3xl font-light">Our Purpose</h2>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="bg-white rounded-2xl p-10 shadow-md border border-gray-100"
-        >
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center mb-4">
-            <FaGlobe className="text-blue-600 mr-3" /> Why Choose Us
-          </h2>
-          <ul className="space-y-4 text-gray-700">
-            <li className="flex items-start">
-              <FaShieldAlt className="text-green-500 mt-1 mr-3" />
-              <span><strong>Certified Imports:</strong> Every car undergoes over 30 safety and performance checks.</span>
-            </li>
-            <li className="flex items-start">
-              <FaShippingFast className="text-green-500 mt-1 mr-3" />
-              <span><strong>End-to-End Logistics:</strong> We manage everything — from sourcing to customs clearance.</span>
-            </li>
-            <li className="flex items-start">
-              <FaHandshake className="text-green-500 mt-1 mr-3" />
-              <span><strong>Dedicated Local Support:</strong> Reliable post-sale service through our Kenyan partners.</span>
-            </li>
-          </ul>
+          <p className="text-lg text-gray-700 leading-relaxed">
+            We founded this company with one clear mission — to redefine how vehicles are imported into Kenya.
+            For too long, the process has felt uncertain and complicated. We exist to simplify it.
+          </p>
+
+          <p className="text-lg text-gray-700 leading-relaxed">
+            Every vehicle we source is carefully inspected, verified, and managed with precision.
+            From Europe to Mombasa, we oversee every detail so you can focus on what truly matters —
+            driving a car you trust.
+          </p>
         </motion.div>
       </div>
 
-      {/* Brands & Quality Section */}
-      <div className="bg-gradient-to-b from-gray-100 via-white to-gray-50 py-20">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-6 text-gray-900">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-emerald-600">
-              European Excellence, Delivered
-            </span>
+      {/* What Makes Us Different */}
+      <div className="bg-gray-50">
+        <div className="max-w-5xl mx-auto px-6 py-24">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="space-y-16"
+          >
+            <h2 className="text-3xl font-light text-center">
+              Why Clients Choose Us
+            </h2>
+
+            <div className="grid md:grid-cols-3 gap-16 text-center">
+              <div>
+                <h3 className="text-xl font-medium mb-4">
+                  Authenticity
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Every vehicle is sourced directly from certified European dealerships,
+                  ensuring genuine history, verified mileage, and uncompromised quality.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-medium mb-4">
+                  Transparency
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  Clear pricing. Full documentation. No hidden surprises.
+                  We believe trust is built through honesty.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-medium mb-4">
+                  End-to-End Care
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  From sourcing and inspection to shipping and customs clearance,
+                  we manage every step with professionalism and attention to detail.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Process */}
+      <div className="max-w-5xl mx-auto px-6 py-24">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="space-y-16"
+        >
+          <h2 className="text-3xl font-light text-center">
+            A Simple, Refined Process
           </h2>
-          <p className="text-lg text-gray-600 mb-16 max-w-3xl mx-auto">
-            We work directly with leading manufacturers and certified dealerships across Europe — ensuring you get genuine, top-condition vehicles every time.
-          </p>
 
-          <div className="grid md:grid-cols-3 gap-10">
-            {/* Quality */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-2xl p-10 shadow hover:shadow-lg transition border border-gray-100"
-            >
-              <div className="flex justify-center mb-4">
-                <CheckBadgeIcon className="w-12 h-12 text-emerald-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Unmatched Quality</h3>
-              <p className="text-gray-600">
-                Every vehicle passes a detailed inspection before shipment — guaranteeing performance and safety.
-              </p>
-            </motion.div>
+          <div className="grid md:grid-cols-4 gap-12 text-center">
+            <div>
+              <p className="text-4xl font-light mb-4">01</p>
+              <p className="text-gray-600">Select your preferred vehicle</p>
+            </div>
 
-            {/* Experience */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="bg-white rounded-2xl p-10 shadow hover:shadow-lg transition border border-gray-100"
-            >
-              <div className="flex justify-center mb-4">
-                <ShieldCheckIcon className="w-12 h-12 text-amber-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Proven Expertise</h3>
-              <p className="text-gray-600">
-                Over 30 years of experience importing and managing European vehicles — your trust is our legacy.
-              </p>
-            </motion.div>
+            <div>
+              <p className="text-4xl font-light mb-4">02</p>
+              <p className="text-gray-600">We inspect and verify every detail</p>
+            </div>
 
-            {/* Delivery */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="bg-white rounded-2xl p-10 shadow hover:shadow-lg transition border border-gray-100"
-            >
-              <div className="flex justify-center mb-4">
-                <RocketLaunchIcon className="w-12 h-12 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Fast, Global Delivery</h3>
-              <p className="text-gray-600">
-                From Europe to Kenya — our logistics ensure safe, timely, and trackable delivery of every vehicle.
-              </p>
-            </motion.div>
+            <div>
+              <p className="text-4xl font-light mb-4">03</p>
+              <p className="text-gray-600">Shipping and customs handled professionally</p>
+            </div>
+
+            <div>
+              <p className="text-4xl font-light mb-4">04</p>
+              <p className="text-gray-600">Delivery, ready for Kenyan roads</p>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Import Process */}
-      <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-        <h2 className="text-3xl font-bold mb-10 text-gray-900">
-          Simple. Transparent. <span className="text-green-600">Step by Step.</span>
-        </h2>
-        <div className="grid md:grid-cols-4 gap-8">
-          {[
-            { step: "1", title: "Choose", desc: "Pick your dream car from Europe’s finest." },
-            { step: "2", title: "Verify", desc: "We handle full inspection & certification." },
-            { step: "3", title: "Ship", desc: "Logistics, insurance, and customs — done." },
-            { step: "4", title: "Drive", desc: "We deliver your car ready for Kenyan roads." },
-          ].map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white shadow-md rounded-2xl p-8 border border-gray-100"
-            >
-              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-600 to-emerald-600 text-white flex items-center justify-center font-bold text-lg">
-                {item.step}
-              </div>
-              <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-              <p className="text-gray-600">{item.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-green-700 to-blue-700 text-white text-center py-20">
-        <div className="max-w-3xl mx-auto px-6">
-          <h3 className="text-3xl md:text-4xl font-bold mb-4">
-            Start Your European Import Journey Today
+      {/* Closing Statement */}
+      <div className="bg-black text-white py-24">
+        <div className="max-w-3xl mx-auto text-center px-6">
+          <h3 className="text-3xl md:text-4xl font-light mb-6">
+            Excellence is not an option.
+            <br />
+            It is our standard.
           </h3>
-          <p className="text-lg mb-8 font-light">
-            From luxury sedans to rugged SUVs — we make your dream car a reality with unmatched quality, trust, and speed.
+
+          <p className="text-gray-300 text-lg leading-relaxed">
+            When you choose us, you choose reliability, discretion, and
+            a partner committed to delivering more than just a vehicle —
+            but a complete experience.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <button className="px-8 py-4 rounded-xl font-semibold bg-white text-green-700 hover:bg-gray-100 shadow-lg transition">
-              View Cars
-            </button>
-            <button className="px-8 py-4 rounded-xl font-semibold bg-transparent border-2 border-white text-white hover:bg-white hover:text-green-700 transition">
-              Request Import Quote
-            </button>
-          </div>
         </div>
       </div>
+
     </section>
   );
 }

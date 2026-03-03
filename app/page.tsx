@@ -358,7 +358,7 @@ export default function Home() {
   
   return (
    <div>
-  <section className="relative min-h-[600px] w-full overflow-hidden flex items-center">
+  <section className="relative  w-full overflow-hidden flex items-center">
   <Image
     src={backgroundImage}
     alt="Hero Background"
