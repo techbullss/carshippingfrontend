@@ -367,7 +367,7 @@ export default function Home() {
     priority
     quality={100}
   />
-  <div className="absolute inset-0 bg-black/40" />
+  <div className="absolute inset-0 " />
   <div className="container relative z-10 px-2 w-full h-full">
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-center">
       <div className="bg-white/10 w-full p-6 rounded-lg lg:col-span-2">
