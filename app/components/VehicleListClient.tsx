@@ -193,7 +193,7 @@ setFuelTypes(extractUnique(newCars.map((v: { fuelType: any; }) => v.fuelType)));
   return (
     <div>
       {/* ======= FILTER BAR ======= */}
-      <div className="sticky top-14 bg-white z-5  shadow-md">
+      <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-md border-b border-black/5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Clear Filters Button */}
           {hasActiveFilters && (
