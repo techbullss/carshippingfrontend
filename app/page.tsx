@@ -358,24 +358,133 @@ export default function Home() {
   
   return (
    <div>
-  <section className="relative  w-full overflow-hidden flex items-center">
-  <Image
-    src={backgroundImage}
-    alt="Hero Background"
-    fill
-    className="object-cover"
-    priority
-    quality={100}
-  />
-  <div className="absolute inset-0 " />
-  <div className="container relative z-10 px-2 w-full h-full">
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-center">
-      <div className="bg-white/10 w-full p-6 rounded-lg lg:col-span-2">
-        <CarSearchHero />
+  <section className="relative w-full min-h-[90vh] lg:min-h-[85vh] overflow-hidden bg-[#0a0a0a]">
+  {/* Premium gradient overlay */}
+  <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10" />
+  
+  {/* Background Image with parallax effect */}
+  <div className="absolute inset-0 scale-105 hover:scale-100 transition-transform duration-10000">
+    <Image
+      src={backgroundImage}
+      alt="Mercedes-Benz Hero"
+      fill
+      className="object-cover opacity-90"
+      priority
+      quality={100}
+    />
+  </div>
+
+  {/* Subtle pattern overlay for texture */}
+  <div className="absolute inset-0 bg-[url('/carbon-fiber-pattern.png')] opacity-20 mix-blend-overlay z-10" />
+
+  {/* Split screen illusion - Right side reveal */}
+  <div className="absolute inset-0 z-20">
+    <div className="container mx-auto px-4 h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 h-full items-center">
+        {/* Left content - Mercedes text */}
+        <div className="text-white space-y-6 pr-12">
+          <div className="overflow-hidden">
+            <p className="text-[#c9a96b] tracking-[0.3em] text-sm font-light mb-2 animate-slideDown">
+              THE BEST OR NOTHING
+            </p>
+          </div>
+          <div className="overflow-hidden">
+            <h1 className="text-5xl lg:text-7xl font-light tracking-tight leading-tight animate-slideUp">
+              <span className="block">Engineered for</span>
+              <span className="block font-semibold text-[#c9a96b]">the extraordinary</span>
+            </h1>
+          </div>
+          <div className="overflow-hidden">
+            <p className="text-gray-300 max-w-md text-lg font-light leading-relaxed animate-fadeIn delay-300">
+              Discover unparalleled luxury and cutting-edge innovation in every detail.
+            </p>
+          </div>
+          
+          {/* Mercedes-style buttons */}
+          <div className="flex gap-6 pt-8 animate-fadeIn delay-500">
+            <button className="group relative px-8 py-4 bg-[#c9a96b] text-black font-medium tracking-wider overflow-hidden transition-all duration-300 hover:bg-[#b8944f]">
+              <span className="relative z-10">EXPLORE MODELS</span>
+              <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 opacity-20" />
+            </button>
+            <button className="group relative px-8 py-4 border border-white/30 text-white font-medium tracking-wider overflow-hidden transition-all duration-300 hover:border-[#c9a96b]">
+              <span className="relative z-10">CONFIGURE</span>
+              <div className="absolute inset-0 bg-[#c9a96b] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 -z-0" />
+            </button>
+          </div>
+
+          {/* Mercedes signature line */}
+          <div className="absolute bottom-12 left-4 lg:left-8 flex items-center gap-3 text-white/40">
+            <div className="w-12 h-[1px] bg-[#c9a96b]/60" />
+            <span className="text-xs tracking-[0.3em] font-light">MERCEDES-BENZ</span>
+          </div>
+        </div>
+
+        {/* Right side - Empty space for image reveal */}
+        <div className="hidden lg:block relative h-full">
+          {/* This empty space creates the split-screen illusion */}
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#0a0a0a]/20" />
+        </div>
       </div>
     </div>
   </div>
+
+  {/* CarSearchHero positioned on left side */}
+  <div className="absolute bottom-12 right-4 lg:right-12 z-30 w-full max-w-md">
+    <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-8 rounded-sm shadow-2xl">
+      <div className="absolute top-0 left-0 w-20 h-[2px] bg-[#c9a96b]" />
+      <CarSearchHero />
+    </div>
+  </div>
+
+  {/* Animated Mercedes star */}
+  <div className="absolute top-12 right-12 z-30 opacity-20 animate-pulse">
+    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L14 9H21L16 14L18 21L12 17L6 21L8 14L3 9H10L12 2Z" fill="#c9a96b" />
+    </svg>
+  </div>
 </section>
+
+<style jsx>{`
+  @keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-slideDown {
+    animation: slideDown 0.8s ease-out forwards;
+  }
+  
+  .animate-slideUp {
+    animation: slideUp 0.8s ease-out forwards;
+  }
+  
+  .animate-fadeIn {
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+  
+  .delay-300 {
+    animation-delay: 0.3s;
+  }
+  
+  .delay-500 {
+    animation-delay: 0.5s;
+  }
+  
+  .transition-transform {
+    transition: transform 10s ease;
+  }
+`}</style>
 <section className="bg-white py-4">
   <div className="max-w-7xl mx-auto px-6 lg:px-8">
 

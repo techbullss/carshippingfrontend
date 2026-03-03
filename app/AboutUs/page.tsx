@@ -6,26 +6,7 @@ export default function AboutUs() {
   return (
     <section className="bg-white text-gray-900">
 
-      {/* Hero */}
-      <div className="min-h-[70vh] flex items-center">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl md:text-6xl font-light tracking-tight leading-tight"
-          >
-            Bringing European Automotive Excellence
-            <br />
-            <span className="font-medium">to Kenyan Roads</span>
-          </motion.h1>
-
-          <p className="mt-8 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            We specialize in sourcing and importing authentic European vehicles —
-            combining transparency, experience, and care to make your journey seamless from start to finish.
-          </p>
-        </div>
-      </div>
+      
 
       {/* Our Story */}
       <div className="max-w-4xl mx-auto px-6 py-24">
