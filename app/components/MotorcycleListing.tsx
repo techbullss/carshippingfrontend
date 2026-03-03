@@ -200,7 +200,7 @@ export default function MotorcycleListing() {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* ======= FILTER BAR ======= */}
-      <div className="sticky top-0 bg-white z-50 shadow-md">
+      <div className="sticky top-0 bg-white z-10 shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-3">
           {/* Clear Filters Button */}
           {hasActiveFilters && (
