@@ -360,7 +360,6 @@ export default function Home() {
    <div>
   <section className="relative w-full min-h-[90vh] lg:min-h-[85vh] overflow-hidden bg-[#0a0a0a]">
   {/* Premium gradient overlay */}
-  <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10" />
   
   {/* Background Image with parallax effect */}
   <div className="absolute inset-0 scale-105 hover:scale-100 transition-transform duration-10000">
@@ -375,7 +374,7 @@ export default function Home() {
   </div>
 
   {/* Subtle pattern overlay for texture */}
-  <div className="absolute inset-0 bg-[url('/carbon-fiber-pattern.png')] opacity-20 mix-blend-overlay z-10" />
+  <div className="absolute inset-0 bg-[url('/carbon-fiber-pattern.png')] opacity-0 mix-blend-overlay z-10" />
 
   {/* Split screen illusion - Right side reveal */}
   <div className="absolute inset-0 z-20">
