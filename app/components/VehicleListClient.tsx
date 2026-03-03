@@ -92,7 +92,7 @@ export default function VehicleListClient() {
     params.append("size", "12");
     params.append("sort", "priceKes,desc");
 
-    // ✅ use correct backend parameter names
+    //  use correct backend parameter names
     if (filters.brand) params.append("brand", filters.brand);
     if (filters.model) params.append("model", filters.model);
     if (filters.transmission) params.append("transmission", filters.transmission);
@@ -103,7 +103,7 @@ export default function VehicleListClient() {
     if (filters.ownerType) params.append("ownerType", filters.ownerType);
     if (filters.yearOfManufacture) params.append("yearOfManufacture", filters.yearOfManufacture);
 
-    // ✅ numeric filters (use _gte and _lte)
+    //  numeric filters (use _gte and _lte)
     if (filters.minPrice) params.append("price_gte", filters.minPrice);
     if (filters.maxPrice) params.append("price_lte", filters.maxPrice);
     if (filters.minYear) params.append("year_gte", filters.minYear);
@@ -193,7 +193,7 @@ setFuelTypes(extractUnique(newCars.map((v: { fuelType: any; }) => v.fuelType)));
   return (
     <div>
       {/* ======= FILTER BAR ======= */}
-      <div className="sticky top-0 bg-white z-5  shadow-md">
+      <div className="sticky top-14 bg-white z-5  shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Clear Filters Button */}
           {hasActiveFilters && (
