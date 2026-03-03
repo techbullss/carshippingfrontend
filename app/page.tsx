@@ -359,45 +359,25 @@ export default function Home() {
   return (
    <div>
  <section className="w-full min-h-[90vh] bg-white flex items-center">
-  <div className="max-w-7xl mx-auto px-0 py-20 w-full">
+  <div className="max-w-7xl mx-auto px-8 w-full">
     
-    <div className="grid lg:grid-cols-2 gap-16 items-center">
+    <div className="grid lg:grid-cols-2 items-center gap-24">
       
-      {/* LEFT — Search + Messaging */}
-      <div className="space-y-10 pl-6">
-        
-        {/* Premium heading with human touch */}
-        <div className="space-y-4">
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-black">
-            Drive Home <span className="text-gray-400">Your</span> Dream
-          </h1>
-          <p className="text-gray-500 text-lg leading-relaxed max-w-md">
-            Every journey begins with the right vehicle. Let's find yours together — with honest advice and a handshake.
-          </p>
-        </div>
-
-        {/* Search Component */}
-        <div className="bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.05)] p-6">
-          {/* Search form will go here */}
-        </div>
+      {/* LEFT — Search Only */}
+      <div className="w-full">
+        <CarSearchHero />
       </div>
 
-      {/* RIGHT — Hero Image */}
-      <div className="relative w-full h-[500px] lg:h-[600px]">
-        
-        <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.08)]">
-          <Image
-            src={backgroundImage}
-            alt="Featured Vehicle"
-            fill
-            priority
-            quality={100}
-            className="object-cover"
-          />
-        </div>
-
-        {/* Subtle glow effect */}
-        <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-black/5 rounded-full blur-3xl" />
+      {/* RIGHT — Image */}
+      <div className="relative w-full h-[520px] lg:h-[620px]">
+        <Image
+          src={backgroundImage}
+          alt="Vehicle"
+          fill
+          priority
+          quality={100}
+          className="object-contain"
+        />
       </div>
 
     </div>
