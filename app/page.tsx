@@ -359,26 +359,26 @@ export default function Home() {
   return (
    <div>
  <section className="w-full min-h-[90vh] bg-white flex items-center">
-  <div className="max-w-7xl mx-auto px-6 py-20 w-full">
+  <div className="max-w-7xl mx-auto px-0 py-20 w-full">
     
     <div className="grid lg:grid-cols-2 gap-16 items-center">
       
       {/* LEFT — Search + Messaging */}
-      <div className="space-y-10">
+      <div className="space-y-10 pl-6">
         
-        {/* Optional premium heading */}
+        {/* Premium heading with human touch */}
         <div className="space-y-4">
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-black">
-            Find Your Next Vehicle
+            Drive Home <span className="text-gray-400">Your</span> Dream
           </h1>
           <p className="text-gray-500 text-lg leading-relaxed max-w-md">
-            Premium imports and locally available vehicles delivered with trust and precision.
+            Every journey begins with the right vehicle. Let's find yours together — with honest advice and a handshake.
           </p>
         </div>
 
-        {/* Car Search Component */}
+        {/* Search Component */}
         <div className="bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.05)] p-6">
-          <CarSearchHero />
+          {/* Search form will go here */}
         </div>
       </div>
 
