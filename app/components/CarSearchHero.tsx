@@ -113,158 +113,131 @@ useEffect(() => {
     });
   };
 
-  return (
-    <div className="bg-white rounded-lg shadow-xl p-6 max-w-3xl mx-auto">
-      <form onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Find Your Perfect Vehicle</h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Search our inventory of premium European vehicles
-          </p>
+return (
+  <div className="w-full max-w-3xl">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white/80 backdrop-blur-md border border-black/5 rounded-3xl p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)]"
+    >
+      {/* Header */}
+      <div className="mb-10">
+        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-gray-900">
+          Find your next vehicle
+        </h1>
+        <p className="text-gray-500 mt-3 text-base">
+          Refined selection. Thoughtfully curated. Effortlessly searchable.
+        </p>
+      </div>
+
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* Make */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Make
+          </label>
+          {loadingMakes ? (
+            <div className="w-full rounded-2xl px-4 py-3 bg-gray-100 animate-pulse text-gray-400 text-sm">
+              Loading makes…
+            </div>
+          ) : (
+            <select
+              value={filters.make}
+              onChange={(e) => handleFilterChange("make", e.target.value)}
+              className="w-full rounded-2xl bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all duration-200"
+            >
+              <option value="">Any Make</option>
+              {makes.map((make) => (
+                <option key={make.id} value={make.id}>
+                  {make.name} ({make.count})
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Make Selector */}
-          <div>
-            <label htmlFor="make" className="block text-sm font-medium text-gray-700 mb-1">
-              Make
-            </label>
-            <div className="relative">
-              {loadingMakes ? (
-                <div className="w-full rounded-lg border border-gray-300 px-4 py-3 bg-gray-100 animate-pulse">
-                  Loading makes...
-                </div>
-              ) : (
-                <select
-                  id="make"
-                  name="make"
-                  value={filters.make}
-                  onChange={(e) => handleFilterChange("make", e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Any Make</option>
-                  {makes.map((make) => (
-                    <option key={make.id} value={make.id}>
-                      {make.name} ({make.count})
-                    </option>
-                  ))}
-                </select>
-              )}
+        {/* Model */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Model
+          </label>
+          {filters.make && loadingModels ? (
+            <div className="w-full rounded-2xl px-4 py-3 bg-gray-100 animate-pulse text-gray-400 text-sm">
+              Loading models…
             </div>
-          </div>
-
-          {/* Model Selector */}
-          <div>
-            <label htmlFor="model" className="block text-sm font-medium text-gray-700 mb-1">
-              Model
-            </label>
-            <div className="relative">
-              {filters.make && loadingModels ? (
-                <div className="w-full rounded-lg border border-gray-300 px-4 py-3 bg-gray-100 animate-pulse">
-                  Loading models...
-                </div>
-              ) : (
-                <select
-                  id="model"
-                  name="model"
-                  value={filters.model}
-                  onChange={(e) => handleFilterChange("model", e.target.value)}
-                  disabled={!filters.make}
-                  className={`w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    !filters.make ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-white"
-                  }`}
-                >
-                  <option value="">Any Model</option>
-                  {models.map((model) => (
-                    <option key={model.id} value={model.id}>
-                      {model.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-          </div>
-
-          {/* Body Type */}
-          <div>
-            <label htmlFor="bodyType" className="block text-sm font-medium text-gray-700 mb-1">
-              Body Type
-            </label>
-            <div className="relative">
-              <select
-                id="bodyType"
-                name="bodyType"
-                value={filters.bodyType}
-                onChange={(e) => handleFilterChange("bodyType", e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {BODY_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Transmission */}
-          <div>
-            <label htmlFor="transmission" className="block text-sm font-medium text-gray-700 mb-1">
-              Transmission
-            </label>
-            <div className="relative">
-              <select
-                id="transmission"
-                name="transmission"
-                value={filters.transmission}
-                onChange={(e) => handleFilterChange("transmission", e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 pr-8 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {TRANSMISSION_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          ) : (
+            <select
+              value={filters.model}
+              onChange={(e) => handleFilterChange("model", e.target.value)}
+              disabled={!filters.make}
+              className="w-full rounded-2xl bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all duration-200 disabled:opacity-50"
+            >
+              <option value="">Any Model</option>
+              {models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-between pt-6">
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+        {/* Body Type */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Body Type
+          </label>
+          <select
+            value={filters.bodyType}
+            onChange={(e) => handleFilterChange("bodyType", e.target.value)}
+            className="w-full rounded-2xl bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all duration-200"
           >
-            Reset Filters
-          </button>
-          <button
-            type="submit"
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-md hover:shadow-lg"
-          >
-            <div className="flex items-center justify-center gap-2">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M21 21l-4.35-4.35"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="6"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-              </svg>
-              Search Vehicles
-            </div>
-          </button>
+            {BODY_TYPES.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
         </div>
-      </form>
-    </div>
-  );
+
+        {/* Transmission */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Transmission
+          </label>
+          <select
+            value={filters.transmission}
+            onChange={(e) => handleFilterChange("transmission", e.target.value)}
+            className="w-full rounded-2xl bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black/20 transition-all duration-200"
+          >
+            {TRANSMISSION_TYPES.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex justify-between items-center mt-12">
+        <button
+          type="button"
+          onClick={resetFilters}
+          className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+        >
+          Reset
+        </button>
+
+        <button
+          type="submit"
+          className="px-8 py-3 rounded-full bg-black text-white text-sm font-medium tracking-wide shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+        >
+          Search Vehicles
+        </button>
+      </div>
+    </form>
+  </div>
+);
 }

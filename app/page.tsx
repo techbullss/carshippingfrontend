@@ -382,7 +382,7 @@ export default function Home() {
   <div className="relative z-10 container mx-auto px-6 h-full flex items-center">
     
     {/* Left Side - Search Only */}
-    <div className="max-w-xl w-full">
+    <div className="max-w-xl w-full py-16">
       <CarSearchHero />
     </div>
 
