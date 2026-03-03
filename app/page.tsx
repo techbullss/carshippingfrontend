@@ -444,47 +444,7 @@ export default function Home() {
   </div>
 </section>
 
-<style jsx>{`
-  @keyframes slideDown {
-    from { transform: translateY(-100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  
-  @keyframes slideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .animate-slideDown {
-    animation: slideDown 0.8s ease-out forwards;
-  }
-  
-  .animate-slideUp {
-    animation: slideUp 0.8s ease-out forwards;
-  }
-  
-  .animate-fadeIn {
-    opacity: 0;
-    animation: fadeIn 0.8s ease-out forwards;
-  }
-  
-  .delay-300 {
-    animation-delay: 0.3s;
-  }
-  
-  .delay-500 {
-    animation-delay: 0.5s;
-  }
-  
-  .transition-transform {
-    transition: transform 10s ease;
-  }
-`}</style>
+
 <section className="bg-white py-4">
   <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
