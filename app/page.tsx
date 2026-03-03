@@ -358,24 +358,24 @@ export default function Home() {
   
   return (
    <div>
-  <section
-      className="flex items-center min-h-[600px]"
-      style={{
-        backgroundImage: ` url('${backgroundImage}')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      <div className="container px-2 w-full h-full">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-center">
-          {/* Search Component */}
-          <div className="bg-white/10  w-full p-6 rounded-lg lg:col-span-2">
-            <CarSearchHero />
-          </div>
-        </div>
+  <section className="relative min-h-[600px] w-full overflow-hidden flex items-center">
+  <Image
+    src={backgroundImage}
+    alt="Hero Background"
+    fill
+    className="object-cover"
+    priority
+    quality={100}
+  />
+  <div className="absolute inset-0 bg-black/40" />
+  <div className="container relative z-10 px-2 w-full h-full">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-center">
+      <div className="bg-white/10 w-full p-6 rounded-lg lg:col-span-2">
+        <CarSearchHero />
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 <section className="bg-white py-4">
   <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
