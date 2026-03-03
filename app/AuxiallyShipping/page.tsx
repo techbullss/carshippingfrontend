@@ -327,7 +327,7 @@ const handleTabChange = (tab: string) => {
 
         <div className="flex flex-col sm:flex-row gap-4">
           <a
-            href="/dashboard/RequestItemPage"
+            href="/Reviews"
             className="px-8 py-3 bg-black text-white text-sm uppercase tracking-wider hover:bg-gray-800 transition"
           >
             Request Item
