@@ -358,31 +358,35 @@ export default function Home() {
   
   return (
    <div>
- <section className="w-full min-h-[90vh] bg-white flex items-center">
-  <div className="max-w-7xl mx-auto px-8 w-full">
-    
-    <div className="grid lg:grid-cols-2 items-center gap-24">
-      
-      {/* LEFT — Search Only */}
-      <div className="w-full">
+<section className="w-full min-h-screen relative bg-white overflow-hidden">
+  <div className="flex min-h-screen">
+
+    {/* LEFT — Floating Search */}
+    <div className="w-full lg:w-1/2 flex items-center justify-center px-8 lg:px-20 relative z-20">
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-3xl p-10 border border-white/20">
         <CarSearchHero />
       </div>
+    </div>
 
-      {/* RIGHT — Image */}
-      <div className="relative w-full h-[520px] lg:h-[620px]">
-        <Image
-          src={backgroundImage}
-          alt="Vehicle"
-          fill
-          priority
-          quality={100}
-          className="object-contain"
-        />
-      </div>
+    {/* RIGHT — Full Image */}
+    <div className="hidden lg:block lg:w-1/2 relative">
+      <Image
+        src={backgroundImage}
+        alt="Vehicle"
+        fill
+        priority
+        quality={100}
+        className="object-cover"
+      />
 
+      {/* Soft cinematic glow / fade */}
+      <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/30" />
     </div>
 
   </div>
+
+  {/* Optional subtle horizontal glow between sections */}
+  <div className="absolute left-1/2 top-0 h-full w-16 bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
 </section>
 
 
