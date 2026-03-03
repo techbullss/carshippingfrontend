@@ -327,7 +327,7 @@ const handleTabChange = (tab: string) => {
 
         <div className="flex flex-col sm:flex-row gap-4">
           <a
-            href="/Reviews"
+            href="/dashboard/RequestItemPage"
             className="px-8 py-3 bg-black text-white text-sm uppercase tracking-wider hover:bg-gray-800 transition"
           >
             Request Item
@@ -396,14 +396,7 @@ const handleTabChange = (tab: string) => {
       <section id="products" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12 gap-6">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-3">
-                Live Shipment Tracking
-              </h2>
-              <p className="text-gray-600 text-lg">
-                Real-time updates on items we're currently handling for our clients
-              </p>
-            </div>
+           
             
             {/* Enhanced Search and Filter */}
             <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
@@ -763,7 +756,7 @@ const handleTabChange = (tab: string) => {
           {/* Enhanced Add Review CTA */}
           <div className="text-center mt-16">
             <motion.a
-              href="/dashboard/ReviewPage"
+              href="/Reviews"
               className="group inline-flex items-center gap-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
