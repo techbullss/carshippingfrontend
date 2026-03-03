@@ -358,32 +358,48 @@ export default function Home() {
   
   return (
    <div>
- <section className="relative w-full min-h-[90vh] overflow-hidden bg-[#0a0a0a]">
-  
-  {/* Background Image */}
-  <div className="absolute inset-0">
-    <Image
-      src={backgroundImage}
-      alt="Hero"
-      fill
-      priority
-      quality={100}
-      className="object-cover"
-    />
+ <section className="w-full min-h-[90vh] bg-white flex items-center">
+  <div className="max-w-7xl mx-auto px-6 py-20 w-full">
     
-    {/* Soft cinematic fade */}
-    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/10" />
-    
-    {/* Bottom fade for seamless blend */}
-    <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
-  </div>
+    <div className="grid lg:grid-cols-2 gap-16 items-center">
+      
+      {/* LEFT — Search + Messaging */}
+      <div className="space-y-10">
+        
+        {/* Optional premium heading */}
+        <div className="space-y-4">
+          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-black">
+            Find Your Next Vehicle
+          </h1>
+          <p className="text-gray-500 text-lg leading-relaxed max-w-md">
+            Premium imports and locally available vehicles delivered with trust and precision.
+          </p>
+        </div>
 
-  {/* Content */}
-  <div className="relative z-10 container mx-auto px-6 h-full flex items-center">
-    
-    {/* Left Side - Search Only */}
-    <div className="max-w-xl w-full py-16">
-      <CarSearchHero />
+        {/* Car Search Component */}
+        <div className="bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.05)] p-6">
+          <CarSearchHero />
+        </div>
+      </div>
+
+      {/* RIGHT — Hero Image */}
+      <div className="relative w-full h-[500px] lg:h-[600px]">
+        
+        <div className="absolute inset-0 rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.08)]">
+          <Image
+            src={backgroundImage}
+            alt="Featured Vehicle"
+            fill
+            priority
+            quality={100}
+            className="object-cover"
+          />
+        </div>
+
+        {/* Subtle glow effect */}
+        <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-black/5 rounded-full blur-3xl" />
+      </div>
+
     </div>
 
   </div>
