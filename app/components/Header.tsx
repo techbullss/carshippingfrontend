@@ -82,7 +82,8 @@ export default function Header() {
   }, []);
 
  return (
-<header className="w-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-md">    <nav className="max-w-7xl mx-auto px-6">
+  <header className="w-full bg-white/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-50">
+    <nav className="max-w-7xl mx-auto px-6">
       <div className="flex items-center justify-between h-14">
         
         {/* Logo */}
