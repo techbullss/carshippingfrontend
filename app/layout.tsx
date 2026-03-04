@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "motor sales",
+  title: "F-carshipping - Your Trusted Vehicle Import Partner in Kenya",
   description:
     "Your trusted partner for importing quality vehicles into Kenya. We simplify the process, ensuring authenticity, transparency, and exceptional service from Europe to Mombasa.",
 
