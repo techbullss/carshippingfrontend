@@ -179,20 +179,7 @@ export default function Footer() {
           </ul>
 
           {/* CTA buttons */}
-          <div className="flex gap-3 mt-6">
-            <a
-              href="/contact"
-              className="px-4 py-2 bg-yellow-500 text-gray-900 text-sm font-semibold rounded hover:bg-yellow-400 transition-colors duration-200"
-            >
-              Get a Quote
-            </a>
-            <a
-              href="/about"
-              className="px-4 py-2 border border-gray-700 text-gray-300 text-sm font-semibold rounded hover:border-yellow-500 hover:text-yellow-400 transition-colors duration-200"
-            >
-              Learn More
-            </a>
-          </div>
+          
         </div>
       </div>
 
