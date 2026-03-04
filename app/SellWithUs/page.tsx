@@ -64,7 +64,7 @@ export default function SellWithUsPage() {
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden text-black">
-  <div className="relative max-w-6xl mx-auto px-6 pt-32 pb-36 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+  <div className="relative max-w-6xl mx-auto px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
     
     {/* Left: Text Content */}
     <div>
