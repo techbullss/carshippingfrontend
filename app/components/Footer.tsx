@@ -1,3 +1,4 @@
+import Image from "next/image";
 export default function Footer() {
   return (
    <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-white pt-16 pb-8 relative">
@@ -9,13 +10,33 @@ export default function Footer() {
       
       {/* Company Info - Enhanced */}
       <div className="mb-6 transform transition-transform duration-300 hover:translate-y-[-4px]">
-        <h3 className="text-3xl font-bold bg-gradient-to-r from-sky-400 to-blue-400 bg-clip-text text-transparent mb-4">
-          F-carshipping
-        </h3>
-        <p className="text-gray-300 mb-6 leading-relaxed">
-          Your trusted partner in nationwide vehicle transportation. 
-          Safe, reliable, and professional service every time.
-        </p>
+        <div className="w-48 h-auto mx-auto mb-4">
+    <Image
+      src="/lod.png"
+      alt="FCarShipping Logo"
+      width={192}   // width you want
+      height={64}   // adjust height to keep proportions
+      className="object-contain"
+      priority
+    />
+  </div>
+
+  {/* Optional description */}
+  <p className="text-gray-300 mb-6 leading-relaxed text-center max-w-xl mx-auto">
+    Your trusted partner in nationwide vehicle transportation. 
+    Safe, reliable, and professional service every time.
+  </p>
+
+  {/* Buttons / actions */}
+  <div className="flex justify-center space-x-4">
+    {/* Example buttons */}
+    <button className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+      Get Started
+    </button>
+    <button className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition">
+      Learn More
+    </button>
+  </div>
         <div className="flex space-x-4">
   {/* Facebook */}
   <a 
