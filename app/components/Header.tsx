@@ -92,7 +92,7 @@ export default function Header() {
   {/* Logo Icon (3 stacked shapes) */}
   <div className="relative w-100 h-40">
     <Image
-      src="/log.png"
+      src="/log24.png"
       alt="FCarShipping Logo"
       fill
       className="object-contain"
