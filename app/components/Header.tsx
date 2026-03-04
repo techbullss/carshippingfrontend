@@ -90,7 +90,7 @@ export default function Header() {
         <Link href="/" className="flex items-center space-x-3 group">
   
   {/* Logo Icon (3 stacked shapes) */}
-  <div className="relative w-8 h-8">
+  <div className="relative w-14 h-14">
     <Image
       src="/log.png"
       alt="FCarShipping Logo"
