@@ -20,9 +20,7 @@ export const metadata: Metadata = {
   description:
     "Your trusted partner for importing quality vehicles into Kenya. We simplify the process, ensuring authenticity, transparency, and exceptional service from Europe to Mombasa.",
 
-  icons: {
-    icon: "/lod.png",
-  },
+ 
 };
 
 export default function RootLayout({
