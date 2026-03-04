@@ -63,7 +63,6 @@ export default function SellWithUsPage() {
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden bg-slate-950 text-white">
-        {/* Subtle grid overlay */}
         <div
           className="absolute inset-0 opacity-5"
           style={{
@@ -72,8 +71,6 @@ export default function SellWithUsPage() {
             backgroundSize: "48px 48px",
           }}
         />
-        {/* Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-yellow-500 opacity-5 blur-3xl pointer-events-none" />
 
         <div className="relative max-w-6xl mx-auto px-6 pt-32 pb-36">
           <motion.div
@@ -82,8 +79,8 @@ export default function SellWithUsPage() {
             transition={{ duration: 0.6 }}
             className="flex justify-center mb-6"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 text-xs font-semibold tracking-widest uppercase">
-              <Star className="w-3 h-3 fill-yellow-400" />
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 text-xs font-semibold tracking-widest uppercase">
+              <Star className="w-3 h-3" />
               Seller Marketplace
             </span>
           </motion.div>
@@ -95,7 +92,7 @@ export default function SellWithUsPage() {
             className="text-center text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight"
           >
             Sell Smarter.<br />
-            <span className="text-yellow-400">Reach Further.</span>
+            <span className="text-slate-300">Reach Further.</span>
           </motion.h1>
 
           <motion.p
@@ -117,7 +114,7 @@ export default function SellWithUsPage() {
           >
             <a
               href="/Signup"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-yellow-500/20 hover:shadow-yellow-400/30 hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm rounded-xl transition-all duration-200 shadow-lg hover:-translate-y-0.5"
             >
               Start Selling Today
               <ArrowRight className="w-4 h-4" />
@@ -152,17 +149,17 @@ export default function SellWithUsPage() {
       </section>
 
       {/* ── LIMITED ONBOARDING BANNER ── */}
-      <section className="bg-yellow-500">
+      <section className="bg-slate-900 border-b border-slate-800">
         <div className="max-w-6xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-slate-900 animate-pulse flex-shrink-0" />
-            <p className="text-slate-900 text-sm font-semibold">
-              <span className="font-black">Limited Onboarding Open</span> — We are accepting a select number of sellers during our soft launch phase.
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse flex-shrink-0" />
+            <p className="text-slate-300 text-sm">
+              <span className="font-bold text-white">Limited Onboarding Open</span> — We are accepting a select number of sellers during our soft launch phase.
             </p>
           </div>
           <a
             href="/Signup"
-            className="flex-shrink-0 text-xs font-black uppercase tracking-widest text-slate-900 underline underline-offset-2 hover:no-underline transition"
+            className="flex-shrink-0 text-xs font-black uppercase tracking-widest text-white underline underline-offset-2 hover:no-underline transition"
           >
             Apply Now →
           </a>
@@ -173,7 +170,7 @@ export default function SellWithUsPage() {
       <section className="py-28 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-yellow-500 mb-3 block">Why Choose Us</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3 block">Why Choose Us</span>
             <h2 className="text-4xl font-bold tracking-tight">Why Sellers Join Our Platform</h2>
           </div>
 
@@ -185,17 +182,14 @@ export default function SellWithUsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.12, duration: 0.5 }}
                 viewport={{ once: true }}
-                className="group relative p-8 rounded-2xl border border-slate-200 hover:border-yellow-400 hover:shadow-xl hover:shadow-yellow-50 transition-all duration-300"
+                className="group relative p-8 rounded-2xl border border-slate-200 hover:border-slate-400 hover:shadow-xl transition-all duration-300"
               >
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-yellow-50 group-hover:text-yellow-600 flex items-center justify-center mb-6 transition-colors duration-300 text-slate-700">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center mb-6 transition-colors duration-300 text-slate-700">
                   {item.icon}
                 </div>
                 <h3 className="text-lg font-bold mb-3">{item.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
-
-                {/* Hover accent */}
-                <div className="absolute bottom-0 left-8 right-8 h-0.5 bg-yellow-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full" />
+                <div className="absolute bottom-0 left-8 right-8 h-0.5 bg-slate-900 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full" />
               </motion.div>
             ))}
           </div>
@@ -214,7 +208,7 @@ export default function SellWithUsPage() {
         />
         <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-yellow-500 mb-3 block">The Process</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 block">The Process</span>
             <h2 className="text-4xl font-bold tracking-tight">How Selling Works</h2>
           </div>
 
@@ -226,16 +220,11 @@ export default function SellWithUsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.12, duration: 0.5 }}
                 viewport={{ once: true }}
-                className="relative group"
+                className="group"
               >
-                {/* Connector line */}
-                {i < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-10 left-full w-full h-px bg-slate-800 z-0" style={{ width: "calc(100% - 64px)", left: "calc(50% + 32px)" }} />
-                )}
-
-                <div className="relative z-10 bg-slate-900 border border-slate-800 group-hover:border-yellow-500/50 rounded-2xl p-7 text-center transition-all duration-300 group-hover:shadow-xl group-hover:shadow-yellow-500/5">
-                  <div className="text-xs font-black text-yellow-500 tracking-widest mb-4 uppercase">{step.step}</div>
-                  <div className="w-11 h-11 rounded-full bg-slate-800 group-hover:bg-yellow-500/10 flex items-center justify-center mx-auto mb-5 text-slate-400 group-hover:text-yellow-400 transition-colors duration-300">
+                <div className="bg-slate-900 border border-slate-800 group-hover:border-slate-600 rounded-2xl p-7 text-center transition-all duration-300 group-hover:shadow-xl">
+                  <div className="text-xs font-black text-slate-500 tracking-widest mb-4 uppercase">{step.step}</div>
+                  <div className="w-11 h-11 rounded-full bg-slate-800 group-hover:bg-slate-700 flex items-center justify-center mx-auto mb-5 text-slate-400 group-hover:text-white transition-colors duration-300">
                     {step.icon}
                   </div>
                   <h3 className="font-bold text-white mb-2">{step.title}</h3>
@@ -251,7 +240,7 @@ export default function SellWithUsPage() {
       <section className="py-28 bg-white">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-yellow-500 mb-3 block">FAQ</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3 block">FAQ</span>
             <h2 className="text-4xl font-bold tracking-tight">Seller Questions</h2>
           </div>
 
@@ -264,7 +253,7 @@ export default function SellWithUsPage() {
                 transition={{ delay: i * 0.08 }}
                 viewport={{ once: true }}
                 className={`border rounded-xl overflow-hidden transition-colors duration-200 ${
-                  open === i ? "border-yellow-400 shadow-md shadow-yellow-50" : "border-slate-200"
+                  open === i ? "border-slate-900 shadow-md" : "border-slate-200"
                 }`}
               >
                 <button
@@ -274,7 +263,7 @@ export default function SellWithUsPage() {
                   <span className="font-semibold text-sm">{faq.q}</span>
                   <ChevronDown
                     className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-300 ${
-                      open === i ? "rotate-180 text-yellow-500" : ""
+                      open === i ? "rotate-180 text-slate-900" : ""
                     }`}
                   />
                 </button>
@@ -296,8 +285,6 @@ export default function SellWithUsPage() {
 
       {/* ── FINAL CTA ── */}
       <section className="py-28 bg-slate-950 text-white relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-yellow-500 opacity-5 blur-3xl pointer-events-none" />
-
         <div className="relative max-w-3xl mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -305,14 +292,14 @@ export default function SellWithUsPage() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-yellow-500/40 bg-yellow-500/10 text-yellow-400 text-xs font-semibold tracking-widest uppercase mb-8">
-              <Star className="w-3 h-3 fill-yellow-400" />
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 text-xs font-semibold tracking-widest uppercase mb-8">
+              <Star className="w-3 h-3" />
               Early Access
             </span>
 
             <h2 className="text-5xl font-bold tracking-tight mb-6 leading-tight">
               Become an<br />
-              <span className="text-yellow-400">Early Seller</span>
+              <span className="text-slate-300">Early Seller</span>
             </h2>
 
             <p className="text-slate-400 mb-10 leading-relaxed">
@@ -322,7 +309,7 @@ export default function SellWithUsPage() {
 
             <a
               href="/Signup"
-              className="inline-flex items-center gap-2 px-10 py-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black text-sm rounded-xl shadow-lg shadow-yellow-500/20 hover:shadow-yellow-400/30 transition-all duration-200 hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 px-10 py-4 bg-white hover:bg-slate-100 text-slate-900 font-black text-sm rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5"
             >
               Start Selling
               <ArrowRight className="w-4 h-4" />
