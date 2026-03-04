@@ -140,43 +140,10 @@ export default function SellWithUsPage() {
     </motion.div>
   </div>
 
-  {/* Stats bar */}
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6, delay: 0.45 }}
-    className="mt-20 max-w-6xl mx-auto px-6 grid grid-cols-3 gap-px bg-slate-800 rounded-2xl overflow-hidden border border-slate-800"
-  >
-    {[
-      { value: "500+", label: "Active Listings" },
-      { value: "12K+", label: "Monthly Buyers" },
-      { value: "40+", label: "Export Countries" },
-    ].map((stat, i) => (
-      <div key={i} className="bg-slate-900 px-8 py-7 text-center">
-        <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-        <div className="text-xs text-slate-500 uppercase tracking-widest">{stat.label}</div>
-      </div>
-    ))}
-  </motion.div>
+  
 </section>
 
-      {/* ── LIMITED ONBOARDING BANNER ── */}
-      <section className="bg-slate-900 border-b border-slate-800">
-        <div className="max-w-6xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse flex-shrink-0" />
-            <p className="text-slate-300 text-sm">
-              <span className="font-bold text-white">Limited Onboarding Open</span> — We are accepting a select number of sellers during our soft launch phase.
-            </p>
-          </div>
-          <a
-            href="/Signup"
-            className="flex-shrink-0 text-xs font-black uppercase tracking-widest text-white underline underline-offset-2 hover:no-underline transition"
-          >
-            Apply Now →
-          </a>
-        </div>
-      </section>
+      
 
       {/* ── BENEFITS ── */}
       <section className="py-28 bg-white">
