@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Globe2,
@@ -62,91 +63,102 @@ export default function SellWithUsPage() {
     <div className="bg-white text-slate-900 min-h-screen font-sans">
 
       {/* ── HERO ── */}
-      <section className="relative overflow-hidden bg-slate-950 text-white">
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
+      <section className="relative overflow-hidden text-black">
+  <div className="relative max-w-6xl mx-auto px-6 pt-32 pb-36 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    
+    {/* Left: Text Content */}
+    <div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex justify-start mb-6"
+      >
+        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 text-xs font-semibold tracking-widest uppercase">
+          <Star className="w-3 h-3" />
+          Seller Marketplace
+        </span>
+      </motion.div>
 
-        <div className="relative max-w-6xl mx-auto px-6 pt-32 pb-36">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex justify-center mb-6"
-          >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 text-xs font-semibold tracking-widest uppercase">
-              <Star className="w-3 h-3" />
-              Seller Marketplace
-            </span>
-          </motion.div>
+      <motion.h1
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65, delay: 0.1 }}
+        className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight"
+      >
+        Sell Smarter.<br />
+        <span className="text-yellow-500">Reach Further.</span>
+      </motion.h1>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.1 }}
-            className="text-center text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight"
-          >
-            Sell Smarter.<br />
-            <span className="text-slate-300">Reach Further.</span>
-          </motion.h1>
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="text-lg text-gray-700 mb-8"
+      >
+        Join a growing digital marketplace connecting vehicle sellers with
+        serious local and international buyers. Gain visibility, attract
+        qualified inquiries, and position your inventory for a wider market.
+      </motion.p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-center max-w-2xl mx-auto text-lg text-slate-400 leading-relaxed mb-12"
-          >
-            Join a growing digital marketplace connecting vehicle sellers with
-            serious local and international buyers. Gain visibility, attract
-            qualified inquiries, and position your inventory for a wider market.
-          </motion.p>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="flex flex-col sm:flex-row gap-4"
+      >
+        <a
+          href="/Signup"
+          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold text-sm rounded-xl transition-all duration-200 shadow-lg hover:-translate-y-0.5"
+        >
+          Start Selling Today
+          <ArrowRight className="w-4 h-4" />
+        </a>
+        <a
+          href="#how-it-works"
+          className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-yellow-500 hover:border-yellow-400 text-yellow-500 hover:text-gray-900 font-semibold text-sm rounded-xl transition-all duration-200 hover:-translate-y-0.5"
+        >
+          See How It Works
+        </a>
+      </motion.div>
+    </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row justify-center gap-4"
-          >
-            <a
-              href="/Signup"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm rounded-xl transition-all duration-200 shadow-lg hover:-translate-y-0.5"
-            >
-              Start Selling Today
-              <ArrowRight className="w-4 h-4" />
-            </a>
-            <a
-              href="#how-it-works"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-semibold text-sm rounded-xl transition-all duration-200 hover:-translate-y-0.5"
-            >
-              See How It Works
-            </a>
-          </motion.div>
+    {/* Right: Image */}
+    <motion.div
+      initial={{ opacity: 0, x: 40 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+      className="flex justify-center md:justify-end"
+    >
+      <Image
+        src="/sellwithus.jpg" // replace with your image path
+        alt="Vehicle Marketplace"
+        width={500}
+        height={400}
+        className="rounded-3xl shadow-2xl object-cover"
+      />
+    </motion.div>
+  </div>
 
-          {/* Stats bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-20 grid grid-cols-3 gap-px bg-slate-800 rounded-2xl overflow-hidden border border-slate-800"
-          >
-            {[
-              { value: "500+", label: "Active Listings" },
-              { value: "12K+", label: "Monthly Buyers" },
-              { value: "40+", label: "Export Countries" },
-            ].map((stat, i) => (
-              <div key={i} className="bg-slate-900 px-8 py-7 text-center">
-                <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-xs text-slate-500 uppercase tracking-widest">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+  {/* Stats bar */}
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay: 0.45 }}
+    className="mt-20 max-w-6xl mx-auto px-6 grid grid-cols-3 gap-px bg-slate-800 rounded-2xl overflow-hidden border border-slate-800"
+  >
+    {[
+      { value: "500+", label: "Active Listings" },
+      { value: "12K+", label: "Monthly Buyers" },
+      { value: "40+", label: "Export Countries" },
+    ].map((stat, i) => (
+      <div key={i} className="bg-slate-900 px-8 py-7 text-center">
+        <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
+        <div className="text-xs text-slate-500 uppercase tracking-widest">{stat.label}</div>
+      </div>
+    ))}
+  </motion.div>
+</section>
 
       {/* ── LIMITED ONBOARDING BANNER ── */}
       <section className="bg-slate-900 border-b border-slate-800">
