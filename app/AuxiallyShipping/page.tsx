@@ -309,86 +309,98 @@ const handleTabChange = (tab: string) => {
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen">
       {/* Hero Section */}
-      <section className="bg-white text-gray-900 py-24">
-  <div className="max-w-7xl mx-auto px-6 lg:px-8">
-    <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="bg-white text-gray-900 py-24 relative overflow-hidden">
+  <div className="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
 
-      {/* Left Content */}
-      <div>
-        <h1 className="text-4xl md:text-5xl font-semibold leading-tight mb-6">
-          Global Shipping & Sourcing
-        </h1>
+    {/* Left Content */}
+    <motion.div
+      initial={{ opacity: 0, x: -40 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
+        Global Shipping & Sourcing
+        <span className="block text-yellow-500 mt-2">Seamless & Reliable</span>
+      </h1>
 
-        <p className="text-lg text-gray-600 leading-relaxed mb-8 max-w-xl">
-          We connect Europe to East Africa through reliable sourcing and
-          professional shipping solutions. From request to delivery,
-          everything is handled with precision and transparency.
-        </p>
+      <p className="text-lg text-gray-600 leading-relaxed mb-8 max-w-xl">
+        We connect Europe to East Africa through reliable sourcing and
+        professional shipping solutions. From request to delivery,
+        everything is handled with precision and transparency.
+      </p>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <a
-            href="/dashboard/RequestItemPage"
-            className="px-8 py-3 bg-black text-white text-sm uppercase tracking-wider hover:bg-gray-800 transition"
-          >
-            Request Item
-          </a>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <motion.a
+          href="/dashboard/RequestItemPage"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-8 py-3 bg-yellow-500 text-gray-900 text-sm uppercase tracking-wider rounded-lg shadow-lg hover:bg-yellow-400 transition"
+        >
+          Request Item
+        </motion.a>
 
-          <a
-            href="#products"
-            className="px-8 py-3 border border-gray-400 text-gray-700 text-sm uppercase tracking-wider hover:bg-gray-100 transition"
-          >
-            Track Shipment
-          </a>
+        <motion.a
+          href="#products"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-8 py-3 border border-yellow-500 text-yellow-500 text-sm uppercase tracking-wider rounded-lg hover:bg-yellow-50 transition"
+        >
+          Track Shipment
+        </motion.a>
+      </div>
+    </motion.div>
+
+    {/* Right Stats Card */}
+    <motion.div
+      initial={{ opacity: 0, x: 40 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      className="bg-yellow-50 border border-yellow-300 rounded-xl p-8 shadow-xl"
+    >
+      <h3 className="text-xl font-semibold mb-8 text-yellow-700">
+        Live Overview
+      </h3>
+
+      {loading.stats ? (
+        <div className="space-y-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex justify-between">
+              <div className="h-4 bg-yellow-200 rounded w-32 animate-pulse"></div>
+              <div className="h-6 bg-yellow-200 rounded w-12 animate-pulse"></div>
+            </div>
+          ))}
         </div>
-      </div>
-
-      {/* Right Stats Card */}
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-8">
-        <h3 className="text-xl font-semibold mb-8">
-          Live Overview
-        </h3>
-
-        {loading.stats ? (
-          <div className="space-y-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex justify-between">
-                <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-                <div className="h-6 bg-gray-200 rounded w-12 animate-pulse"></div>
-              </div>
-            ))}
+      ) : stats ? (
+        <div className="space-y-6 text-sm text-yellow-900">
+          <div className="flex justify-between">
+            <span className="text-yellow-800">Active Shipments</span>
+            <span className="font-semibold">{stats.activeShipments}</span>
           </div>
-        ) : stats ? (
-          <div className="space-y-6 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Active Shipments</span>
-              <span className="font-semibold">{stats.activeShipments}</span>
-            </div>
 
-            <div className="flex justify-between">
-              <span className="text-gray-600">Total Requests</span>
-              <span className="font-semibold">{stats.totalRequests}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="text-gray-600">Pending</span>
-              <span className="font-semibold">{stats.pendingRequests}</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span className="text-gray-600">Average Rating</span>
-              <span className="font-semibold">
-                {stats.averageRating?.toFixed(1)}
-              </span>
-            </div>
+          <div className="flex justify-between">
+            <span className="text-yellow-800">Total Requests</span>
+            <span className="font-semibold">{stats.totalRequests}</span>
           </div>
-        ) : (
-          <div className="text-gray-500 text-sm">
-            Unable to load statistics
-          </div>
-        )}
-      </div>
 
-    </div>
+          <div className="flex justify-between">
+            <span className="text-yellow-800">Pending</span>
+            <span className="font-semibold">{stats.pendingRequests}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-yellow-800">Average Rating</span>
+            <span className="font-semibold">
+              {stats.averageRating?.toFixed(1)}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="text-yellow-700 text-sm">
+          Unable to load statistics
+        </div>
+      )}
+    </motion.div>
+
   </div>
 </section>
 
