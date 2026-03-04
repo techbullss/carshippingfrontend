@@ -92,7 +92,7 @@ export default function Header() {
   {/* Logo Icon (3 stacked shapes) */}
   <div className="relative w-8 h-8">
     <Image
-      src="/logo.png"
+      src="/log.png"
       alt="FCarShipping Logo"
       fill
       className="object-contain"
@@ -101,10 +101,7 @@ export default function Header() {
   </div>
 
   {/* Logo Text */}
-  <span className="text-2xl font-bold tracking-tight text-gray-900">
-    F<span className="italic">Car</span>
-    <span className="font-light text-gray-600">Shipping</span>
-  </span>
+  
 
 </Link>
 
