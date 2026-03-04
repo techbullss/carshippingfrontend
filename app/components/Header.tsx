@@ -87,21 +87,19 @@ export default function Header() {
       <div className="flex items-center justify-between h-14">
         
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
+        <Link href="/" className="flex items-center group">
   
-  {/* Logo Icon (3 stacked shapes) */}
-  <div className="relative w-100 h-40">
+  {/* Logo Image */}
+  <div className="relative h-8 w-auto">
     <Image
-      src="/log24.png"
+      src="/lod.png"
       alt="FCarShipping Logo"
-      fill
-      className="object-contain"
+      width={120}
+      height={32}
+      className="object-contain transition-transform duration-300 group-hover:scale-105"
       priority
     />
   </div>
-
-  {/* Logo Text */}
-  
 
 </Link>
 
