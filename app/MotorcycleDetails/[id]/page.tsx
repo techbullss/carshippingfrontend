@@ -563,10 +563,6 @@ const [rating, setRating] = useState(0);
                 <span>{motorcycle.brand || "N/A"}</span>
               </div>
 
-              <div className="flex justify-between items-center py-2">
-                <span className="font-medium">Engine Capacity</span>
-                <span>{motorcycle.engineCapacity || "N/A"}</span>
-              </div>
 
               <div className="flex justify-between items-center py-2">
                 <span className="font-medium">Body type</span>
@@ -622,7 +618,7 @@ const [rating, setRating] = useState(0);
               {/* Overlay */}
               <div
                 onClick={() => setIsOpen(false)}
-                className="fixed inset-0 bg-black bg-opacity-40 z-40"
+                className="fixed inset-0  bg-opacity-40 z-40"
               ></div>
 
               {/* Drawer Panel */}
@@ -691,33 +687,37 @@ const [rating, setRating] = useState(0);
                   ✕
                 </button>
 
-                {openDrawer === "history" && (
+{openDrawer === "history" && (
   <>
     <h2 className="text-xl font-bold mb-4">Ownership & History</h2>
-    <p className="text-gray-700 mb-4">
-      A comprehensive history check has been completed on this vehicle, examining its background through multiple authoritative databases. This verification process helps ensure that you're making an informed decision by uncovering any potential issues that might not be visible during a physical inspection. The check covers everything from ownership patterns to legal status, giving you confidence in the vehicle's background before you commit to the purchase.
-    </p>
-    <p className="text-gray-700 mb-4">
-      All five critical history checks have passed successfully, confirming the vehicle's clean status across major risk categories. These include verification of the VIN authenticity, mileage consistency checks, and validation of the registration details with the relevant authorities. Each passed check represents one less potential problem to worry about, building a clearer picture of the vehicle's history and helping you avoid common pitfalls that can turn a great deal into a costly mistake.
-    </p>
-    <p className="text-gray-700">
-      Most importantly, the check confirms there is no outstanding finance attached to the vehicle and no records of theft or write-off in any official databases. The absence of outstanding finance means you won't inherit someone else's debt, while the clean theft and write-off status ensures the vehicle hasn't been declared a total loss by an insurance company or reported stolen. These clear results provide essential peace of mind and form the foundation of a secure, transparent private vehicle purchase.
-    </p>
+    <div className="overflow-y-auto max-h-64 pr-2">
+      <p className="text-gray-700 mb-4">
+        A comprehensive history check has been completed on this vehicle, examining its background through multiple authoritative databases. This verification process helps ensure that you're making an informed decision by uncovering any potential issues that might not be visible during a physical inspection. The check covers everything from ownership patterns to legal status, giving you confidence in the vehicle's background before you commit to the purchase.
+      </p>
+      <p className="text-gray-700 mb-4">
+        All five critical history checks have passed successfully, confirming the vehicle's clean status across major risk categories. These include verification of the VIN authenticity, mileage consistency checks, and validation of the registration details with the relevant authorities. Each passed check represents one less potential problem to worry about, building a clearer picture of the vehicle's history and helping you avoid common pitfalls that can turn a great deal into a costly mistake.
+      </p>
+      <p className="text-gray-700">
+        Most importantly, the check confirms there is no outstanding finance attached to the vehicle and no records of theft or write-off in any official databases. The absence of outstanding finance means you won't inherit someone else's debt, while the clean theft and write-off status ensures the vehicle hasn't been declared a total loss by an insurance company or reported stolen. These clear results provide essential peace of mind and form the foundation of a secure, transparent private vehicle purchase.
+      </p>
+    </div>
   </>
 )}
 
-                {openDrawer === "safety" && (
+{openDrawer === "safety" && (
   <>
     <h2 className="text-xl font-bold mb-4">Buying a car safely</h2>
-    <p className="text-gray-700 mb-4">
-      When arranging to view or test drive a vehicle, always choose well-lit, public locations with plenty of foot traffic or security cameras present. Shopping centers, busy parking lots, or police station parking lots are ideal meeting spots. Avoid going alone by bringing a friend or family member along, and always inform someone you trust about your whereabouts and expected return time. Trust your instincts—if something feels uncomfortable about the situation or the seller, don't hesitate to reschedule or walk away.
-    </p>
-    <p className="text-gray-700 mb-4">
-      Payment security should be a top priority throughout your transaction. Be wary of sellers who pressure you into unconventional payment methods or request deposits before you've seen the vehicle in person. Cash transactions in public places remain the safest option for private sales, but if the amount is substantial, consider arranging to complete the transaction at a bank where funds can be verified immediately. For online payments, use secure, traceable methods and never share your financial information through unsecured channels.
-    </p>
-    <p className="text-gray-700">
-      Before committing to any purchase, thoroughly review all vehicle documentation including the title, service history, and maintenance records. Verify that the Vehicle Identification Number (VIN) on the title matches the one on the dashboard and door frame. For added peace of mind, arrange for a professional mechanic to perform a comprehensive inspection before finalizing the sale. This small investment can reveal potential issues that might not be apparent during a casual test drive and could save you from expensive repairs down the road.
-    </p>
+    <div className="overflow-y-auto max-h-64 pr-2">
+      <p className="text-gray-700 mb-4">
+        When arranging to view or test drive a vehicle, always choose well-lit, public locations with plenty of foot traffic or security cameras present. Shopping centers, busy parking lots, or police station parking lots are ideal meeting spots. Avoid going alone by bringing a friend or family member along, and always inform someone you trust about your whereabouts and expected return time. Trust your instincts—if something feels uncomfortable about the situation or the seller, don't hesitate to reschedule or walk away.
+      </p>
+      <p className="text-gray-700 mb-4">
+        Payment security should be a top priority throughout your transaction. Be wary of sellers who pressure you into unconventional payment methods or request deposits before you've seen the vehicle in person. Cash transactions in public places remain the safest option for private sales, but if the amount is substantial, consider arranging to complete the transaction at a bank where funds can be verified immediately. For online payments, use secure, traceable methods and never share your financial information through unsecured channels.
+      </p>
+      <p className="text-gray-700">
+        Before committing to any purchase, thoroughly review all vehicle documentation including the title, service history, and maintenance records. Verify that the Vehicle Identification Number (VIN) on the title matches the one on the dashboard and door frame. For added peace of mind, arrange for a professional mechanic to perform a comprehensive inspection before finalizing the sale. This small investment can reveal potential issues that might not be apparent during a casual test drive and could save you from expensive repairs down the road.
+      </p>
+    </div>
   </>
 )}
               </div>
