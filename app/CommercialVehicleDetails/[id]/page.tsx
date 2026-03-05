@@ -1,15 +1,21 @@
 "use client";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
-import { ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowRight, Calendar, CheckCircle, ChevronRight, Mail, MapPin, Phone, Shield, Star } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { CommercialVehicle } from '@/app/CommercialVehicle';
 import React from 'react';
 import { FaRegHeart } from 'react-icons/fa';
+import { Seller } from '@/app/Cardetails/[id]/page';
+import { formatDate } from 'date-fns';
+
 
 const CommercialVehicleDetails = () => {
   const params = useParams();
   const id = params?.id as string;
+  const [seller, setSeller] = useState<Seller | null>(null);
+    const [sellerLoading, setSellerLoading] = useState(false);
+  
   const [commercialVehicle, setVehicle] = useState<CommercialVehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +26,9 @@ const CommercialVehicleDetails = () => {
 const [currentImageIndex, setCurrentImageIndex] = useState(0);
 const [isOpen, setIsOpen] = useState(false);
 const [openDrawer, setOpenDrawer] = useState<null | "history" | "safety">(null);
-
+const [openReview, setOpenReview] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
 
  const preview =
     (commercialVehicle?.description ?? "").length > 70
@@ -92,7 +100,125 @@ setVehicle(normalizedVehicle);
 
     fetchVehicleDetails();
   }, [id]);
+  const fetchSellerInfo = async (sellerEmail: string) => {
+  try {
+    setSellerLoading(true);
 
+    // Fetch seller profile
+    const sellerResponse = await fetch(
+      `https://api.f-carshipping.com/api/admin/users/email/${encodeURIComponent(
+        sellerEmail
+      )}`,
+      {
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        method: "GET",
+      }
+    );
+
+    // Fetch seller stats (rating + listings)
+    const statsResponse = await fetch(
+      `https://api.f-carshipping.com/api/cars/stats/${encodeURIComponent(
+        sellerEmail
+      )}`,
+      {
+        headers: { "Content-Type": "application/json" },
+        method: "GET",
+      }
+    );
+
+    let stats = {
+      rating: 0,
+      reviewCount: 0,
+      totalListings: 0,
+    };
+
+    if (statsResponse.ok) {
+      stats = await statsResponse.json();
+    }
+
+    if (sellerResponse.ok) {
+      const sellerData = await sellerResponse.json();
+
+      const normalizedSeller: Seller = {
+        id: sellerData.id,
+        firstName: sellerData.firstName || "",
+        lastName: sellerData.lastName || "",
+        email: sellerData.email,
+        phone: sellerData.phone || "",
+        streetAddress: sellerData.streetAddress,
+        city: sellerData.city,
+        state: sellerData.state,
+        postalCode: sellerData.postalCode,
+        country: sellerData.country,
+        companyName: sellerData.companyName,
+        isVerified: sellerData.emailVerified || sellerData.isVerified || false,
+        emailVerified: sellerData.emailVerified || false,
+        memberSince: sellerData.createdAt,
+        roles: sellerData.roles || new Set(),
+
+        // Dynamic values from backend
+        rating: stats.rating,
+        totalListings: stats.totalListings,
+
+        responseRate: 95,
+        avgResponseTime: "2 hours",
+      };
+
+      setSeller(normalizedSeller);
+    } else {
+      console.log("Using basic seller info from email");
+
+      const basicSeller: Seller = {
+        id: 0,
+        firstName: sellerEmail.split("@")[0] || "Seller",
+        lastName: "",
+        email: sellerEmail,
+        phone: "",
+        isVerified: false,
+        memberSince: new Date().toISOString(),
+
+        rating: stats.rating || 0,
+        totalListings: stats.totalListings || 0,
+      };
+
+      setSeller(basicSeller);
+    }
+  } catch (err) {
+    console.error("Error fetching seller:", err);
+
+    const minimalSeller: Seller = {
+      id: 0,
+      firstName: "Private",
+      lastName: "Seller",
+      email: sellerEmail,
+      phone: "Contact for details",
+      isVerified: false,
+      memberSince: new Date().toISOString(),
+      rating: 0,
+      totalListings: 0,
+    };
+
+    setSeller(minimalSeller);
+  } finally {
+    setSellerLoading(false);
+  }
+};
+const formatDate = (dateString?: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+  };
+
+  const getLocation = (seller: Seller) => {
+    if (seller.city && seller.country) {
+      return `${seller.city}, ${seller.country}`;
+    }
+    if (seller.city) return seller.city;
+    if (seller.country) return seller.country;
+    if (seller.streetAddress) return seller.streetAddress;
+    return "Location not specified";
+  };
   if (loading) return (
     <div className="flex justify-center items-center h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -162,6 +288,8 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
     <p className="text-gray-500 text-xs uppercase tracking-wider">{label}</p>
   </div>
 );
+ 
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
@@ -288,44 +416,126 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
   </p>
 </div>
   {/* Dealer Info */}
-  <div className="border-t border-gray-200 pt-4 space-y-3">
-    <div className="flex items-center gap-3">
-      <img
-        src="/dealer-logo.png"
-        alt="Dealer Logo"
-        className="w-10 h-10 rounded-md object-cover border"
-      />
-      <div>
-        <h3 className="font-semibold text-gray-900">AUTO SEVEN 7 LTD</h3>
-        <p className="text-xs text-gray-500">Find out more</p>
-      </div>
-    </div>
+  <div className="border-t border-gray-200 pt-4 space-y-4">
+            {sellerLoading ? (
+              <div className="animate-pulse space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            ) : seller ? (
+              <>
+                {/* Seller Header */}
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-white shadow flex items-center justify-center">
+                        {seller.profilePicture ? (
+                          <img
+                            src={seller.profilePicture}
+                            alt={`${seller.firstName} ${seller.lastName}`}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-blue-600 font-bold text-lg">
+                            {seller.firstName?.charAt(0)}{seller.lastName?.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      {seller.isVerified && (
+                        <div className="absolute -bottom-1 -right-1 bg-green-500 text-white p-1 rounded-full">
+                          <CheckCircle className="w-3 h-3" />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        {seller.companyName || `${seller.firstName} ${seller.lastName}`}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        {seller.rating && (
+                          <div className="flex items-center bg-yellow-50 px-2 py-1 rounded">
+                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                            <span className="ml-1 text-xs font-medium">{seller.rating.toFixed(1)}</span>
+                            {seller.totalListings && (
+                              <span className="mx-2 text-gray-400">•</span>
+                            )}
+                          </div>
+                        )}
+                        {seller.totalListings && (
+                          <span className="text-xs text-gray-600">
+                            {seller.totalListings} listings
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  {seller.isVerified && (
+                    <div className="flex items-center gap-1 text-green-600 text-xs">
+                      <Shield className="w-3 h-3" />
+                      <span>Verified</span>
+                    </div>
+                  )}
+                </div>
 
-    <div className="flex items-center text-yellow-500 text-xs">
-      ⭐⭐⭐⭐⭐ <span className="ml-2 text-gray-700">4.9 out of 5</span>
-    </div>
-    <a href="#" className="text-blue-600 text-xs underline">
-      View all reviews
-    </a>
+                {/* Seller Stats */}
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  {seller.memberSince && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Calendar className="w-3 h-3" />
+                      <span>Since {formatDate(seller.memberSince)}</span>
+                    </div>
+                  )}
+                  {seller.responseRate && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Mail className="w-3 h-3" />
+                      <span>{seller.responseRate}% response rate</span>
+                    </div>
+                  )}
+                </div>
 
-    <div className="space-y-1 text-xs text-gray-700">
-      <p>(07482) 878952</p>
-      <p>(01925) 916826</p>
-    </div>
+                {/* Seller Contact Info */}
+                <div className="space-y-2">
+                  {seller.phone && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="w-4 h-4 text-gray-500" />
+                      <span className="text-gray-700">{seller.phone}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="w-4 h-4 text-gray-500" />
+                    <span className="text-gray-700 truncate">{seller.email}</span>
+                  </div>
+                  {(seller.city || seller.country || seller.streetAddress) && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <MapPin className="w-4 h-4 text-gray-500" />
+                      <span className="text-gray-700">{getLocation(seller)}</span>
+                    </div>
+                  )}
+                </div>
 
-    {commercialVehicle.location && (
-      <p className="text-gray-600 text-xs">📍 {commercialVehicle.location}</p>
-    )}
-
-    <div className="flex gap-2">
-      <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg text-xs">
-        Visit website
-      </button>
-      <button className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 rounded-lg text-xs">
-        Message seller
-      </button>
-    </div>
-  </div>
+                {/* Action Buttons */}
+                <div className="flex gap-2 pt-2">
+                 
+                  <button
+                    onClick={() => setOpenReview(true)}
+                    className="px-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg text-xs transition duration-200"
+                  >
+                    Review
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center p-4 border border-gray-200 rounded-lg">
+                <p className="text-gray-600 text-sm">Seller information not available</p>
+                <p className="text-xs text-gray-500 mt-1">Contact support for assistance</p>
+              </div>
+            )}
+          </div>
 </div>
 
 
@@ -657,8 +867,107 @@ onClick={() => setOpenSpec(true)}>
     </div>
   </div>
 )}
+     {openReview && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative">
+      
+      {/* Close Button */}
+      <button
+        onClick={() => setOpenReview(false)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl"
+      >
+        ×
+      </button>
+
+      <h2 className="text-xl font-semibold mb-4 text-center">
+        Leave a Review
+      </h2>
+
+      {/* Rating */}
+      <div className="flex justify-center mb-4 space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => setRating(star)}
+            className={`text-2xl ${
+              star <= rating ? "text-yellow-400" : "text-gray-300"
+            }`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+
+      {/* Review Text */}
+      <textarea
+        rows={4}
+        value={reviewText}
+        onChange={(e) => setReviewText(e.target.value)}
+        placeholder="Write your review here..."
+        className="w-full border rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+
+      {/* Submit Button */}
+      <button
+        onClick={async () => {
+          if (!reviewText || rating === 0) {
+            alert("Please add a rating and a comment.");
+            return;
+          }
+
+          if (!seller?.id) {
+            alert("Seller information not available.");
+            return;
+          }
+
+          try {
+            const response = await fetch(`https://api.f-carshipping.com/api/reviews/save`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+             
+                body: JSON.stringify({
+                  sellerId: seller.id,
+                  rating,
+                  comment: reviewText,
+                  reviewerName: "Anonymous",
+                }),
+              });
+
+            if (response.ok) {
+              alert("Review submitted successfully! Awaiting approval.");
+              setOpenReview(false);
+              setRating(0);
+              setReviewText("");
+            } else {
+              const error = await response.text();
+              alert(error || "Failed to submit review.");
+            }
+          } catch (error) {
+            console.error("Review error:", error);
+            alert("An error occurred while submitting your review.");
+          }
+        }}
+        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
+      >
+        Submit Review
+      </button>
+
+    </div>
+  </div>
+)}
     </div>
   );
 };
 
 export default CommercialVehicleDetails;
+
+function setSeller(minimalSeller: Seller) {
+  throw new Error('Function not implemented.');
+}
+function setSellerLoading(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}
+
