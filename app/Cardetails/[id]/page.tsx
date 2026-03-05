@@ -266,7 +266,7 @@ const VehicleDetails = () => {
 
     // Fetch seller stats (rating + listings)
     const statsResponse = await fetch(
-      `https://api.f-carshipping.com/api/cars/sellers/stats/${encodeURIComponent(
+      `https://api.f-carshipping.com/api/cars/stats/${encodeURIComponent(
         sellerEmail
       )}`,
       {
