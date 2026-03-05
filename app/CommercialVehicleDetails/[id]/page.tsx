@@ -79,7 +79,7 @@ setVehicle(normalizedVehicle);
         // Fetch similar vehicles (uncomment when ready)
         
         const similarResponse = await fetch(
-          `https://api.f-carshipping.com/api/vehicles/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
+          `https://api.f-carshipping.com/api/cars/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
          credentials: 'include',
             headers: {
             'Content-Type': 'application/json',
