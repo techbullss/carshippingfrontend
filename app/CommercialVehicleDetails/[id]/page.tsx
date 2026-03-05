@@ -69,17 +69,20 @@ const normalizeVehicle = (raw: any): CommercialVehicle => {
       : typeof raw.customSpecs === 'string'
       ? JSON.parse(raw.customSpecs)
       : [],
+      seller:raw.seller ||"",
   };
 };
 
 const normalizedVehicle = normalizeVehicle(data);
 setVehicle(normalizedVehicle);
         
-
+  if (normalizedVehicle.seller) {
+          await fetchSellerInfo(normalizedVehicle.seller);
+        }
         // Fetch similar vehicles (uncomment when ready)
         
         const similarResponse = await fetch(
-          `https://api.f-carshipping.com/api/cars/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
+          `https://api.f-carshipping.com/api/vehicles/similar?brand=${data.brand}&model=${data.model}&exclude=${id}`, {
          credentials: 'include',
             headers: {
             'Content-Type': 'application/json',
