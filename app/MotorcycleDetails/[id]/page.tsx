@@ -14,7 +14,8 @@ export type Motorcycle = {
   status: string;
   price: number;
   location: string;
-  owner: string; // This is the seller's email
+  owner: string;
+  seller: string;        // ← missing in your version
   description: string;
   imageUrls: string[];
   createdAt: string;
@@ -48,7 +49,10 @@ export type Seller = {
 
 const MotorcycleDetails = () => {
   const params = useParams();
+
   const id = params?.id as string;
+    const [openReview, setOpenReview] = useState(false);
+  
   const [motorcycle, setMotorcycle] = useState<Motorcycle | null>(null);
   const [seller, setSeller] = useState<Seller | null>(null);
   const [loading, setLoading] = useState(true);
@@ -61,7 +65,8 @@ const MotorcycleDetails = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [openDrawer, setOpenDrawer] = useState<null | "history" | "safety">(null);
-
+const [rating, setRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
   const preview =
     (motorcycle?.description ?? "").length > 70
       ? motorcycle?.description?.slice(0, 70) + "..."
@@ -105,6 +110,7 @@ const MotorcycleDetails = () => {
           updatedAt: raw.updatedAt || "",
           features: Array.isArray(raw.features) ? raw.features : [],
           year: raw.year || 0,
+          seller: ''
         });
 
         const normalizedMotorcycle = normalizeMotorcycle(data);
@@ -139,84 +145,112 @@ const MotorcycleDetails = () => {
     fetchMotorcycleDetails();
   }, [id]);
 
-  const fetchSellerInfo = async (sellerEmail: string) => {
-    try {
-      setSellerLoading(true);
-      
-      // Fetch seller profile using email from admin endpoint
-      // Note: You might need to adjust authentication/authorization
-      const response = await fetch(
-        `https://api.f-carshipping.com/api/admin/users/${encodeURIComponent(sellerEmail)}`,
-        {
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          method: "GET",
-        }
-      );
+   const fetchSellerInfo = async (sellerEmail: string) => {
+   try {
+     setSellerLoading(true);
+ 
+     // Fetch seller profile
+     const sellerResponse = await fetch(
+       `https://api.f-carshipping.com/api/admin/users/email/${encodeURIComponent(
+         sellerEmail
+       )}`,
+       {
+         credentials: "include",
+         headers: { "Content-Type": "application/json" },
+         method: "GET",
+       }
+     );
+ 
+     // Fetch seller stats (rating + listings)
+     const statsResponse = await fetch(
+       `https://api.f-carshipping.com/api/cars/stats/${encodeURIComponent(
+         sellerEmail
+       )}`,
+       {
+         headers: { "Content-Type": "application/json" },
+         method: "GET",
+       }
+     );
+ 
+     let stats = {
+       rating: 0,
+       reviewCount: 0,
+       totalListings: 0,
+     };
+ 
+     if (statsResponse.ok) {
+       stats = await statsResponse.json();
+     }
+ 
+     if (sellerResponse.ok) {
+       const sellerData = await sellerResponse.json();
+ 
+       const normalizedSeller: Seller = {
+         id: sellerData.id,
+         firstName: sellerData.firstName || "",
+         lastName: sellerData.lastName || "",
+         email: sellerData.email,
+         phone: sellerData.phone || "",
+         streetAddress: sellerData.streetAddress,
+         city: sellerData.city,
+         state: sellerData.state,
+         postalCode: sellerData.postalCode,
+         country: sellerData.country,
+         companyName: sellerData.companyName,
+         isVerified: sellerData.emailVerified || sellerData.isVerified || false,
+         emailVerified: sellerData.emailVerified || false,
+         memberSince: sellerData.createdAt,
+         role: sellerData.role || "",
+ 
+         // Dynamic values from backend
+         rating: stats.rating,
+         totalListings: stats.totalListings,
+ 
+         responseRate: 95,
+         avgResponseTime: "2 hours",
+       };
+ 
+       setSeller(normalizedSeller);
+     } else {
+       console.log("Using basic seller info from email");
+ 
+       const basicSeller: Seller = {
+         id: 0,
+         firstName: sellerEmail.split("@")[0] || "Seller",
+         lastName: "",
+         email: sellerEmail,
+         phone: "",
+         isVerified: false,
+         memberSince: new Date().toISOString(),
 
-      if (response.ok) {
-        const sellerData = await response.json();
-        
-        // Transform to Seller type
-        const normalizedSeller: Seller = {
-          role:sellerData.role,
-          id: sellerData.id,
-          firstName: sellerData.firstName || "",
-          lastName: sellerData.lastName || "",
-          email: sellerData.email,
-          phone: sellerData.phone || "",
-          streetAddress: sellerData.streetAddress,
-          city: sellerData.city,
-          state: sellerData.state,
-          postalCode: sellerData.postalCode,
-          country: sellerData.country,
-          companyName: sellerData.companyName,
-          isVerified: sellerData.emailVerified || false,
-          emailVerified: sellerData.emailVerified || false,
-          memberSince: sellerData.createdAt,
-          // You might want to calculate these from separate endpoints
-          rating: 4.8, // Default or fetch from reviews
-          totalListings: 12, // Default or fetch from listings count
-          responseRate: 95,
-          avgResponseTime: "2 hours",
-        };
-        
-        setSeller(normalizedSeller);
-      } else {
-        // If admin endpoint fails or is not accessible, create a basic seller object
-        console.log("Using basic seller info from email");
-        const basicSeller: Seller = {
-          id: 0,
-          firstName: sellerEmail.split('@')[0] || "Seller",
-          lastName: "",
-          role:"",
-          email: sellerEmail,
-          phone: "",
-          isVerified: false,
-          memberSince: new Date().toISOString(),
-          rating: 4.5,
-          totalListings: 1,
-        };
-        setSeller(basicSeller);
-      }
-    } catch (err) {
-      console.error("Error fetching seller:", err);
-      // Create minimal seller info
-      const minimalSeller: Seller = {
-        id: 0,
-        firstName: "Private",
-        lastName: "Seller",
-        role:"",
-        email: sellerEmail,
-        phone: "Contact for details",
-        isVerified: false,
-        memberSince: new Date().toISOString(),
-      };
-      setSeller(minimalSeller);
-    } finally {
-      setSellerLoading(false);
-    }
-  };
+         rating: stats.rating || 0,
+         totalListings: stats.totalListings || 0,
+         role: ''
+       };
+ 
+       setSeller(basicSeller);
+     }
+   } catch (err) {
+     console.error("Error fetching seller:", err);
+ 
+     const minimalSeller: Seller = {
+       id: 0,
+       firstName: "Private",
+       lastName: "Seller",
+       email: sellerEmail,
+       phone: "Contact for details",
+       isVerified: false,
+       memberSince: new Date().toISOString(),
+       rating: 0,
+       totalListings: 0,
+       role: ''
+     };
+ 
+     setSeller(minimalSeller);
+   } finally {
+     setSellerLoading(false);
+   }
+ };
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
@@ -386,116 +420,125 @@ const MotorcycleDetails = () => {
 
           {/* Seller Info Section */}
           <div className="border-t border-gray-200 pt-4 space-y-4">
-            {sellerLoading ? (
-              <div className="animate-pulse space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-200"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                    <div className="h-3 w-24 bg-gray-200 rounded"></div>
-                  </div>
-                </div>
-              </div>
-            ) : seller ? (
-              <>
-                {/* Seller Header */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-white shadow flex items-center justify-center">
-                        {seller.profilePicture ? (
-                          <img
-                            src={seller.profilePicture}
-                            alt={`${seller.firstName} ${seller.lastName}`}
-                            className="w-full h-full rounded-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-blue-600 font-bold text-lg">
-                            {seller.firstName?.charAt(0)}{seller.lastName?.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      {seller.isVerified && (
-                        <div className="absolute -bottom-1 -right-1 bg-green-500 text-white p-1 rounded-full">
-                          <CheckCircle className="w-3 h-3" />
+                      {sellerLoading ? (
+                        <div className="animate-pulse space-y-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+                            <div className="space-y-2">
+                              <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                              <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : seller ? (
+                        <>
+                          {/* Seller Header */}
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="relative">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-white shadow flex items-center justify-center">
+                                  {seller.profilePicture ? (
+                                    <img
+                                      src={seller.profilePicture}
+                                      alt={`${seller.firstName} ${seller.lastName}`}
+                                      className="w-full h-full rounded-full object-cover"
+                                    />
+                                  ) : (
+                                    <span className="text-blue-600 font-bold text-lg">
+                                      {seller.firstName?.charAt(0)}{seller.lastName?.charAt(0)}
+                                    </span>
+                                  )}
+                                </div>
+                                {seller.isVerified && (
+                                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white p-1 rounded-full">
+                                    <CheckCircle className="w-3 h-3" />
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <h3 className="font-semibold text-gray-900">
+                                  {seller.companyName || `${seller.firstName} ${seller.lastName}`}
+                                </h3>
+                                <div className="flex items-center gap-2 mt-1">
+                                  {seller.rating && (
+                                    <div className="flex items-center bg-yellow-50 px-2 py-1 rounded">
+                                      <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                                      <span className="ml-1 text-xs font-medium">{seller.rating.toFixed(1)}</span>
+                                      {seller.totalListings && (
+                                        <span className="mx-2 text-gray-400">•</span>
+                                      )}
+                                    </div>
+                                  )}
+                                  {seller.totalListings && (
+                                    <span className="text-xs text-gray-600">
+                                      {seller.totalListings} listings
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            {seller.isVerified && (
+                              <div className="flex items-center gap-1 text-green-600 text-xs">
+                                <Shield className="w-3 h-3" />
+                                <span>Verified</span>
+                              </div>
+                            )}
+                          </div>
+          
+                          {/* Seller Stats */}
+                          <div className="grid grid-cols-2 gap-3 text-xs">
+                            {seller.memberSince && (
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <Calendar className="w-3 h-3" />
+                                <span>Since {formatDate(seller.memberSince)}</span>
+                              </div>
+                            )}
+                            {seller.responseRate && (
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <Mail className="w-3 h-3" />
+                                <span>{seller.responseRate}% response rate</span>
+                              </div>
+                            )}
+                          </div>
+          
+                          {/* Seller Contact Info */}
+                          <div className="space-y-2">
+                            {seller.phone && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <Phone className="w-4 h-4 text-gray-500" />
+                                <span className="text-gray-700">{seller.phone}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-sm">
+                              <Mail className="w-4 h-4 text-gray-500" />
+                              <span className="text-gray-700 truncate">{seller.email}</span>
+                            </div>
+                            {(seller.city || seller.country || seller.streetAddress) && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <MapPin className="w-4 h-4 text-gray-500" />
+                                <span className="text-gray-700">{getLocation(seller)}</span>
+                              </div>
+                            )}
+                          </div>
+          
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 pt-2">
+                           
+                            <button
+                              onClick={() => setOpenReview(true)}
+                              className="px-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg text-xs transition duration-200"
+                            >
+                              Review
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-center p-4 border border-gray-200 rounded-lg">
+                          <p className="text-gray-600 text-sm">Seller information not available</p>
+                          <p className="text-xs text-gray-500 mt-1">Contact support for assistance</p>
                         </div>
                       )}
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {seller.companyName || `${seller.firstName} ${seller.lastName}`}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        {seller.rating && (
-                          <div className="flex items-center bg-yellow-50 px-2 py-1 rounded">
-                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                            <span className="ml-1 text-xs font-medium">{seller.rating.toFixed(1)}</span>
-                            {seller.totalListings && (
-                              <span className="mx-2 text-gray-400">•</span>
-                            )}
-                          </div>
-                        )}
-                        {seller.totalListings && (
-                          <span className="text-xs text-gray-600">
-                            {seller.totalListings} listings
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {seller.isVerified && (
-                    <div className="flex items-center gap-1 text-green-600 text-xs">
-                      <Shield className="w-3 h-3" />
-                      <span>Verified</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Seller Stats */}
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  {seller.memberSince && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Calendar className="w-3 h-3" />
-                      <span>Since {formatDate(seller.memberSince)}</span>
-                    </div>
-                  )}
-                  {seller.responseRate && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Mail className="w-3 h-3" />
-                      <span>{seller.responseRate}% response rate</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Seller Contact Info */}
-                <div className="space-y-2">
-                  {seller.phone && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="w-4 h-4 text-gray-500" />
-                      <span className="text-gray-700">{seller.phone}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 text-sm">
-                    <Mail className="w-4 h-4 text-gray-500" />
-                    <span className="text-gray-700 truncate">{seller.email}</span>
-                  </div>
-                  {(seller.city || seller.country) && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="w-4 h-4 text-gray-500" />
-                      <span className="text-gray-700">{getLocation(seller)}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Action Buttons */}
-              
-              </>
-            ) : (
-              <div className="text-center p-4 border border-gray-200 rounded-lg">
-                <p className="text-gray-600 text-sm">Seller information loading...</p>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
@@ -678,102 +721,182 @@ const MotorcycleDetails = () => {
       </div>
 
       {/* Specs Drawer */}
-      {openSpec && (
-        <div className="fixed inset-0 z-50 flex">
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50"
-            onClick={() => setOpenSpec(false)}
-          ></div>
+     {openSpec && (
+  <div className="fixed inset-0 z-50">
+    
+    {/* Overlay */}
+    <div
+      className="absolute inset-0 bg-black/50"
+      onClick={() => setOpenSpec(false)}
+    ></div>
 
-          {/* Drawer */}
-          <div className="ml-auto w-full sm:w-[500px] h-screen bg-white shadow-xl p-6 flex flex-col">
-            {/* Header */}
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold">Vehicle Specifications & Features</h2>
-              <p className="text-sm text-gray-500">
-                Detailed technical information and included features
-              </p>
+    {/* Drawer */}
+    <div className="absolute right-0 top-0 h-full w-full sm:w-[500px] bg-white shadow-xl p-6 flex flex-col z-10">
+      
+      {/* Header */}
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold">
+          Vehicle Specifications & Features
+        </h2>
+        <p className="text-sm text-gray-500">
+          Detailed technical information and included features
+        </p>
+      </div>
+
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto space-y-6 text-gray-700">
+
+        {/* Technical Specs */}
+        <div>
+          <h3 className="text-base font-semibold mb-2">Technical Specs</h3>
+          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 text-sm">
+
+           
+
+            <div>
+              <dt className="font-medium">Displacement</dt>
+              <dd>
+                {motorcycle.engineCapacity
+                  ? `${motorcycle.engineCapacity} cc`
+                  : "Not specified"}
+              </dd>
             </div>
 
-            {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto space-y-6 text-gray-700">
-              {/* 🔹 Technical Specs */}
-              <div>
-                <h3 className="text-base font-semibold mb-2">Technical Specs</h3>
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 text-sm">
-                  <div>
-                    <dt className="font-medium">Engine Type</dt>
-                    <dd>{motorcycle.type || "Not specified"}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">Displacement</dt>
-                    <dd>{motorcycle.engineCapacity ? `${motorcycle.engineCapacity} cc` : "Not specified"}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">Condition</dt>
-                    <dd>{motorcycle.owner || "Not specified"}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">Body Type</dt>
-                    <dd>{motorcycle.type || "Not specified"}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">Transmission</dt>
-                    <dd>{motorcycle.type || "Not specified"}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-medium">Location</dt>
-                    <dd>{motorcycle.location || "Not specified"}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              {/* 🔹 Features */}
-              <div>
-                <h3 className="text-base font-semibold mb-2">Features</h3>
-                <ul className="list-disc pl-5 space-y-1 text-sm">
-                  {motorcycle.features?.length ? (
-                    motorcycle.features.map((feature, i) => (
-                      <li key={i}>{feature}</li>
-                    ))
-                  ) : (
-                    <li className="text-gray-500 italic">Not specified</li>
-                  )}
-                </ul>
-              </div>
-
-              {/* 🔹 Custom Specs */}
-              <div>
-                <h3 className="text-base font-semibold mb-2">Custom Specs</h3>
-                <ul className="space-y-1 text-sm">
-                  {motorcycle.features?.length ? (
-                    <ul className="divide-y divide-gray-200">
-                      {motorcycle.features.map((feature, i) => (
-                        <li key={i} className="py-2 text-gray-700">
-                          • {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-gray-500 italic">No features available</p>
-                  )}
-                </ul>
-              </div>
+            <div>
+              <dt className="font-medium">Condition</dt>
+              <dd>{motorcycle.owner || "Not specified"}</dd>
             </div>
 
-            {/* Close Button */}
-            <div className="mt-4">
-              <button
-                onClick={() => setOpenSpec(false)}
-                className="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                Close
-              </button>
+           
+
+            <div>
+              <dt className="font-medium">Location</dt>
+              <dd>{motorcycle.location || "Not specified"}</dd>
             </div>
-          </div>
+
+          </dl>
         </div>
-      )}
+
+        {/* Features */}
+        <div>
+          <h3 className="text-base font-semibold mb-2">Features</h3>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            {motorcycle.features?.length ? (
+              motorcycle.features.map((feature, i) => (
+                <li key={i}>{feature}</li>
+              ))
+            ) : (
+              <li className="text-gray-500 italic">Not specified</li>
+            )}
+          </ul>
+        </div>
+
+      </div>
+
+      {/* Close Button */}
+      <div className="mt-4">
+        <button
+          onClick={() => setOpenSpec(false)}
+          className="w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+           {openReview && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative">
+      
+      {/* Close Button */}
+      <button
+        onClick={() => setOpenReview(false)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-2xl"
+      >
+        ×
+      </button>
+
+      <h2 className="text-xl font-semibold mb-4 text-center">
+        Leave a Review
+      </h2>
+
+      {/* Rating */}
+      <div className="flex justify-center mb-4 space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => setRating(star)}
+            className={`text-2xl ${
+              star <= rating ? "text-yellow-400" : "text-gray-300"
+            }`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+
+      {/* Review Text */}
+      <textarea
+        rows={4}
+        value={reviewText}
+        onChange={(e) => setReviewText(e.target.value)}
+        placeholder="Write your review here..."
+        className="w-full border rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+
+      {/* Submit Button */}
+      <button
+        onClick={async () => {
+          if (!reviewText || rating === 0) {
+            alert("Please add a rating and a comment.");
+            return;
+          }
+
+          if (!seller?.id) {
+            alert("Seller information not available.");
+            return;
+          }
+
+          try {
+            const response = await fetch(`https://api.f-carshipping.com/api/reviews/save`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+             
+                body: JSON.stringify({
+                  sellerId: seller.id,
+                  rating,
+                  comment: reviewText,
+                  reviewerName: "Anonymous",
+                }),
+              });
+
+            if (response.ok) {
+              alert("Review submitted successfully! Awaiting approval.");
+              setOpenReview(false);
+              setRating(0);
+              setReviewText("");
+            } else {
+              const error = await response.text();
+              alert(error || "Failed to submit review.");
+            }
+          } catch (error) {
+            console.error("Review error:", error);
+            alert("An error occurred while submitting your review.");
+          }
+        }}
+        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
+      >
+        Submit Review
+      </button>
+
+    </div>
+  </div>
+)}
     </div>
   );
 };
