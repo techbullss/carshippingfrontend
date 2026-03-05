@@ -24,7 +24,7 @@ const ContactPage = () => {
       </Head>
 
       {/* HERO */}
-      <section className="relative bg-gradient-to-b from-white to-gray-50 pt-32 pb-24 overflow-hidden">
+      <section className="relative bg-gradient-to-b from-white to-gray-50 py-8 overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 border border-amber-200 rounded-full animate-pulse"></div>
@@ -303,30 +303,7 @@ const ContactPage = () => {
         </div>
       </section>
 
-      {/* BOTTOM CTA */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="bg-gradient-to-r from-amber-50 to-white py-16 border-t border-amber-100"
-      >
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h3 className="text-2xl font-light text-gray-900 mb-4">
-            Ready to ship your vehicle?
-          </h3>
-          <p className="text-gray-500 mb-8">
-            Get a free quote or consultation within 24 hours
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-amber-400 text-gray-900 rounded-full font-medium hover:bg-amber-500 transition-colors shadow-lg shadow-amber-200/50"
-          >
-            Request a Quote
-          </motion.button>
-        </div>
-      </motion.section>
+     
     </>
   );
 };
