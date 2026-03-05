@@ -249,80 +249,109 @@ const VehicleDetails = () => {
   }, [id]);
 
   const fetchSellerInfo = async (sellerEmail: string) => {
-    try {
-      setSellerLoading(true);
-      
-      // Fetch seller profile using email from admin endpoint
-      const response = await fetch(
-        `https://api.f-carshipping.com/api/admin/users/email/${encodeURIComponent(sellerEmail)}`,
-        {
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          method: "GET",
-        }
-      );
+  try {
+    setSellerLoading(true);
 
-      if (response.ok) {
-        const sellerData = await response.json();
-        
-        // Transform to Seller type
-        const normalizedSeller: Seller = {
-          id: sellerData.id,
-          firstName: sellerData.firstName || "",
-          lastName: sellerData.lastName || "",
-          email: sellerData.email,
-          phone: sellerData.phone || "",
-          streetAddress: sellerData.streetAddress,
-          city: sellerData.city,
-          state: sellerData.state,
-          postalCode: sellerData.postalCode,
-          country: sellerData.country,
-          companyName: sellerData.companyName,
-          isVerified: sellerData.emailVerified || sellerData.isVerified || false,
-          emailVerified: sellerData.emailVerified || false,
-          memberSince: sellerData.createdAt,
-          roles: sellerData.roles || new Set(),
-          // You might want to calculate these from separate endpoints
-          rating: 4.8, // Default or fetch from reviews
-          totalListings: 12, // Default or fetch from listings count
-          responseRate: 95,
-          avgResponseTime: "2 hours",
-        };
-        
-        setSeller(normalizedSeller);
-      } else {
-        // If admin endpoint fails, create a basic seller object
-        console.log("Using basic seller info from email");
-        const basicSeller: Seller = {
-          id: 0,
-          firstName: sellerEmail.split('@')[0] || "Seller",
-          lastName: "",
-          email: sellerEmail,
-          phone: "",
-          isVerified: false,
-          memberSince: new Date().toISOString(),
-          rating: 4.5,
-          totalListings: 1,
-        };
-        setSeller(basicSeller);
+    // Fetch seller profile
+    const sellerResponse = await fetch(
+      `https://api.f-carshipping.com/api/admin/users/email/${encodeURIComponent(
+        sellerEmail
+      )}`,
+      {
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        method: "GET",
       }
-    } catch (err) {
-      console.error("Error fetching seller:", err);
-      // Create minimal seller info
-      const minimalSeller: Seller = {
+    );
+
+    // Fetch seller stats (rating + listings)
+    const statsResponse = await fetch(
+      `https://api.f-carshipping.com/api/cars/sellers/stats/${encodeURIComponent(
+        sellerEmail
+      )}`,
+      {
+        headers: { "Content-Type": "application/json" },
+        method: "GET",
+      }
+    );
+
+    let stats = {
+      rating: 0,
+      reviewCount: 0,
+      totalListings: 0,
+    };
+
+    if (statsResponse.ok) {
+      stats = await statsResponse.json();
+    }
+
+    if (sellerResponse.ok) {
+      const sellerData = await sellerResponse.json();
+
+      const normalizedSeller: Seller = {
+        id: sellerData.id,
+        firstName: sellerData.firstName || "",
+        lastName: sellerData.lastName || "",
+        email: sellerData.email,
+        phone: sellerData.phone || "",
+        streetAddress: sellerData.streetAddress,
+        city: sellerData.city,
+        state: sellerData.state,
+        postalCode: sellerData.postalCode,
+        country: sellerData.country,
+        companyName: sellerData.companyName,
+        isVerified: sellerData.emailVerified || sellerData.isVerified || false,
+        emailVerified: sellerData.emailVerified || false,
+        memberSince: sellerData.createdAt,
+        roles: sellerData.roles || new Set(),
+
+        // Dynamic values from backend
+        rating: stats.rating,
+        totalListings: stats.totalListings,
+
+        responseRate: 95,
+        avgResponseTime: "2 hours",
+      };
+
+      setSeller(normalizedSeller);
+    } else {
+      console.log("Using basic seller info from email");
+
+      const basicSeller: Seller = {
         id: 0,
-        firstName: "Private",
-        lastName: "Seller",
+        firstName: sellerEmail.split("@")[0] || "Seller",
+        lastName: "",
         email: sellerEmail,
-        phone: "Contact for details",
+        phone: "",
         isVerified: false,
         memberSince: new Date().toISOString(),
+
+        rating: stats.rating || 0,
+        totalListings: stats.totalListings || 0,
       };
-      setSeller(minimalSeller);
-    } finally {
-      setSellerLoading(false);
+
+      setSeller(basicSeller);
     }
-  };
+  } catch (err) {
+    console.error("Error fetching seller:", err);
+
+    const minimalSeller: Seller = {
+      id: 0,
+      firstName: "Private",
+      lastName: "Seller",
+      email: sellerEmail,
+      phone: "Contact for details",
+      isVerified: false,
+      memberSince: new Date().toISOString(),
+      rating: 0,
+      totalListings: 0,
+    };
+
+    setSeller(minimalSeller);
+  } finally {
+    setSellerLoading(false);
+  }
+};
 
   if (loading) return (
     <div className="flex justify-center items-center h-screen">
