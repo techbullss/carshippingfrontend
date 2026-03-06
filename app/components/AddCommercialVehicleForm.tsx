@@ -53,7 +53,7 @@ export default function AddCommercialVehicleForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ Populate when editing
+  //  Populate when editing
   useEffect(() => {
     if (vehicleToEdit) {
       setForm({
@@ -364,12 +364,33 @@ export default function AddCommercialVehicleForm({
         </div>
 
         {/* ACTIONS */}
-        <div className="flex justify-between">
-          <button type="button" onClick={onCancel} className="border px-4 py-2 rounded">Cancel</button>
-          <button type="submit" disabled={loading} className="bg-blue-600 text-white px-6 py-2 rounded">
-            {vehicleToEdit ? "Update" : "Add"}
-          </button>
-        </div>
+       <div className="flex justify-between">
+  <button
+    type="button"
+    onClick={onCancel}
+    className="border px-4 py-2 rounded"
+  >
+    Cancel
+  </button>
+
+  <button
+    type="submit"
+    disabled={loading}
+    className={`px-6 py-2 rounded text-white flex items-center gap-2
+      ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}
+    `}
+  >
+    {loading && (
+      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+    )}
+
+    {loading
+      ? "Processing..."
+      : vehicleToEdit
+      ? "Update"
+      : "Add"}
+  </button>
+</div>
       </form>
     </div>
   );
