@@ -618,47 +618,38 @@ const email = user?.email || "";
                 <h3 className="font-bold text-lg">Contact Information</h3>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Your Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                    value={formData.clientName}
-                    onChange={(e) => updateFormData('clientName', e.target.value)}
-                  />
-                </div>
+  <label className="block text-sm font-medium text-gray-700">Email</label>
+  <input
+    type="email"
+    value={formData.clientEmail}
+    disabled // cannot be changed
+    className="mt-1 block w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
+  />
+</div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      placeholder="your.email@example.com"
-                      value={formData.clientEmail}
-                      onChange={(e) => updateFormData('clientEmail', e.target.value)}
-                    />
-                  </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700">Full Name</label>
+  <input
+    type="text"
+    value={formData.clientName}
+    onChange={(e) =>
+      setFormData({ ...formData, clientName: e.target.value })
+    }
+    className="mt-1 block w-full px-3 py-2 border rounded-md"
+  />
+</div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number (Optional)
-                    </label>
-                    <input
-                      type="tel"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                      placeholder="+254 712 345 678"
-                      value={formData.clientPhone}
-                      onChange={(e) => updateFormData('clientPhone', e.target.value)}
-                    />
-                  </div>
-                </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700">Phone</label>
+  <input
+    type="text"
+    value={formData.clientPhone}
+    onChange={(e) =>
+      setFormData({ ...formData, clientPhone: e.target.value })
+    }
+    className="mt-1 block w-full px-3 py-2 border rounded-md"
+  />
+</div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
