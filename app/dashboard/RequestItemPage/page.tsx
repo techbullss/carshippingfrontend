@@ -44,6 +44,7 @@ export default function RequestItemPage() {
   const { user } = useCurrentUser(); // returns User | null
 const fullName = user ? `${user.firstName} ${user.lastName}` : "";
 const email = user?.email || "";
+console.log("Current user:", user);
   const [formData, setFormData] = useState<FormData>({
   clientName: fullName || "",
   clientEmail: email || "",  // final, pre-filled
