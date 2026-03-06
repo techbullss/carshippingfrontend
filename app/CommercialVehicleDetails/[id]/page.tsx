@@ -299,7 +299,7 @@ const QuickSpecItem = ({ icon, value, label }: QuickSpecItemProps) => (
       
       {/* Breadcrumb Navigation */}
       <nav className="flex text-sm text-gray-600 mb-6">
-        <a href="/vehicles" className="hover:text-blue-500">Back To Listing</a>
+        <a href="/CommercialVehicles" className="hover:text-blue-500">Back To Listing</a>
         <span className="mx-2" aria-hidden="true">→</span>
         <span className="text-gray-800">{commercialVehicle.model}</span>
       </nav>
