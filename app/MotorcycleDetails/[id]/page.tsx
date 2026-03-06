@@ -366,7 +366,7 @@ const [rating, setRating] = useState(0);
           </div>
         </div>
         
-        {/* Vehicle Info */}
+        {/*  Info */}
         <div className="lg:w-1/3 space-y-5 text-sm">
           {/* Title & Price */}
           <div>
@@ -389,9 +389,7 @@ const [rating, setRating] = useState(0);
 
           {/* Key Details */}
           <div className="flex flex-wrap gap-2 text-gray-700">
-            <span className="bg-gray-200 px-3 py-1 rounded-full text-sm">
-              {motorcycle.status} km
-            </span>
+           
             <span className="bg-gray-200 px-3 py-1 rounded-full text-sm">
               {motorcycle.year}
             </span>
