@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { 
   Upload, Package, MapPin, DollarSign, 
@@ -44,7 +44,7 @@ export default function RequestItemPage() {
   const { user } = useCurrentUser(); // returns User | null
 const fullName = user ? `${user.firstName} ${user.lastName}` : "";
 const email = user?.email || "";
-console.log("Current user:", user);
+
   const [formData, setFormData] = useState<FormData>({
   clientName: fullName || "",
   clientEmail: email || "",  // final, pre-filled
@@ -59,7 +59,15 @@ console.log("Current user:", user);
   urgency: "normal",
   notes: "",
 });
-console.log("Initial form data:", formData);
+useEffect(() => {
+  if (user) {
+    setFormData(prev => ({
+      ...prev,
+      clientName: `${user.firstName} ${user.lastName}`,
+      clientEmail: user.email
+    }));
+  }
+}, [user]);
   const categories = [
     "Electronics", "Clothing & Fashion", "Home & Kitchen",
     "Automotive Parts", "Books & Media", "Medical Equipment",
