@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
 
 // Types
 interface FormData {
@@ -38,21 +39,25 @@ export default function RequestItemPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
   const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
+  const { user } = useCurrentUser(); // returns User | null
+const fullName = user ? `${user.firstName} ${user.lastName}` : "";
+const email = user?.email || "";
   const [formData, setFormData] = useState<FormData>({
-    clientName: "",
-    clientEmail: "",
-    clientPhone: "",
-    itemName: "",
-    category: "",
-    description: "",
-    originCountry: "",
-    destination: "",
-    budget: "",
-    quantity: 1,
-    urgency: "normal",
-    notes: "",
-  });
+  clientName: fullName || "",
+  clientEmail: email || "",  // final, pre-filled
+  clientPhone: "",
+  itemName: "",
+  category: "",
+  description: "",
+  originCountry: "",
+  destination: "",
+  budget: "",
+  quantity: 1,
+  urgency: "normal",
+  notes: "",
+});
 
   const categories = [
     "Electronics", "Clothing & Fashion", "Home & Kitchen",

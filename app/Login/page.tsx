@@ -14,48 +14,46 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setIsLoading(true);
   setError('');
 
   try {
-  if (!email || !password) {
-    throw new Error("Please fill in all fields");
-  }
+    if (!email || !password) throw new Error("Please fill in all fields");
 
-  const response = await fetch(
-    "https://api.f-carshipping.com/api/auth/login",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    }
-  );
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(
-      errorData.message ||
-      errorData.error ||
-      "Invalid email or password"
+    const response = await fetch(
+      "https://api.f-carshipping.com/api/auth/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      }
     );
+
+    // Try to parse JSON even if response is not ok
+    let data: any = null;
+    try {
+      data = await response.json();
+    } catch {
+      data = { message: "Invalid email or password" }; // fallback if backend returns empty
+    }
+
+    if (!response.ok) {
+      // use backend message if available
+      throw new Error(data?.message || "Invalid email or password");
+    }
+
+    // login success
+    console.log("Login success:", data);
+    window.location.href = "/dashboard";
+
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "An error occurred during login");
+  } finally {
+    setIsLoading(false);
   }
-
-  await response.json();
-
-  window.location.href = "/dashboard";
-
-} catch (err) {
-  setError(
-    err instanceof Error
-      ? err.message
-      : "An error occurred during login"
-  );
-} finally {
-  setIsLoading(false);
-}
 };
 
 
