@@ -59,7 +59,7 @@ console.log("Current user:", user);
   urgency: "normal",
   notes: "",
 });
-
+console.log("Initial form data:", formData);
   const categories = [
     "Electronics", "Clothing & Fashion", "Home & Kitchen",
     "Automotive Parts", "Books & Media", "Medical Equipment",
