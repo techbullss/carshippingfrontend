@@ -248,7 +248,7 @@ useEffect(() => {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            href="/auxiliary-shipping" 
+            href="/AuxiallyShipping" 
             className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-6"
           >
             <ArrowLeft size={20} className="mr-2" />
@@ -716,13 +716,13 @@ useEffect(() => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/dashboard/my-requests"
+                  href="/dashboard/UserOrdersPage"
                   className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
                 >
                   View My Requests
                 </Link>
                 <Link
-                  href="/auxiliary-shipping"
+                  href="/AuxiallyShipping"
                   className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition"
                 >
                   Back to Services
