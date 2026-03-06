@@ -163,7 +163,7 @@ const [rating, setRating] = useState(0);
  
      // Fetch seller stats (rating + listings)
      const statsResponse = await fetch(
-       `https://api.f-carshipping.com/api/cars/stats/${encodeURIComponent(
+       `https://api.f-carshipping.com/api/motorcycles/stats/${encodeURIComponent(
          sellerEmail
        )}`,
        {

@@ -121,7 +121,7 @@ setVehicle(normalizedVehicle);
 
     // Fetch seller stats (rating + listings)
     const statsResponse = await fetch(
-      `https://api.f-carshipping.com/api/cars/stats/${encodeURIComponent(
+      `https://api.f-carshipping.com/api/vehicles/stats/${encodeURIComponent(
         sellerEmail
       )}`,
       {
