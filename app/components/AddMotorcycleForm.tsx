@@ -28,7 +28,9 @@ export default function AddMotorcycleForm({
     owner: currentUser?.email || currentUserEmail || "",
     description: "",
     year: "",
-    status: "PENDING", // Default status for new motorcycles
+    status: "PENDING", 
+    mileageKm: "",
+    // Default status for new motorcycles
   });
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -116,6 +118,7 @@ export default function AddMotorcycleForm({
         owner: motorcycleToEdit.owner || currentUser?.email || currentUserEmail || "",
         description: motorcycleToEdit.description || "",
         year: motorcycleToEdit.year?.toString() || "",
+        mileageKm: motorcycleToEdit.mileageKm?.toString() || "",
       });
       setFeatures(motorcycleToEdit.features || []);
       setPreviews(motorcycleToEdit.imageUrls || []);
@@ -132,6 +135,7 @@ export default function AddMotorcycleForm({
         owner: currentUser?.email || currentUserEmail || "",
         description: "",
         year: "",
+        mileageKm: "",
       });
       setFeatures([]);
       setPreviews([]);
@@ -402,6 +406,7 @@ export default function AddMotorcycleForm({
                     ))}
                   </select>
                 </div>
+                
 
                 {/* Type */}
                 <div>
@@ -445,6 +450,18 @@ export default function AddMotorcycleForm({
                     name="engineCapacity"
                     type="number"
                     value={form.engineCapacity}
+                    onChange={handleChange}
+                    placeholder="e.g., 650"
+                    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    min="0"
+                  />
+                </div>
+                 <div>
+                  <label className="block text-sm font-medium mb-1">Mileage (km)</label>
+                  <input
+                    name="mileageKm"
+                    type="number"
+                    value={form.mileageKm}
                     onChange={handleChange}
                     placeholder="e.g., 650"
                     className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"

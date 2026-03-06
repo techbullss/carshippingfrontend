@@ -42,7 +42,7 @@ type CommercialVehicle = {
   brand: string;
   model: string;
   yearOfManufacture: string;
-  mileage: string;
+  mileageKm: string;
   fuelType: string;
   transmission: string;
   bodyType: string;
@@ -166,7 +166,7 @@ export default function Home() {
       imageUrls: ["/commercial1.jpg"],
       priceKes: 3800000,
       yearOfManufacture: "2023",
-      mileage: "10,000",
+      mileageKm: "10,000",
       fuelType: "Diesel",
       transmission: "Manual",
       bodyType: "Pickup",
@@ -180,7 +180,7 @@ export default function Home() {
       imageUrls: ["/commercial2.jpg"],
       priceKes: 5200000,
       yearOfManufacture: "2022",
-      mileage: "25,000",
+      mileageKm: "25,000",
       fuelType: "Diesel",
       transmission: "Manual",
       bodyType: "Truck",
@@ -194,7 +194,7 @@ export default function Home() {
       imageUrls: ["/commercial3.jpg"],
       priceKes: 3200000,
       yearOfManufacture: "2023",
-      mileage: "8,500",
+      mileageKm: "8,500",
       fuelType: "Diesel",
       transmission: "Automatic",
       bodyType: "Pickup",
@@ -208,7 +208,7 @@ export default function Home() {
       imageUrls: ["/commercial4.jpg"],
       priceKes: 3500000,
       yearOfManufacture: "2022",
-      mileage: "15,000",
+      mileageKm: "15,000",
       fuelType: "Diesel",
       transmission: "Automatic",
       bodyType: "Pickup",
@@ -767,7 +767,7 @@ export default function Home() {
                     {vehicle.brand} {vehicle.model}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    {vehicle.yearOfManufacture} • {vehicle.mileage} km
+                    {vehicle.yearOfManufacture} • {vehicle.mileageKm} km
                   </p>
                 </div>
 
@@ -807,13 +807,16 @@ export default function Home() {
     {/* Footer CTA */}
     {!loadingCommercial && (
       <div className="text-center mt-14">
-        <button
-          onClick={() => window.location.href = "/CommercialVehicles"}
-          className="px-8 py-3 text-black border border-green-600 border-b-4 font-semibold rounded-full shadow-md 
-                     hover:bg-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
-        >
-          Browse All Commercial Vehicles
-        </button>
+      <button
+  onClick={() => window.location.href = "/CommercialVehicles"}
+  className="group inline-flex items-center gap-3 text-lg font-medium text-gray-900 hover:text-green-600 transition-all duration-300"
+>
+  Browse All Commercial Vehicles
+
+  <span className="text-3xl transform transition-transform duration-300 group-hover:translate-x-2">
+    →
+  </span>
+</button>
       </div>
     )}
   </div>
