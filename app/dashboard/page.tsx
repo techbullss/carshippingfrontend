@@ -256,7 +256,8 @@ const { user } = useCurrentUser();
     </h2>
   </div>
 
-  {/* Users */}
+  
+  {user?.roles?.includes("ADMIN") && (
   <div
     onClick={() => router.push('/dashboard/Users')}
     className="cursor-pointer"
@@ -265,13 +266,13 @@ const { user } = useCurrentUser();
       <Users className="w-5 h-5 text-gray-600" />
       <p className="text-sm text-gray-500">Total Users</p>
     </div>
+
     <h2 className="text-3xl font-semibold mt-2">
       {stats.totalUsers}
     </h2>
   </div>
-
+)}
 </div>
-
         {/* Recent Items Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Cars */}
@@ -375,13 +376,7 @@ const { user } = useCurrentUser();
               <Bike className="w-8 h-8 text-purple-600 mx-auto mb-2" />
               <span className="text-sm font-medium">Add Motorcycle</span>
             </button>
-            <button
-              onClick={() => router.push('/dashboard/Users')}
-              className="p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors text-center"
-            >
-              <Users className="w-8 h-8 text-orange-600 mx-auto mb-2" />
-              <span className="text-sm font-medium">Manage Users</span>
-            </button>
+           
           </div>
         </div>
       </div>
