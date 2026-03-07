@@ -17,10 +17,10 @@ export default function Footer() {
 
   const links = [
     { name: "Home", path: "/" },
-    { name: "Sell With Us", path: "/sell" },
-    { name: "About Us", path: "/about" },
-    { name: "Contact Us", path: "/contact" },
-    { name: "Login", path: "/login" },
+    { name: "Sell With Us", path: "/SellWithUs" },
+    { name: "About Us", path: "/AboutUs" },
+    { name: "Contact Us", path: "/ContactUs" },
+    { name: "Login", path: "/Login" },
   ];
 
   const socials = [
