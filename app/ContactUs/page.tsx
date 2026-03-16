@@ -27,9 +27,9 @@ const ContactPage = () => {
       <section className="relative bg-gradient-to-b from-white to-gray-50 py-8 overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 border border-amber-200 rounded-full animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 border border-amber-200 rounded-full animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-amber-100 rounded-full"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 border border-red-200 rounded-full animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 border border-blue-200 rounded-full animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-green-100 rounded-full"></div>
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
@@ -39,11 +39,11 @@ const ContactPage = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="inline-flex items-center justify-center p-1 mb-8">
-              <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
-              <span className="w-16 h-[1px] bg-amber-300 mx-2"></span>
-              <span className="text-xs tracking-[0.3em] text-amber-600/70 uppercase font-light">London Office</span>
-              <span className="w-16 h-[1px] bg-amber-300 mx-2"></span>
-              <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
+              <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
+              <span className="w-16 h-[1px] bg-blue-300 mx-2"></span>
+              <span className="text-xs tracking-[0.3em] text-green-600/70 uppercase font-light">London Office</span>
+              <span className="w-16 h-[1px] bg-blue-300 mx-2"></span>
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
             </div>
           </motion.div>
           
@@ -54,7 +54,7 @@ const ContactPage = () => {
             className="text-5xl md:text-7xl font-light mb-8 tracking-tight text-gray-900"
           >
             Contact
-            <span className="text-amber-500 block mt-2">FCarShipping</span>
+            <span className="text-red-500 block mt-2">FCarShipping</span>
           </motion.h1>
 
           <motion.p
@@ -90,7 +90,7 @@ const ContactPage = () => {
                   initial={{ width: 0 }}
                   whileInView={{ width: 96 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
-                  className="h-[2px] bg-amber-400"
+                  className="h-[2px] bg-gradient-to-r from-red-400 via-blue-400 to-green-400"
                 ></motion.div>
               </div>
 
@@ -105,8 +105,8 @@ const ContactPage = () => {
                   className="group flex gap-5 cursor-pointer"
                   whileHover={{ x: 5 }}
                 >
-                  <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition-all duration-300">
-                    <MapPin className="w-5 h-5 text-amber-500" strokeWidth={1.5} />
+                  <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-all duration-300">
+                    <MapPin className="w-5 h-5 text-red-500" strokeWidth={1.5} />
                   </div>
 
                   <div>
@@ -126,7 +126,7 @@ const ContactPage = () => {
                     <motion.button
                       onClick={openDirections}
                       whileHover={{ x: 5 }}
-                      className="inline-flex items-center gap-2 text-amber-600 font-medium text-sm mt-4 group"
+                      className="inline-flex items-center gap-2 text-blue-600 font-medium text-sm mt-4 group"
                     >
                       Get Directions
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" strokeWidth={1.5} />
@@ -143,8 +143,8 @@ const ContactPage = () => {
                   className="group flex gap-5 cursor-pointer"
                   whileHover={{ x: 5 }}
                 >
-                  <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition-all duration-300">
-                    <Phone className="w-5 h-5 text-amber-500" strokeWidth={1.5} />
+                  <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-all duration-300">
+                    <Phone className="w-5 h-5 text-blue-500" strokeWidth={1.5} />
                   </div>
 
                   <div>
@@ -154,7 +154,7 @@ const ContactPage = () => {
                     <motion.a
                       href="tel:+447398145581"
                       whileHover={{ scale: 1.02 }}
-                      className="text-gray-900 font-medium text-lg hover:text-amber-600 transition-colors inline-block"
+                      className="text-gray-900 font-medium text-lg hover:text-blue-600 transition-colors inline-block"
                     >
                       +44 7398 145581
                     </motion.a>
@@ -170,8 +170,8 @@ const ContactPage = () => {
                   className="group flex gap-5 cursor-pointer"
                   whileHover={{ x: 5 }}
                 >
-                  <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition-all duration-300">
-                    <Mail className="w-5 h-5 text-amber-500" strokeWidth={1.5} />
+                  <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-all duration-300">
+                    <Mail className="w-5 h-5 text-green-500" strokeWidth={1.5} />
                   </div>
 
                   <div>
@@ -181,7 +181,7 @@ const ContactPage = () => {
                     <motion.a
                       href="mailto:info@f-carshipping.com"
                       whileHover={{ scale: 1.02 }}
-                      className="text-gray-900 font-medium text-lg hover:text-amber-600 transition-colors inline-block"
+                      className="text-gray-900 font-medium text-lg hover:text-green-600 transition-colors inline-block"
                     >
                       info@f-carshipping.com
                     </motion.a>
@@ -197,8 +197,8 @@ const ContactPage = () => {
                   className="group flex gap-5"
                   whileHover={{ x: 5 }}
                 >
-                  <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition-all duration-300">
-                    <Clock className="w-5 h-5 text-amber-500" strokeWidth={1.5} />
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-50 to-blue-50 flex items-center justify-center group-hover:from-red-100 group-hover:to-blue-100 transition-all duration-300">
+                    <Clock className="w-5 h-5 text-green-500" strokeWidth={1.5} />
                   </div>
 
                   <div>
@@ -239,10 +239,10 @@ const ContactPage = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
                 viewport={{ once: true }}
-                className="flex items-center gap-3 bg-amber-50/50 p-4 rounded-2xl border border-amber-100"
+                className="flex items-center gap-3 bg-gradient-to-r from-red-50 via-blue-50 to-green-50 p-4 rounded-2xl border border-gray-200"
               >
-                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                  <Send className="w-4 h-4 text-amber-600" strokeWidth={1.5} />
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-red-100 to-green-100 flex items-center justify-center">
+                  <Send className="w-4 h-4 text-blue-600" strokeWidth={1.5} />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">Quick response guaranteed</p>
@@ -264,13 +264,13 @@ const ContactPage = () => {
                 initial={{ opacity: 0, x: -20, y: -20 }}
                 whileInView={{ opacity: 1, x: 0, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="absolute -top-6 -left-6 w-24 h-24 border-l-2 border-t-2 border-amber-300"
+                className="absolute -top-6 -left-6 w-24 h-24 border-l-2 border-t-2 border-red-300"
               ></motion.div>
               <motion.div 
                 initial={{ opacity: 0, x: 20, y: 20 }}
                 whileInView={{ opacity: 1, x: 0, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="absolute -bottom-6 -right-6 w-24 h-24 border-r-2 border-b-2 border-amber-300"
+                className="absolute -bottom-6 -right-6 w-24 h-24 border-r-2 border-b-2 border-green-300"
               ></motion.div>
               
               <motion.div 
@@ -291,7 +291,7 @@ const ContactPage = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm px-5 py-3 rounded-lg shadow-lg border border-amber-200"
+                  className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm px-5 py-3 rounded-lg shadow-lg border border-blue-200"
                 >
                   <p className="text-sm font-medium text-gray-900">📍 Visit our office</p>
                   <p className="text-xs text-gray-500">By appointment only</p>
@@ -302,8 +302,6 @@ const ContactPage = () => {
           </div>
         </div>
       </section>
-
-     
     </>
   );
 };
