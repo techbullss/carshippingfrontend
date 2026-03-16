@@ -354,7 +354,7 @@ export default function AuxiliaryShippingPage() {
             </div>
           ) : reviews.length > 0 ? (
             <>
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid md:grid-cols-4 gap-4">
                 {displayedReviews.map((review) => (
                   <motion.div
                     key={review.id}
