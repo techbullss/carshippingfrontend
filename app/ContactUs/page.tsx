@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 const ContactPage = () => {
   const openDirections = () => {
     window.open(
-      "https://www.google.com/maps/dir/?api=1&destination=2010+Estuary+House+196+Ballards+Road+Dagenham+RM10+9AB+UK",
+      "https://www.google.com/maps/dir/?api=1&destination=210+Estuary+House+196+Ballards+Road+Dagenham+RM10+9AB+UK",
       "_blank"
     );
   };
@@ -114,7 +114,7 @@ const ContactPage = () => {
                       Office Address
                     </h3>
                     <p className="text-gray-900 font-medium text-lg leading-relaxed">
-                      2010 Estuary House, 196 Ballards Road
+                      210 Estuary House, 196 Ballards Road
                     </p>
                     <p className="text-gray-600 text-lg">
                       Dagenham, RM10 9AB
