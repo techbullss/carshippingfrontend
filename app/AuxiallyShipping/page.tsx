@@ -355,7 +355,7 @@ const handleTabChange = (tab: string) => {
   initial={{ opacity: 0, x: 40 }}
   animate={{ opacity: 1, x: 0 }}
   transition={{ duration: 0.6, delay: 0.2 }}
-  className="rounded-xl shadow-xl overflow-hidden"
+  className=" overflow-hidden"
   style={{
     width: '100%',
     height: '400px', // Adjust height as needed
