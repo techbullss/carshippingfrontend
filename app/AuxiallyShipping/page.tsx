@@ -352,54 +352,21 @@ const handleTabChange = (tab: string) => {
 
     {/* Right Stats Card */}
     <motion.div
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-      className="bg-green-50 border border-green-300 rounded-xl p-8 shadow-xl"
-    >
-      <h3 className="text-xl font-semibold mb-8 text-green-700">
-        Live Overview
-      </h3>
-
-      {loading.stats ? (
-        <div className="space-y-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex justify-between">
-              <div className="h-4 bg-green-200 rounded w-32 animate-pulse"></div>
-              <div className="h-6 bg-green-200 rounded w-12 animate-pulse"></div>
-            </div>
-          ))}
-        </div>
-      ) : stats ? (
-        <div className="space-y-6 text-sm text-green-900">
-          <div className="flex justify-between">
-            <span className="text-green-800">Active Shipments</span>
-            <span className="font-semibold">{stats.activeShipments}</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="text-green-800">Total Requests</span>
-            <span className="font-semibold">{stats.totalRequests}</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="text-green-800">Pending</span>
-            <span className="font-semibold">{stats.pendingRequests}</span>
-          </div>
-
-          <div className="flex justify-between">
-            <span className="text-green-800">Average Rating</span>
-            <span className="font-semibold">
-              {stats.averageRating?.toFixed(1)}
-            </span>
-          </div>
-        </div>
-      ) : (
-        <div className="text-green-700 text-sm">
-          Unable to load statistics
-        </div>
-      )}
-    </motion.div>
+  initial={{ opacity: 0, x: 40 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.6, delay: 0.2 }}
+  className="rounded-xl shadow-xl overflow-hidden"
+  style={{
+    width: '100%',
+    height: '400px', // Adjust height as needed
+  }}
+>
+  <img 
+    src="/shipping.png" 
+    alt="Descriptive alt text"
+    className="w-full h-full object-cover"
+  />
+</motion.div>
 
   </div>
 </section>
