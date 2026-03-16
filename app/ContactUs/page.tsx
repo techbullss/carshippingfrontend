@@ -279,7 +279,7 @@ const ContactPage = () => {
                 className="relative rounded-2xl overflow-hidden shadow-xl border border-gray-100 h-full min-h-[500px]"
               >
                 <iframe
-                  src="https://www.google.com/maps?q=2010+Estuary+House+196+Ballards+Road+Dagenham+RM10+9AB+UK&output=embed"
+                  src="https://www.google.com/maps?q=210+Estuary+House+196+Ballards+Road+Dagenham+RM10+9AB+UK&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0, minHeight: "500px" }}
