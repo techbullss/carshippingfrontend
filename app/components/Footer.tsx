@@ -55,7 +55,7 @@ export default function Footer() {
           }`}
         >
           <Image
-            src="/log11.png"
+            src="/log12.png"
             alt="F-CarShipping Logo"
             width={160}
             height={52}
