@@ -92,7 +92,7 @@ export default function Header() {
   {/* Logo Image */}
   <div className="relative h-8 w-auto">
     <Image
-      src="/lod.png"
+      src="/log11.png"
       alt="FCarShipping Logo"
       width={120}
       height={32}
