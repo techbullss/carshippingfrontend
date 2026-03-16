@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const FloatingWhatsApp = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [showTooltip, setShowTooltip] = useState(true);
 
   const phoneNumber = "447398145581"; // Your WhatsApp number
@@ -22,31 +21,28 @@ const FloatingWhatsApp = () => {
   }, []);
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+
     const controlNavbar = () => {
-      if (typeof window !== 'undefined') {
-        // Scrolling down
-        if (window.scrollY > lastScrollY && window.scrollY > 100) {
-          setIsVisible(false);
-        } 
-        // Scrolling up
-        else if (window.scrollY < lastScrollY) {
-          setIsVisible(true);
-        }
-        
-        // Update last scroll position
-        setLastScrollY(window.scrollY);
+      if (window.scrollY > lastScrollY && window.scrollY > 100) {
+        // Scrolling down - hide
+        setIsVisible(false);
+      } else if (window.scrollY < lastScrollY) {
+        // Scrolling up - show
+        setIsVisible(true);
       }
+      
+      // Update last scroll position
+      lastScrollY = window.scrollY;
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', controlNavbar);
+    window.addEventListener('scroll', controlNavbar);
 
-      // Cleanup
-      return () => {
-        window.removeEventListener('scroll', controlNavbar);
-      };
-    }
-  }, [lastScrollY]);
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', controlNavbar);
+    };
+  }, []); // Empty dependency array - runs once on mount
 
   return (
     <AnimatePresence>
