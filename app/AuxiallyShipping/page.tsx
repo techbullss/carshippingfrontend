@@ -328,9 +328,7 @@ export default function AuxiliaryShippingPage() {
               <Star className="fill-yellow-400 text-yellow-400" size={16} />
               <span className="font-semibold">{stats?.averageRating?.toFixed(1) || "0.0"} Average Rating</span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Trusted by Thousands
-            </h2>
+          
             <p className="text-gray-600 text-lg max-w-3xl mx-auto">
               Read what our clients say about their shipping experience with us
             </p>

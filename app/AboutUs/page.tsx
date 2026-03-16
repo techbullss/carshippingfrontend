@@ -15,10 +15,10 @@ return (
         transition={{ duration: 0.7 }}
         className="space-y-10"
       >
-        <div className="w-16 h-1 bg-yellow-500 mb-6"></div>
+        <div className="w-16 h-1 bg-red-600 mb-6"></div>
 
         <h2 className="text-4xl md:text-5xl font-light tracking-tight">
-          Our <span className="text-yellow-500 font-medium">Purpose</span>
+          Our <span className="text-red-600 font-medium">Purpose</span>
         </h2>
 
         <p className="text-lg text-gray-700 leading-relaxed">
@@ -35,7 +35,7 @@ return (
     </div>
 
     {/* Why Choose Us */}
-    <div className="bg-gray-50 border-y border-yellow-100">
+    <div className="bg-gray-50 border-y border-blue-200">
       <div className="max-w-6xl mx-auto px-6 py-28">
         <motion.div
           initial={{ opacity: 0 }}
@@ -46,9 +46,9 @@ return (
         >
           <div className="text-center">
             <h2 className="text-4xl font-light tracking-tight">
-              Why Clients <span className="text-yellow-500 font-medium">Choose Us</span>
+              Why Clients <span className="text-blue-600 font-medium">Choose Us</span>
             </h2>
-            <div className="w-20 h-1 bg-yellow-500 mx-auto mt-6"></div>
+            <div className="w-20 h-1 bg-blue-600 mx-auto mt-6"></div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-16 text-center">
@@ -74,7 +74,7 @@ return (
                 viewport={{ once: true }}
                 className="space-y-4 group"
               >
-                <div className="w-12 h-12 mx-auto rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-semibold text-lg group-hover:scale-110 transition">
+                <div className="w-12 h-12 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-lg group-hover:scale-110 transition">
                   0{i + 1}
                 </div>
 
@@ -103,9 +103,9 @@ return (
       >
         <div className="text-center">
           <h2 className="text-4xl font-light tracking-tight">
-            A Simple, <span className="text-yellow-500 font-medium">Refined</span> Process
+            A Simple, <span className="text-green-600 font-medium">Refined</span> Process
           </h2>
-          <div className="w-20 h-1 bg-yellow-500 mx-auto mt-6"></div>
+          <div className="w-20 h-1 bg-green-600 mx-auto mt-6"></div>
         </div>
 
         <div className="grid md:grid-cols-4 gap-12 text-center">
@@ -123,7 +123,7 @@ return (
               viewport={{ once: true }}
               className="space-y-4"
             >
-              <p className="text-5xl font-light text-yellow-500">
+              <p className="text-5xl font-light text-green-600">
                 0{i + 1}
               </p>
               <p className="text-gray-600">{step}</p>
@@ -135,13 +135,13 @@ return (
 
     {/* Closing Statement */}
     <div className="bg-black text-white py-28 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_yellow,_transparent_60%)]"></div>
+      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_#3b82f6,_transparent_60%)]"></div>
 
       <div className="relative max-w-3xl mx-auto text-center px-6">
         <h3 className="text-4xl md:text-5xl font-light mb-8 leading-tight">
           Excellence is not an option.
           <br />
-          <span className="text-yellow-500 font-medium">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-blue-500 to-green-500 font-medium">
             It is our standard.
           </span>
         </h3>
