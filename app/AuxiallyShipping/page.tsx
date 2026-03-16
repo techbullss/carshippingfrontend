@@ -355,51 +355,55 @@ export default function AuxiliaryShippingPage() {
           ) : reviews.length > 0 ? (
             <>
               <div className="grid md:grid-cols-4 gap-4">
-                {displayedReviews.map((review) => (
-                  <motion.div
-                    key={review.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all"
-                  >
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-gradient-to-br from-red-100 to-blue-100 rounded-full flex items-center justify-center">
-                          <User className="w-6 h-6 text-red-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-lg">{review.clientName}</h4>
-                          <p className="text-gray-600 text-sm">{review.itemName}</p>
-                        </div>
-                      </div>
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            size={18} 
-                            className={`ml-1 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <p className="text-gray-700 mb-6 leading-relaxed text-lg italic">"{review.comment}"</p>
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500 text-sm">{formatDate(review.createdAt)}</span>
-                      <div className="flex gap-2">
-                        <button className="p-2 hover:bg-red-50 rounded-lg transition-colors">
-                          <ThumbsUp size={16} className="text-red-500" />
-                        </button>
-                        <button className="p-2 hover:bg-blue-50 rounded-lg transition-colors">
-                          <Share2 size={16} className="text-blue-500" />
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+  {displayedReviews.map((review) => (
+    <motion.div
+      key={review.id}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="group bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all h-full flex flex-col"
+    >
+      <div className="flex items-start justify-between mb-4 flex-shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <User className="w-5 h-5 text-red-600" />
+          </div>
+          <div className="min-w-0">
+            <h4 className="font-bold text-gray-900 text-base truncate">{review.clientName}</h4>
+            <p className="text-gray-600 text-xs truncate">{review.itemName}</p>
+          </div>
+        </div>
+        <div className="flex flex-shrink-0">
+          {[...Array(5)].map((_, i) => (
+            <Star 
+              key={i} 
+              size={14} 
+              className={`ml-0.5 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+            />
+          ))}
+        </div>
+      </div>
+      
+      <div className="flex-1 mb-4">
+        <p className="text-gray-700 text-sm leading-relaxed line-clamp-4">
+          "{review.comment}"
+        </p>
+      </div>
+      
+      <div className="flex justify-between items-center flex-shrink-0 pt-2 border-t border-gray-100">
+        <span className="text-gray-500 text-xs">{formatDate(review.createdAt)}</span>
+        <div className="flex gap-1">
+          <button className="p-1.5 hover:bg-red-50 rounded-lg transition-colors">
+            <ThumbsUp size={14} className="text-red-500" />
+          </button>
+          <button className="p-1.5 hover:bg-blue-50 rounded-lg transition-colors">
+            <Share2 size={14} className="text-blue-500" />
+          </button>
+        </div>
+      </div>
+    </motion.div>
+  ))}
+</div>
               
               {/* Pagination / Load More */}
               {hasMore && (

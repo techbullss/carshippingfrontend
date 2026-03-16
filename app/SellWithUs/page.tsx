@@ -64,92 +64,88 @@ export default function SellWithUsPage() {
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden text-black">
-  <div className="relative max-w-6xl mx-auto px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-    
-    {/* Left: Text Content */}
-    <div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="flex justify-start mb-6"
-      >
-        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 text-xs font-semibold tracking-widest uppercase">
-          <Star className="w-3 h-3" />
-          Seller Marketplace
-        </span>
-      </motion.div>
+        <div className="relative max-w-6xl mx-auto px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          
+          {/* Left: Text Content */}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex justify-start mb-6"
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-red-200 bg-red-50 text-red-600 text-xs font-semibold tracking-widest uppercase">
+                <Star className="w-3 h-3 fill-red-500 text-red-500" />
+                Seller Marketplace
+              </span>
+            </motion.div>
 
-      <motion.h1
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.65, delay: 0.1 }}
-        className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight"
-      >
-        Sell Smarter.<br />
-        <span className="text-yellow-500">Reach Further.</span>
-      </motion.h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.1 }}
+              className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight"
+            >
+              Sell Smarter.<br />
+              <span className="text-blue-600">Reach Further.</span>
+            </motion.h1>
 
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-lg text-gray-700 mb-8"
-      >
-        Join a growing digital marketplace connecting vehicle sellers with
-        serious local and international buyers. Gain visibility, attract
-        qualified inquiries, and position your inventory for a wider market.
-      </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg text-gray-700 mb-8"
+            >
+              Join a growing digital marketplace connecting vehicle sellers with
+              serious local and international buyers. Gain visibility, attract
+              qualified inquiries, and position your inventory for a wider market.
+            </motion.p>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-        className="flex flex-col sm:flex-row gap-4"
-      >
-        <a
-          href="/Signup"
-          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-gray-900 font-bold text-sm rounded-xl transition-all duration-200 shadow-lg hover:-translate-y-0.5"
-        >
-          Start Selling Today
-          <ArrowRight className="w-4 h-4" />
-        </a>
-        <a
-          href="#how-it-works"
-          className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-yellow-500 hover:border-yellow-400 text-yellow-500 hover:text-gray-900 font-semibold text-sm rounded-xl transition-all duration-200 hover:-translate-y-0.5"
-        >
-          See How It Works
-        </a>
-      </motion.div>
-    </div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <a
+                href="/Signup"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition-all duration-200 shadow-lg hover:-translate-y-0.5"
+              >
+                Start Selling Today
+                <ArrowRight className="w-4 h-4" />
+              </a>
+              <a
+                href="#how-it-works"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-blue-500 hover:border-blue-600 text-blue-500 hover:text-blue-600 font-semibold text-sm rounded-xl transition-all duration-200 hover:-translate-y-0.5"
+              >
+                See How It Works
+              </a>
+            </motion.div>
+          </div>
 
-    {/* Right: Image */}
-    <motion.div
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6, delay: 0.4 }}
-      className="flex justify-center md:justify-end"
-    >
-      <Image
-        src="/sellwithus.jpg" // replace with your image path
-        alt="Vehicle Marketplace"
-        width={500}
-        height={400}
-        className="rounded-3xl shadow-2xl object-cover"
-      />
-    </motion.div>
-  </div>
-
-  
-</section>
-
-      
+          {/* Right: Image */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex justify-center md:justify-end"
+          >
+            <Image
+              src="/sellwithus.jpg"
+              alt="Vehicle Marketplace"
+              width={500}
+              height={400}
+              className="rounded-3xl shadow-2xl object-cover border-4 border-green-100"
+            />
+          </motion.div>
+        </div>
+      </section>
 
       {/* ── BENEFITS ── */}
       <section className="py-28 bg-white">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3 block">Why Choose Us</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3 block">Why Choose Us</span>
             <h2 className="text-4xl font-bold tracking-tight">Why Sellers Join Our Platform</h2>
           </div>
 
@@ -161,14 +157,14 @@ export default function SellWithUsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.12, duration: 0.5 }}
                 viewport={{ once: true }}
-                className="group relative p-8 rounded-2xl border border-slate-200 hover:border-slate-400 hover:shadow-xl transition-all duration-300"
+                className="group relative p-8 rounded-2xl border border-slate-200 hover:border-green-400 hover:shadow-xl transition-all duration-300"
               >
-                <div className="w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-slate-200 flex items-center justify-center mb-6 transition-colors duration-300 text-slate-700">
+                <div className="w-12 h-12 rounded-xl bg-red-50 group-hover:bg-red-100 flex items-center justify-center mb-6 transition-colors duration-300 text-red-600">
                   {item.icon}
                 </div>
                 <h3 className="text-lg font-bold mb-3">{item.title}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
-                <div className="absolute bottom-0 left-8 right-8 h-0.5 bg-slate-900 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full" />
+                <div className="absolute bottom-0 left-8 right-8 h-0.5 bg-blue-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full" />
               </motion.div>
             ))}
           </div>
@@ -187,7 +183,7 @@ export default function SellWithUsPage() {
         />
         <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 block">The Process</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-green-400 mb-3 block">The Process</span>
             <h2 className="text-4xl font-bold tracking-tight">How Selling Works</h2>
           </div>
 
@@ -201,9 +197,9 @@ export default function SellWithUsPage() {
                 viewport={{ once: true }}
                 className="group"
               >
-                <div className="bg-slate-900 border border-slate-800 group-hover:border-slate-600 rounded-2xl p-7 text-center transition-all duration-300 group-hover:shadow-xl">
-                  <div className="text-xs font-black text-slate-500 tracking-widest mb-4 uppercase">{step.step}</div>
-                  <div className="w-11 h-11 rounded-full bg-slate-800 group-hover:bg-slate-700 flex items-center justify-center mx-auto mb-5 text-slate-400 group-hover:text-white transition-colors duration-300">
+                <div className="bg-slate-900 border border-slate-800 group-hover:border-blue-500 rounded-2xl p-7 text-center transition-all duration-300 group-hover:shadow-xl">
+                  <div className="text-xs font-black text-red-400 tracking-widest mb-4 uppercase">{step.step}</div>
+                  <div className="w-11 h-11 rounded-full bg-slate-800 group-hover:bg-green-700 flex items-center justify-center mx-auto mb-5 text-slate-400 group-hover:text-white transition-colors duration-300">
                     {step.icon}
                   </div>
                   <h3 className="font-bold text-white mb-2">{step.title}</h3>
@@ -219,7 +215,7 @@ export default function SellWithUsPage() {
       <section className="py-28 bg-white">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3 block">FAQ</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-red-600 mb-3 block">FAQ</span>
             <h2 className="text-4xl font-bold tracking-tight">Seller Questions</h2>
           </div>
 
@@ -232,7 +228,7 @@ export default function SellWithUsPage() {
                 transition={{ delay: i * 0.08 }}
                 viewport={{ once: true }}
                 className={`border rounded-xl overflow-hidden transition-colors duration-200 ${
-                  open === i ? "border-slate-900 shadow-md" : "border-slate-200"
+                  open === i ? "border-green-500 shadow-md" : "border-slate-200"
                 }`}
               >
                 <button
@@ -241,8 +237,8 @@ export default function SellWithUsPage() {
                 >
                   <span className="font-semibold text-sm">{faq.q}</span>
                   <ChevronDown
-                    className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-300 ${
-                      open === i ? "rotate-180 text-slate-900" : ""
+                    className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${
+                      open === i ? "rotate-180 text-green-600" : "text-blue-400"
                     }`}
                   />
                 </button>
@@ -252,7 +248,7 @@ export default function SellWithUsPage() {
                   transition={{ duration: 0.25 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pb-6 text-sm text-slate-500 leading-relaxed border-t border-slate-100 pt-4">
+                  <div className="px-6 pb-6 text-sm text-slate-500 leading-relaxed border-t border-green-100 pt-4">
                     {faq.a}
                   </div>
                 </motion.div>
@@ -271,14 +267,14 @@ export default function SellWithUsPage() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-700 bg-slate-800 text-slate-300 text-xs font-semibold tracking-widest uppercase mb-8">
-              <Star className="w-3 h-3" />
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500 bg-blue-900/30 text-blue-300 text-xs font-semibold tracking-widest uppercase mb-8">
+              <Star className="w-3 h-3 fill-blue-400 text-blue-400" />
               Early Access
             </span>
 
             <h2 className="text-5xl font-bold tracking-tight mb-6 leading-tight">
               Become an<br />
-              <span className="text-slate-300">Early Seller</span>
+              <span className="text-green-400">Early Seller</span>
             </h2>
 
             <p className="text-slate-400 mb-10 leading-relaxed">
@@ -288,7 +284,7 @@ export default function SellWithUsPage() {
 
             <a
               href="/Signup"
-              className="inline-flex items-center gap-2 px-10 py-4 bg-white hover:bg-slate-100 text-slate-900 font-black text-sm rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 px-10 py-4 bg-green-600 hover:bg-green-700 text-white font-black text-sm rounded-xl shadow-lg transition-all duration-200 hover:-translate-y-0.5"
             >
               Start Selling
               <ArrowRight className="w-4 h-4" />
