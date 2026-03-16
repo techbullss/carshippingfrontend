@@ -40,14 +40,6 @@ interface Review {
   comment: string;
   itemName: string;
   createdAt: string;
-  replies?: ReviewReply[];
-}
-
-interface ReviewReply {
-  id: number;
-  adminName: string;
-  reply: string;
-  createdAt: string;
 }
 
 interface DashboardStats {
@@ -73,15 +65,28 @@ export default function AuxiliaryShippingPage() {
   });
   const [error, setError] = useState<string | null>(null);
   
+  // Pagination states for reviews
+  const [displayCount, setDisplayCount] = useState(4);
+  const [loadingMore, setLoadingMore] = useState(false);
+  
   // Modal states
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  
-  // Review reply states
-  const [replyingToReview, setReplyingToReview] = useState<number | null>(null);
-  const [replyText, setReplyText] = useState("");
-  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+
+  // Calculate displayed reviews
+  const displayedReviews = reviews.slice(0, displayCount);
+  const hasMore = displayedReviews.length < reviews.length;
+
+  // Load more function
+  const loadMoreReviews = async () => {
+    setLoadingMore(true);
+    // Simulate loading delay
+    setTimeout(() => {
+      setDisplayCount(prev => Math.min(prev + 4, reviews.length));
+      setLoadingMore(false);
+    }, 500);
+  };
 
   // Calculate progress based on status
   const calculateProgress = (status: string): number => {
@@ -123,14 +128,14 @@ export default function AuxiliaryShippingPage() {
   };
 
   // Get status icon
-const getStatusIcon = (status: string, size: number = 16) => {
-  switch (status.toLowerCase()) {
-    case "delivered": return <CheckCircle size={size} />;
-    case "in_transit": return <Truck size={size} />;
-    case "sourcing": return <ShoppingBag size={size} />;
-    default: return <Clock size={size} />;
-  }
-};
+  const getStatusIcon = (status: string, size: number = 16) => {
+    switch (status.toLowerCase()) {
+      case "delivered": return <CheckCircle size={size} />;
+      case "in_transit": return <Truck size={size} />;
+      case "sourcing": return <ShoppingBag size={size} />;
+      default: return <Clock size={size} />;
+    }
+  };
 
   // Fetch dashboard stats
   const fetchStats = async () => {
@@ -199,7 +204,7 @@ const getStatusIcon = (status: string, size: number = 16) => {
   const fetchReviews = async () => {
     try {
       setLoading(prev => ({ ...prev, reviews: true }));
-      const response = await fetch(`${API_BASE_URL}/reviews/public?page=0&size=6`, {
+      const response = await fetch(`${API_BASE_URL}/reviews/public?page=0&size=10`, {
         method: 'GET',
         credentials: 'include',
         headers: { 'Accept': 'application/json' }
@@ -207,59 +212,12 @@ const getStatusIcon = (status: string, size: number = 16) => {
       if (!response.ok) throw new Error('Failed to fetch reviews');
       const data = await response.json();
       setReviews(data.content);
+      setDisplayCount(4); // Reset to show 4 initially
     } catch (err) {
       console.error('Error fetching reviews:', err);
       setError('Failed to load reviews');
     } finally {
       setLoading(prev => ({ ...prev, reviews: false }));
-    }
-  };
-
-  // Submit reply to review
-  const submitReply = async (reviewId: number) => {
-    if (!replyText.trim()) return;
-    
-    try {
-      setIsSubmittingReply(true);
-      const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/reply`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ reply: replyText })
-      });
-      
-      if (!response.ok) throw new Error('Failed to submit reply');
-      
-      // Update local state
-      setReviews(prevReviews =>
-        prevReviews.map(review =>
-          review.id === reviewId
-            ? {
-                ...review,
-                replies: [
-                  ...(review.replies || []),
-                  {
-                    id: Date.now(),
-                    adminName: "Admin",
-                    reply: replyText,
-                    createdAt: new Date().toISOString()
-                  }
-                ]
-              }
-            : review
-        )
-      );
-      
-      setReplyText("");
-      setReplyingToReview(null);
-    } catch (err) {
-      console.error('Error submitting reply:', err);
-      alert('Failed to submit reply. Please try again.');
-    } finally {
-      setIsSubmittingReply(false);
     }
   };
 
@@ -285,20 +243,11 @@ const getStatusIcon = (status: string, size: number = 16) => {
     
     return () => clearTimeout(timer);
   }, [searchQuery]);
-const handleTabChange = (tab: string) => {
+
+  const handleTabChange = (tab: string) => {
     setActiveTab(tab);
   };
 
-  // Handle search with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery !== '') {
-        fetchProducts();
-      }
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
   // Open product modal
   const openProductModal = (product: Product) => {
     setSelectedProduct(product);
@@ -309,77 +258,75 @@ const handleTabChange = (tab: string) => {
   return (
     <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen">
       {/* Hero Section */}
-     <section className="bg-white text-gray-900 py-24 relative overflow-hidden">
-  <div className="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
+      <section className="bg-white text-gray-900 py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
 
-    {/* Left Content */}
-    <motion.div
-      initial={{ opacity: 0, x: -40 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-        Global Shipping & Sourcing
-        <span className="block text-red-600 mt-2">Seamless & Reliable</span>
-      </h1>
+          {/* Left Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
+              Global Shipping & Sourcing
+              <span className="block text-red-600 mt-2">Seamless & Reliable</span>
+            </h1>
 
-      <p className="text-lg text-gray-600 leading-relaxed mb-8 max-w-xl">
-        We connect Europe to East Africa through reliable sourcing and
-        professional shipping solutions. From request to delivery,
-        everything is handled with precision and transparency.
-      </p>
+            <p className="text-lg text-gray-600 leading-relaxed mb-8 max-w-xl">
+              We connect Europe to East Africa through reliable sourcing and
+              professional shipping solutions. From request to delivery,
+              everything is handled with precision and transparency.
+            </p>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        <motion.a
-          href="/dashboard/RequestItemPage"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 bg-red-600 text-white text-sm uppercase tracking-wider rounded-lg shadow-lg hover:bg-red-700 transition"
-        >
-          Request Item
-        </motion.a>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <motion.a
+                href="/dashboard/RequestItemPage"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3 bg-red-600 text-white text-sm uppercase tracking-wider rounded-lg shadow-lg hover:bg-red-700 transition"
+              >
+                Request Item
+              </motion.a>
 
-        <motion.a
-          href="#products"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-8 py-3 border border-blue-500 text-blue-500 text-sm uppercase tracking-wider rounded-lg hover:bg-blue-50 transition"
-        >
-          Track Shipment
-        </motion.a>
-      </div>
-    </motion.div>
+              <motion.a
+                href="#products"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-3 border border-blue-500 text-blue-500 text-sm uppercase tracking-wider rounded-lg hover:bg-blue-50 transition"
+              >
+                Track Shipment
+              </motion.a>
+            </div>
+          </motion.div>
 
-    {/* Right Stats Card */}
-    <motion.div
-  initial={{ opacity: 0, x: 40 }}
-  animate={{ opacity: 1, x: 0 }}
-  transition={{ duration: 0.6, delay: 0.2 }}
-  className=" overflow-hidden"
-  style={{
-    width: '100%',
-    height: '400px', // Adjust height as needed
-  }}
->
-  <img 
-    src="/shipping.png" 
-    alt="Descriptive alt text"
-    className="w-full h-full object-cover"
-  />
-</motion.div>
+          {/* Right Image */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="overflow-hidden rounded-xl shadow-xl"
+            style={{
+              width: '100%',
+              height: '400px',
+            }}
+          >
+            <img 
+              src="/shipping.png" 
+              alt="Shipping container ship at port"
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
 
-  </div>
-</section>
-
-    
+        </div>
+      </section>
 
       {/* Enhanced Testimonials & Ratings */}
       <section id="reviews" className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full mb-4">
+            <div className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full mb-4">
               <Star className="fill-yellow-400 text-yellow-400" size={16} />
-              <span className="font-semibold">{stats?.averageRating.toFixed(1)} Average Rating</span>
+              <span className="font-semibold">{stats?.averageRating?.toFixed(1) || "0.0"} Average Rating</span>
             </div>
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Trusted by Thousands
@@ -391,7 +338,7 @@ const handleTabChange = (tab: string) => {
           
           {loading.reviews ? (
             <div className="grid md:grid-cols-2 gap-8">
-              {[1, 2].map((i) => (
+              {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 animate-pulse">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
@@ -406,75 +353,89 @@ const handleTabChange = (tab: string) => {
               ))}
             </div>
           ) : reviews.length > 0 ? (
-            <div className="grid md:grid-cols-2 gap-8">
-              {reviews.map((review) => (
-                <motion.div
-                  key={review.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:border-green-300 hover:shadow-xl transition-all"
-                >
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center">
-                        <User className="w-6 h-6 text-green-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-gray-900 text-lg">{review.clientName}</h4>
-                        <p className="text-gray-600 text-sm">{review.itemName}</p>
-                      </div>
-                    </div>
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          size={18} 
-                          className={`ml-1 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-700 mb-6 leading-relaxed text-lg italic">"{review.comment}"</p>
-                  
-                  <div className="flex justify-between items-center mb-6">
-                    <span className="text-gray-500 text-sm">{formatDate(review.createdAt)}</span>
-                    <div className="flex gap-2">
-                      <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <ThumbsUp size={16} className="text-gray-500" />
-                      </button>
-                      <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <Share2 size={16} className="text-gray-500" />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Replies Section */}
-                  <div className="space-y-4">
-                    {review.replies?.map((reply) => (
-                      <div key={reply.id} className="bg-gray-50 rounded-xl p-4 border-l-4 border-green-500">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <User className="w-4 h-4 text-green-600" />
-                          </div>
-                          <span className="font-semibold text-green-700">{reply.adminName}</span>
-                          <span className="text-gray-500 text-sm">• {formatDate(reply.createdAt)}</span>
+            <>
+              <div className="grid md:grid-cols-2 gap-8">
+                {displayedReviews.map((review) => (
+                  <motion.div
+                    key={review.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-gradient-to-br from-red-100 to-blue-100 rounded-full flex items-center justify-center">
+                          <User className="w-6 h-6 text-red-600" />
                         </div>
-                        <p className="text-gray-700 ml-10">{reply.reply}</p>
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-lg">{review.clientName}</h4>
+                          <p className="text-gray-600 text-sm">{review.itemName}</p>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                  
-                  {/* Reply Form */}
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            size={18} 
+                            className={`ml-1 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <p className="text-gray-700 mb-6 leading-relaxed text-lg italic">"{review.comment}"</p>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500 text-sm">{formatDate(review.createdAt)}</span>
+                      <div className="flex gap-2">
+                        <button className="p-2 hover:bg-red-50 rounded-lg transition-colors">
+                          <ThumbsUp size={16} className="text-red-500" />
+                        </button>
+                        <button className="p-2 hover:bg-blue-50 rounded-lg transition-colors">
+                          <Share2 size={16} className="text-blue-500" />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
               
-                </motion.div>
-              ))}
-            </div>
+              {/* Pagination / Load More */}
+              {hasMore && (
+                <div className="text-center mt-12">
+                  <motion.button
+                    onClick={loadMoreReviews}
+                    className="group inline-flex items-center gap-3 bg-gradient-to-r from-red-600 to-blue-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        <MessageSquare size={22} />
+                        Load More Reviews
+                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+              )}
+              
+              {/* Pagination Info */}
+              <div className="text-center mt-6 text-gray-500 text-sm">
+                Showing {displayedReviews.length} of {reviews.length} reviews
+              </div>
+            </>
           ) : (
             <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageSquare className="w-12 h-12 text-gray-400" />
+              <div className="w-24 h-24 bg-gradient-to-br from-red-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MessageSquare className="w-12 h-12 text-green-600" />
               </div>
               <h3 className="text-2xl font-medium text-gray-700 mb-3">No reviews yet</h3>
               <p className="text-gray-500 mb-8">Be the first to share your experience!</p>
@@ -490,7 +451,7 @@ const handleTabChange = (tab: string) => {
               whileTap={{ scale: 0.95 }}
             >
               <MessageSquare size={22} />
-              more reviews
+              More Reviews
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </motion.a>
           </div>
@@ -656,9 +617,9 @@ const handleTabChange = (tab: string) => {
                           <div className="bg-gray-50 rounded-xl p-4">
                             <div className="text-sm text-gray-500 mb-1">Status</div>
                             <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedProduct.status)} text-white`}>
-                                {getStatusIcon(selectedProduct.status, 12)}
-                                {formatStatus(selectedProduct.status)}
-                              </div>
+                              {getStatusIcon(selectedProduct.status, 12)}
+                              {formatStatus(selectedProduct.status)}
+                            </div>
                           </div>
                         </div>
                         
