@@ -304,7 +304,7 @@ export default function AuxiliaryShippingPage() {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="overflow-hidden rounded-xl shadow-xl"
+            className="overflow-hidden "
             style={{
               width: '100%',
               height: '400px',
@@ -443,18 +443,7 @@ export default function AuxiliaryShippingPage() {
           )}
           
           {/* Enhanced Add Review CTA */}
-          <div className="text-center mt-16">
-            <motion.a
-              href="/Reviews"
-              className="group inline-flex items-center gap-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <MessageSquare size={22} />
-              More Reviews
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </motion.a>
-          </div>
+         
         </div>
       </section>
 
