@@ -172,44 +172,91 @@ export default function SellWithUsPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="how-it-works" className="py-28 bg-slate-950 text-white relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="relative max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-xs font-bold uppercase tracking-widest text-green-400 mb-3 block">The Process</span>
-            <h2 className="text-4xl font-bold tracking-tight">How Selling Works</h2>
-          </div>
+     <section id="how-it-works" className="py-28 relative overflow-hidden bg-white">
+  {/* Subtle ambient gradient */}
+  <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50" />
+  
+  {/* Refined decorative elements */}
+  <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+  <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+  
+  <div className="relative max-w-7xl mx-auto px-6">
+    {/* Section Header - Minimal and elegant */}
+    <div className="text-center mb-20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="space-y-4"
+      >
+        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-400">
+          The Process
+        </span>
+        <h2 className="text-4xl md:text-5xl font-light tracking-tight text-gray-900">
+          How Selling Works
+        </h2>
+        <div className="w-16 h-0.5 bg-gradient-to-r from-red-400 via-blue-400 to-green-400 mx-auto mt-6" />
+      </motion.div>
+    </div>
 
-          <div className="grid md:grid-cols-4 gap-6">
-            {steps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.12, duration: 0.5 }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="bg-slate-900 border border-slate-800 group-hover:border-blue-500 rounded-2xl p-7 text-center transition-all duration-300 group-hover:shadow-xl">
-                  <div className="text-xs font-black text-red-400 tracking-widest mb-4 uppercase">{step.step}</div>
-                  <div className="w-11 h-11 rounded-full bg-slate-800 group-hover:bg-green-700 flex items-center justify-center mx-auto mb-5 text-slate-400 group-hover:text-white transition-colors duration-300">
+    {/* Process Steps - Clean, minimal, premium */}
+    <div className="grid md:grid-cols-4 gap-8 lg:gap-12">
+      {steps.map((step, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.1, duration: 0.6 }}
+          viewport={{ once: true }}
+          className="relative"
+        >
+          {/* Connector line (except last) */}
+          {i < steps.length - 1 && (
+            <div className="hidden md:block absolute top-12 left-[60%] w-full h-px bg-gradient-to-r from-gray-300 to-transparent" />
+          )}
+          
+          {/* Content - No card, just elegant typography and subtle accents */}
+          <div className="text-center space-y-5">
+            {/* Step number - Minimal typography */}
+            <div className="relative">
+              <span className="text-7xl font-light text-gray-200 select-none">
+                {step.step}
+              </span>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-50 to-blue-50 flex items-center justify-center">
+                  <div className="text-gray-700">
                     {step.icon}
                   </div>
-                  <h3 className="font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">{step.desc}</p>
                 </div>
-              </motion.div>
-            ))}
+              </div>
+            </div>
+
+            {/* Title - Clean and refined */}
+            <h3 className="text-lg font-medium text-gray-900 tracking-tight">
+              {step.title}
+            </h3>
+
+            {/* Description - Subtle and elegant */}
+            <p className="text-sm text-gray-500 leading-relaxed max-w-[220px] mx-auto">
+              {step.desc}
+            </p>
+
+            {/* Subtle bottom accent on hover */}
+            <div className="w-8 h-px bg-gradient-to-r from-transparent via-gray-400 to-transparent mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </div>
-        </div>
-      </section>
+        </motion.div>
+      ))}
+    </div>
+
+    {/* Optional: Subtle decorative element */}
+    <div className="flex justify-center gap-2 mt-16">
+      <div className="w-1 h-1 rounded-full bg-red-300" />
+      <div className="w-1 h-1 rounded-full bg-blue-300" />
+      <div className="w-1 h-1 rounded-full bg-green-300" />
+    </div>
+  </div>
+</section>
 
       {/* ── FAQ ── */}
       <section className="py-28 bg-white">
