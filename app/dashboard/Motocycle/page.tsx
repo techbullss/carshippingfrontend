@@ -9,10 +9,11 @@ import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
 import { useRouter } from "next/navigation";
 
 export default function MotorcyclePage() {
-  const { user: currentUser } = useCurrentUser();
-  const email = currentUser?.email || '';
-  const role = currentUser?.roles?.[0] || '';
   const router = useRouter();
+  const { user, loading: userLoading, error: userError } = useCurrentUser();
+  
+  const email = user?.email || '';
+  const role = user?.roles?.[0] || '';
   
   const [motorcycles, setMotorcycles] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,7 @@ export default function MotorcyclePage() {
   const [editing, setEditing] = useState<any | null>(null);
   const [selected, setSelected] = useState<any | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   
   // Pagination state
   const [page, setPage] = useState(0);
@@ -42,8 +44,39 @@ export default function MotorcyclePage() {
   const isAuthenticated = !!email;
   const isAdmin = role === "ADMIN";
   const isSeller = role === "SELLER";
-const { user } = useCurrentUser();
-    
+
+  // Handle authentication and authorization
+  useEffect(() => {
+    // Wait for user loading to complete
+    if (userLoading) {
+      console.log('Still loading user...');
+      return;
+    }
+
+    // No user found - redirect to login
+    if (!user) {
+      console.log('No user found, redirecting to login');
+      router.push('/Login');
+      return;
+    }
+
+    // Guest user - redirect to request items page
+    if (role === "GUEST") {
+      console.log('Guest user detected, redirecting to request items page');
+      router.push('/dashboard/requestItemPage');
+      return;
+    }
+
+    // Check if user has valid role for dashboard view
+    if (role === "ADMIN" || role === "SELLER") {
+      console.log('User authorized with role:', role);
+      setIsAuthorized(true);
+    } else {
+      console.log('Invalid role detected:', role);
+      router.push('/');
+    }
+  }, [user, userLoading, role, router]);
+
   // Determine endpoint based on authentication and view mode
   const getEndpoint = () => {
     if (isAuthenticated && isDashboardView) {
@@ -96,7 +129,6 @@ const { user } = useCurrentUser();
         method: 'GET',
         headers: { 
           'Content-Type': 'application/json',
-          
         } 
       });
       
@@ -142,8 +174,13 @@ const { user } = useCurrentUser();
 
   // Fetch data when filters or authentication changes
   useEffect(() => {
-    fetchList(0);
-  }, [search, filterType, filterStatus, selectedBrand, priceRange, year, isDashboardView, isAuthenticated]);
+    if (isAuthenticated && !userLoading && user) {
+      fetchList(0);
+    } else if (!isAuthenticated && !userLoading) {
+      // For public view, fetch even without authentication
+      fetchList(0);
+    }
+  }, [search, filterType, filterStatus, selectedBrand, priceRange, year, isDashboardView, isAuthenticated, userLoading, user]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 0 && newPage < totalPages) {
@@ -157,7 +194,6 @@ const { user } = useCurrentUser();
       await fetch(`https://api.f-carshipping.com/api/motorcycles/${m.id}`, { 
         method: "DELETE", 
         credentials: 'include',
-      
       });
       fetchList(page);
     } catch (error) {
@@ -172,7 +208,6 @@ const { user } = useCurrentUser();
       await fetch(`https://api.f-carshipping.com/api/motorcycles/${m.id}/approve`, { 
         method: "PUT", 
         credentials: 'include',
-      
       });
       fetchList(page);
     } catch (error) {
@@ -187,7 +222,6 @@ const { user } = useCurrentUser();
       await fetch(`https://api.f-carshipping.com/api/motorcycles/${m.id}/reject`, { 
         method: "PUT", 
         credentials: 'include',
-        
       });
       fetchList(page);
     } catch (error) {
@@ -220,26 +254,43 @@ const { user } = useCurrentUser();
       setFilterStatus("");
     }
   };
-// Improved authentication check for dashboard access
-if (!user) {
-  // User is not logged in - redirect to login page
-  router.push('/Login?redirect=/dashboard');
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Redirecting to login...</p>
-      </div>
-    </div>
-  );
-}
 
-// Check if user has the correct role (ADMIN or SELLER)
-if (role !== "ADMIN" && role !== "SELLER") {
-  // User is logged in but doesn't have permission
-  if (role === "GUEST") {
-    // Redirect guests to request items page
-    router.push('/dashboard/requestItemPage');
+  // Show loading while user data is being fetched
+  if (userLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading user data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if user fetch failed
+  if (userError) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="bg-red-100 rounded-full p-3 mb-4">
+            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-red-600 mb-4">{userError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if user is authenticated but unauthorized
+  if (user && role === "GUEST") {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
@@ -248,8 +299,10 @@ if (role !== "ADMIN" && role !== "SELLER") {
         </div>
       </div>
     );
-  } else {
-    // Other unauthorized roles
+  }
+
+  // Check if user is authenticated but has invalid role
+  if (user && role !== "ADMIN" && role !== "SELLER" && role !== "GUEST") {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
@@ -260,7 +313,7 @@ if (role !== "ADMIN" && role !== "SELLER") {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
           <p className="text-gray-600 mb-6">
-            You don't have permission to access the dashboard. 
+            You don't have permission to access this page. 
             This area is only available for sellers and administrators.
           </p>
           <div className="space-y-3">
@@ -281,7 +334,257 @@ if (role !== "ADMIN" && role !== "SELLER") {
       </div>
     );
   }
-}
+
+  // For public/unauthenticated users, show the public view
+  if (!user) {
+    return (
+      <div className="p-6">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">Motorcycles</h1>
+            <div className="flex items-center gap-3 mt-1">
+              <span className="text-sm text-gray-500">
+                Public View • Showing Approved Only
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            {/* Search Input */}
+            <input
+              placeholder="Search brand or model..."
+              className="border p-2 rounded-md w-full md:w-64"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            
+            {/* Type Filter */}
+            <select className="border p-2 rounded-md" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+              <option value="">All types</option>
+              <option>Sport</option>
+              <option>Cruiser</option>
+              <option>Dirt</option>
+              <option>Touring</option>
+              <option>Standard</option>
+            </select>
+            
+            {/* Advanced Filters Toggle */}
+            <button
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className="flex items-center gap-2 px-3 py-2 border rounded-md hover:bg-gray-50"
+            >
+              <Filter className="w-4 h-4" />
+              Filters
+            </button>
+          </div>
+        </div>
+
+        {/* Advanced Filter Section */}
+        {showAdvancedFilters && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <h3 className="font-medium mb-3">Advanced Filters</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <input
+                placeholder="Brand"
+                className="border p-2 rounded-md"
+                value={selectedBrand}
+                onChange={(e) => setSelectedBrand(e.target.value)}
+              />
+              
+              <input
+                placeholder="Price Range (e.g., 100000-500000)"
+                className="border p-2 rounded-md"
+                value={priceRange}
+                onChange={(e) => setPriceRange(e.target.value)}
+              />
+              <input
+                placeholder="Year"
+                className="border p-2 rounded-md"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-between mt-3">
+              <div className="flex gap-3">
+                <button 
+                  onClick={handleResetFilters} 
+                  className="px-4 py-2 text-sm border rounded-md hover:bg-gray-100"
+                >
+                  Reset All Filters
+                </button>
+                <button 
+                  onClick={() => setShowAdvancedFilters(false)}
+                  className="px-4 py-2 text-sm border rounded-md hover:bg-gray-100"
+                >
+                  Hide Filters
+                </button>
+              </div>
+              <div className="text-sm text-gray-600">
+                Showing {motorcycles.length} of {totalElements} motorcycles (Public)
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Results Section */}
+        {loading ? (
+          <div className="text-center py-20">Loading motorcycles...</div>
+        ) : motorcycles.length === 0 ? (
+          <div className="text-center py-20 text-gray-500">
+            No motorcycles found. Try adjusting your search.
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {motorcycles.map((m) => (
+                <MotorcycleCard
+                  key={m.id}
+                  m={m}
+                  onDetails={(x) => { setSelected(x); setDrawerOpen(true); }}
+                />
+              ))}
+            </div>
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-8">
+                <button
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 0}
+                  className={`px-4 py-2 rounded-md ${page === 0 ? 'bg-gray-200 text-gray-500' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
+                >
+                  Previous
+                </button>
+                
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i;
+                    } else if (page < 3) {
+                      pageNum = i;
+                    } else if (page > totalPages - 4) {
+                      pageNum = totalPages - 5 + i;
+                    } else {
+                      pageNum = page - 2 + i;
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`w-10 h-10 rounded-md ${page === pageNum ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+                      >
+                        {pageNum + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                <button
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page >= totalPages - 1}
+                  className={`px-4 py-2 rounded-md ${page >= totalPages - 1 ? 'bg-gray-200 text-gray-500' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
+                >
+                  Next
+                </button>
+                
+                <div className="text-sm text-gray-600 ml-4">
+                  Page {page + 1} of {totalPages}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Drawer Details */}
+        {drawerOpen && selected && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="relative w-full sm:w-[420px] md:w-[520px] lg:w-[640px] bg-white shadow-2xl h-full overflow-y-auto"
+            >
+              <div className="sticky top-0 z-20 bg-white border-b p-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold">{selected.brand} {selected.model}</h2>
+                  <div className="text-sm text-gray-500">
+                    {selected.type} • {selected.engineCapacity} cc • {selected.year}
+                  </div>
+                </div>
+                <button className="p-2 rounded-full hover:bg-gray-100" onClick={() => setDrawerOpen(false)}>
+                  <X className="w-5 h-5 text-gray-600" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                {/* Price */}
+                <div className="text-2xl font-semibold text-blue-600">KES {selected.price?.toLocaleString()}</div>
+
+                {/* Details Grid */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-gray-500">Location</div>
+                    <div className="font-medium">{selected.location || "—"}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Engine Capacity</div>
+                    <div className="font-medium">{selected.engineCapacity} cc</div>
+                  </div>
+                </div>
+
+                {/* Features */}
+                {selected.features && selected.features.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-2">Features</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selected.features.map((feature: string, idx: number) => (
+                        <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Description */}
+                <div>
+                  <h3 className="font-semibold mb-2">Description</h3>
+                  <p className="text-sm text-gray-700">{selected.description || "No description provided."}</p>
+                </div>
+
+                {/* Images */}
+                <div>
+                  <h3 className="font-semibold mb-3">Images</h3>
+                  {selected.imageUrls?.length ? (
+                    <div className="grid grid-cols-2 gap-3">
+                      {selected.imageUrls.map((img: string, idx: number) => (
+                        <div key={idx} className="relative overflow-hidden rounded-lg border">
+                          <img 
+                            src={img} 
+                            alt={`${selected.brand}-${idx}`} 
+                            className="w-full h-40 object-cover transform hover:scale-105 transition duration-300" 
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-gray-500 italic">No images available.</div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Authorized user view (ADMIN or SELLER)
   return (
     <div className="p-6">
       {/* Header Section */}
@@ -293,14 +596,12 @@ if (role !== "ADMIN" && role !== "SELLER") {
               {isDashboardView ? "Dashboard View" : "Public View"} • 
               Showing {isDashboardView ? "All Statuses" : "Approved Only"}
             </span>
-            {isAuthenticated && (
-              <button
-                onClick={toggleViewMode}
-                className="text-sm px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200"
-              >
-                Switch to {isDashboardView ? "Public" : "Dashboard"} View
-              </button>
-            )}
+            <button
+              onClick={toggleViewMode}
+              className="text-sm px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200"
+            >
+              Switch to {isDashboardView ? "Public" : "Dashboard"} View
+            </button>
           </div>
         </div>
 
@@ -407,23 +708,21 @@ if (role !== "ADMIN" && role !== "SELLER") {
       )}
 
       {/* User Role Indicator */}
-      {isAuthenticated && (
-        <div className="mb-4 p-3 bg-blue-50 rounded-md">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="text-sm">
-                Logged in as: <span className="font-semibold">{email}</span>
-                <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                  {role}
-                </span>
-              </div>
-            </div>
-            <div className="text-sm text-gray-600">
-              Viewing: <span className="font-medium">{isDashboardView ? "All Listings" : "Approved Listings Only"}</span>
+      <div className="mb-4 p-3 bg-blue-50 rounded-md">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="text-sm">
+              Logged in as: <span className="font-semibold">{email}</span>
+              <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                {role}
+              </span>
             </div>
           </div>
+          <div className="text-sm text-gray-600">
+            Viewing: <span className="font-medium">{isDashboardView ? "All Listings" : "Approved Listings Only"}</span>
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Results Section */}
       {loading ? (
@@ -528,15 +827,13 @@ if (role !== "ADMIN" && role !== "SELLER") {
               {/* Price and Status */}
               <div className="flex justify-between items-center">
                 <div className="text-2xl font-semibold text-blue-600">KES {selected.price?.toLocaleString()}</div>
-                {isAuthenticated && (
-                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    selected.status === "APPROVED" ? "bg-green-100 text-green-800" : 
-                    selected.status === "PENDING" ? "bg-yellow-100 text-yellow-800" : 
-                    "bg-red-100 text-red-800"
-                  }`}>
-                    {selected.status}
-                  </div>
-                )}
+                <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  selected.status === "APPROVED" ? "bg-green-100 text-green-800" : 
+                  selected.status === "PENDING" ? "bg-yellow-100 text-yellow-800" : 
+                  "bg-red-100 text-red-800"
+                }`}>
+                  {selected.status}
+                </div>
               </div>
 
               {/* Details Grid */}
@@ -549,18 +846,16 @@ if (role !== "ADMIN" && role !== "SELLER") {
                   <div className="text-gray-500">Engine Capacity</div>
                   <div className="font-medium">{selected.engineCapacity} cc</div>
                 </div>
-                {isAuthenticated && (
-                  <>
-                    <div>
-                      <div className="text-gray-500">Owner</div>
-                      <div className="font-medium">{selected.owner || "—"}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-500">Created</div>
-                      <div className="font-medium">{selected.createdAt ? new Date(selected.createdAt).toLocaleString() : "—"}</div>
-                    </div>
-                  </>
-                )}
+                <>
+                  <div>
+                    <div className="text-gray-500">Owner</div>
+                    <div className="font-medium">{selected.owner || "—"}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Created</div>
+                    <div className="font-medium">{selected.createdAt ? new Date(selected.createdAt).toLocaleString() : "—"}</div>
+                  </div>
+                </>
               </div>
 
               {/* Features */}

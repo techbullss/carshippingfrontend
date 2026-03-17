@@ -8,6 +8,9 @@ import Reject_Modal from "@/app/components/Reject_Modal";
 import { useRouter } from "next/navigation";
 
 export default function CommercialVehicleList() {
+  const router = useRouter();
+  const { user, loading: userLoading, error: userError } = useCurrentUser();
+  
   const [vehicles, setVehicles] = useState<CommercialVehicle[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -29,11 +32,50 @@ export default function CommercialVehicleList() {
   
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
-  const { user } = useCurrentUser();
   const email = user?.email || '';
   const role = user?.roles?.[0] || '';
-const router = useRouter();
+
+  // Handle authentication and authorization in a single useEffect
+  useEffect(() => {
+    // Wait for user loading to complete
+    if (userLoading) {
+      console.log('Still loading user...');
+      return;
+    }
+
+    // No user found - redirect to login
+    if (!user) {
+      console.log('No user found, redirecting to login');
+      router.push('/Login');
+      return;
+    }
+
+    // Guest user - redirect to request items page
+    if (role === "GUEST") {
+      console.log('Guest user detected, redirecting to request items page');
+      router.push('/dashboard/requestItemPage');
+      return;
+    }
+
+    // Check if user has valid role (ADMIN or SELLER)
+    if (role === "ADMIN" || role === "SELLER") {
+      console.log('User authorized with role:', role);
+      setIsAuthorized(true);
+    } else {
+      console.log('Invalid role detected:', role);
+      router.push('/');
+    }
+  }, [user, userLoading, role, router]);
+
+  // Fetch vehicles when authorized and dependencies change
+  useEffect(() => {
+    if (isAuthorized && email && role) {
+      fetchVehicles();
+    }
+  }, [isAuthorized, email, role, page, size, search, brand, seller, filterType]);
+
   const openRejectModal = (vehicleId: number) => {
     setSelectedVehicleId(vehicleId);
     setShowRejectModal(true);
@@ -143,12 +185,6 @@ const router = useRouter();
     }
   };
 
-  useEffect(() => {
-    if (email && role) {
-      fetchVehicles();
-    }
-  }, [email, role, page, size, search, brand, seller, filterType]);
-
   const deleteVehicle = async (id: number) => {
     if (!confirm("Delete this vehicle?")) return;
     try {
@@ -174,26 +210,55 @@ const router = useRouter();
   };
 
   const vehicleTypes = ["Truck", "Bus", "Van", "Trailer", "Camper Van", "Other"];
-// Improved authentication check for dashboard access
-if (!user) {
-  // User is not logged in - redirect to login page
-  router.push('/Login?redirect=/dashboard');
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">Redirecting to login...</p>
-      </div>
-    </div>
-  );
-}
 
-// Check if user has the correct role (ADMIN or SELLER)
-if (role !== "ADMIN" && role !== "SELLER") {
-  // User is logged in but doesn't have permission
+  // Show loading while user data is being fetched
+  if (userLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading user data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if user fetch failed
+  if (userError) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="bg-red-100 rounded-full p-3 mb-4">
+            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-red-600 mb-4">{userError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // If no user (should be handled by redirect, but just in case)
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Guest user - show redirect message
   if (role === "GUEST") {
-    // Redirect guests to request items page
-    router.push('/dashboard/requestItemPage');
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
@@ -202,8 +267,10 @@ if (role !== "ADMIN" && role !== "SELLER") {
         </div>
       </div>
     );
-  } else {
-    // Other unauthorized roles
+  }
+
+  // Check if user has the correct role (ADMIN or SELLER)
+  if (role !== "ADMIN" && role !== "SELLER") {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
@@ -214,7 +281,7 @@ if (role !== "ADMIN" && role !== "SELLER") {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
           <p className="text-gray-600 mb-6">
-            You don't have permission to access the dashboard. 
+            You don't have permission to access this page. 
             This area is only available for sellers and administrators.
           </p>
           <div className="space-y-3">
@@ -235,7 +302,19 @@ if (role !== "ADMIN" && role !== "SELLER") {
       </div>
     );
   }
-}
+
+  // If not authorized yet (still checking)
+  if (!isAuthorized) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking authorization...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
