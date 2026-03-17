@@ -45,7 +45,7 @@ export default function DashboardHome() {
   // Redirect GUEST users to request items page
   useEffect(() => {
     if (user && role === 'GUEST') {
-      router.push('/dashboard/requestItemPage');
+      router.push('/dashboard/RequestItemPage');
     }
   }, [user, role, router]);
 
