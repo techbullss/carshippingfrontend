@@ -5,7 +5,7 @@ import { CommercialVehicle } from "@/app/CommercialVehicle";
 import AddCommercialVehicleForm from "@/app/components/AddCommercialVehicleForm";
 import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
 import Reject_Modal from "@/app/components/Reject_Modal";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function CommercialVehicleList() {
   const [vehicles, setVehicles] = useState<CommercialVehicle[]>([]);
@@ -33,7 +33,7 @@ export default function CommercialVehicleList() {
   const { user } = useCurrentUser();
   const email = user?.email || '';
   const role = user?.roles?.[0] || '';
-
+const router = useRouter();
   const openRejectModal = (vehicleId: number) => {
     setSelectedVehicleId(vehicleId);
     setShowRejectModal(true);

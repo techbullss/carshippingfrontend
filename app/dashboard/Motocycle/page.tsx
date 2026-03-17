@@ -6,12 +6,13 @@ import { X } from "lucide-react";
 import MotorcycleCard from "@/app/components/MotorcycleCard";
 import AddMotorcycleForm from "@/app/components/AddMotorcycleForm";
 import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function MotorcyclePage() {
   const { user: currentUser } = useCurrentUser();
   const email = currentUser?.email || '';
   const role = currentUser?.roles?.[0] || '';
+  const router = useRouter();
   
   const [motorcycles, setMotorcycles] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);

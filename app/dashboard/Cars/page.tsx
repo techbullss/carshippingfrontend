@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Car } from "@/app/car";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import AddCarForm from "@/app/components/AddCarForm";
 import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
 import RejectModal from "@/app/components/RejectModal";
@@ -36,7 +36,7 @@ const [rejecting, setRejecting] = useState<number | null>(null);
     setSelectedCarId(carId);
     setShowRejectModal(true);
   };
-
+ const router = useRouter();
   const closeRejectModal = () => {
     setSelectedCarId(null);
     setShowRejectModal(false);
