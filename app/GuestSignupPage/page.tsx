@@ -17,52 +17,59 @@ export default function GuestSignupPage() {
     return strongPasswordRegex.test(password);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setIsLoading(true);
 
-    try {
-      if (!email || !password || !confirmPassword) {
-        throw new Error("Please fill in all fields");
-      }
-
-      if (!validatePassword(password)) {
-        throw new Error(
-          "Password must be at least 8 characters long, include 1 uppercase letter, 1 number, and 1 special character."
-        );
-      }
-
-      if (password !== confirmPassword) {
-        throw new Error("Passwords do not match");
-      }
-
-      const response = await fetch(
-        "https://api.f-carshipping.com/api/auth/signup-guest",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
-      }
-
-      alert("Registration successful! Please verify your email.");
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong"
-      );
-    } finally {
-      setIsLoading(false);
+  try {
+    if (!email || !password || !confirmPassword) {
+      throw new Error("Please fill in all fields");
     }
-  };
+
+    if (!validatePassword(password)) {
+      throw new Error(
+        "Password must be at least 8 characters long, include 1 uppercase letter, 1 number, and 1 special character."
+      );
+    }
+
+    if (password !== confirmPassword) {
+      throw new Error("Passwords do not match");
+    }
+
+    const response = await fetch(
+      "https://api.f-carshipping.com/api/auth/signup-guest",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ 
+          email, 
+          password,
+          firstName: "Guest",           // Add default value
+          lastName: "User",              // Add default value
+          phone: "0000000000",           // Add default value
+          sellerType: "individual"       // Add default value
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Registration failed");
+    }
+
+    alert("Registration successful! Please verify your email.");
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Something went wrong"
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
