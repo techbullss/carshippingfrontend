@@ -12,8 +12,6 @@ interface FormData {
   lastName: string;
   email: string;
   phone: string;
-  dateOfBirth: string;
-  gender: string;
   
   // Address Information
   streetAddress: string;
@@ -66,8 +64,6 @@ interface SignupRequest {
   lastName: string;
   email: string;
   phone: string;
-  dateOfBirth: string;
-  gender: string;
   streetAddress: string;
   city: string;
   state: string;
@@ -107,8 +103,6 @@ const RegisterPage = () => {
     lastName: '',
     email: '',
     phone: '',
-    dateOfBirth: '',
-    gender: '',
     streetAddress: '',
     city: '',
     state: '',
@@ -219,28 +213,39 @@ const RegisterPage = () => {
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        return !!(formData.firstName && formData.lastName && formData.email && formData.phone);
+        return !!(formData.firstName && formData.lastName && formData.email && formData.phone && formData.sellerType);
       case 2:
         if (formData.sellerType === 'individual') {
-          return !!(formData.streetAddress && formData.city && formData.state && formData.postalCode && formData.country && formData.idNumber);
+          // For individual, only validate basic info in step 2 (no idNumber here)
+          return true; // Step 2 for individual just shows a message, no required fields
         } else {
-          // Company validation
+          // Company validation for step 2
           return !!(
             formData.companyName &&
             formData.companyRegistrationNumber &&
             formData.kraPin &&
             formData.businessPermitNumber &&
-            formData.companyAddress &&
-            formData.streetAddress &&
-            formData.city &&
-            formData.state &&
-            formData.postalCode &&
-            formData.country
+            formData.companyAddress
           );
         }
       case 3:
-        return !!(formData.password && formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length >= 8);
+        // Address and Documents validation
+        const addressValid = !!(formData.streetAddress && formData.city && formData.state && formData.postalCode && formData.country);
+        
+        if (formData.sellerType === 'individual') {
+          // Individual requires idNumber and files
+          return !!(addressValid && formData.idNumber && formData.govtId && formData.passportPhoto);
+        } else {
+          // Company requires all documents
+          return !!(addressValid && 
+            formData.certificateOfIncorporation && 
+            formData.kraPinCertificate && 
+            formData.businessPermit && 
+            formData.trademarkImage);
+        }
       case 4:
+        return !!(formData.password && formData.confirmPassword && formData.password === formData.confirmPassword && formData.password.length >= 8);
+      case 5:
         return !!(formData.termsAccepted);
       default:
         return true;
@@ -313,7 +318,7 @@ const RegisterPage = () => {
     setIsLoading(true);
     setError('');
 
-    if (!validateStep(4)) {
+    if (!validateStep(5)) {
       setError('Please accept the terms and conditions.');
       setIsLoading(false);
       return;
@@ -337,7 +342,7 @@ const RegisterPage = () => {
 
   const steps = [
     { number: 1, title: 'Account Type' },
-    { number: 2, title: 'Personal/Company Info' },
+    { number: 2, title: formData.sellerType === 'individual' ? 'Personal Info' : 'Company Info' },
     { number: 3, title: 'Address & Documents' },
     { number: 4, title: 'Account Security' },
     { number: 5, title: 'Preferences' },
@@ -524,42 +529,16 @@ const RegisterPage = () => {
                 {currentStep === 2 && (
                   <div className="space-y-6">
                     {formData.sellerType === 'individual' ? (
-                      // Individual Fields
-                      <>
-                        <div>
-                          <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
-                            Date of Birth *
-                          </label>
-                          <input
-                            type="date"
-                            id="dateOfBirth"
-                            name="dateOfBirth"
-                            required
-                            value={formData.dateOfBirth}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                          />
-                        </div>
-
-                        <div>
-                          <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
-                            Gender *
-                          </label>
-                          <select
-                            id="gender"
-                            name="gender"
-                            required
-                            value={formData.gender}
-                            onChange={handleInputChange}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                          >
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                          </select>
-                        </div>
-                      </>
+                      // Individual - No fields needed, just a message
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+                        <svg className="mx-auto h-12 w-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <h3 className="mt-2 text-lg font-medium text-blue-900">Individual Seller Information</h3>
+                        <p className="mt-1 text-sm text-blue-700">
+                          You're registering as an individual seller. In the next step, you'll provide your address and upload your identification documents.
+                        </p>
+                      </div>
                     ) : (
                       // Company Fields
                       <>
