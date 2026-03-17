@@ -55,7 +55,7 @@ export default function CommercialVehicleList() {
     // Guest user - redirect to request items page
     if (role === "GUEST") {
       console.log('Guest user detected, redirecting to request items page');
-      router.push('/dashboard/requestItemPage');
+      router.push('/dashboard/RequestItemPage');
       return;
     }
 
