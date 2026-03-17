@@ -38,12 +38,26 @@ export default function DashboardHome() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-const { user } = useCurrentUser();
-    const email = user?.email || '';
-    const role = user?.roles?.[0] || '';
+  const { user } = useCurrentUser();
+  const email = user?.email || '';
+  const role = user?.roles?.[0] || '';
+
+  // Redirect GUEST users to request items page
   useEffect(() => {
-    fetchDashboardData();
-  }, [user]);
+    if (user && role === 'GUEST') {
+      router.push('/dashboard/requestItemPage');
+    }
+  }, [user, role, router]);
+
+  // Only fetch dashboard data for SELLER and ADMIN
+  useEffect(() => {
+    if (user && (role === 'SELLER' || role === 'ADMIN')) {
+      fetchDashboardData();
+    } else if (user && role !== 'GUEST') {
+      // For any other role, just set loading to false
+      setLoading(false);
+    }
+  }, [user, role]);
 
   const fetchDashboardData = async () => {
     try {
@@ -51,21 +65,21 @@ const { user } = useCurrentUser();
       
       // Fetch all data in parallel
       const [carsRes, commercialRes, motorcyclesRes, usersRes] = await Promise.all([
-       fetch(`https://api.f-carshipping.com/api/cars/dashboard?`, {
-      method: 'POST', // change to POST to send JSON body
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, role }), // send user info
-    }),
-        fetch(`https://api.f-carshipping.com/api/vehicles/dashboard?`, {
-      method: 'POST', // change to POST to send JSON body
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, role }),
+        fetch(`https://api.f-carshipping.com/api/cars/dashboard`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, role }),
+        }),
+        fetch(`https://api.f-carshipping.com/api/vehicles/dashboard`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, role }),
         }),
         fetch('https://api.f-carshipping.com/api/motorcycles/dashboard?page=0&size=5', {
           credentials: 'include'
@@ -74,6 +88,13 @@ const { user } = useCurrentUser();
           credentials: 'include'
         })
       ]);
+
+      // Handle 403 Forbidden responses
+      if (carsRes.status === 403 || commercialRes.status === 403) {
+        setError('You do not have permission to access this data. Please contact support if you believe this is an error.');
+        setLoading(false);
+        return;
+      }
 
       const carsData = carsRes.ok ? await carsRes.json() : { content: [], totalElements: 0 };
       const commercialData = commercialRes.ok ? await commercialRes.json() : { content: [], totalElements: 0 };
@@ -171,6 +192,7 @@ const { user } = useCurrentUser();
     );
   };
 
+  // Show loading while checking user role or fetching data
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -193,12 +215,57 @@ const { user } = useCurrentUser();
     );
   }
 
+  // If user is GUEST, show a message while redirecting
+  if (user && role === 'GUEST') {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto text-center py-12">
+          <Package className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            Welcome Guest!
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Redirecting you to the request items page...
+          </p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show permission error if any
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-red-700 mb-2">
+              Access Denied
+            </h2>
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => router.push('/')}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Go to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Only render dashboard for SELLER and ADMIN
+  if (!user || (role !== 'SELLER' && role !== 'ADMIN')) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 ">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-2">
-          
           <p className="text-gray-600 mt-2">
             Welcome to your vehicle management dashboard
           </p>
@@ -212,67 +279,66 @@ const { user } = useCurrentUser();
         )}
 
         {/* Stats Grid */}
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+          {/* Cars */}
+          <div
+            onClick={() => router.push('/dashboard/Cars')}
+            className="cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <Car className="w-5 h-5 text-gray-600" />
+              <p className="text-sm text-gray-500">Total Cars</p>
+            </div>
+            <h2 className="text-3xl font-semibold mt-2">
+              {stats.totalCars}
+            </h2>
+          </div>
 
-  {/* Cars */}
-  <div
-    onClick={() => router.push('/dashboard/Cars')}
-    className="cursor-pointer"
-  >
-    <div className="flex items-center gap-3">
-      <Car className="w-5 h-5 text-gray-600" />
-      <p className="text-sm text-gray-500">Total Cars</p>
-    </div>
-    <h2 className="text-3xl font-semibold mt-2">
-      {stats.totalCars}
-    </h2>
-  </div>
+          {/* Commercial Vehicles */}
+          <div
+            onClick={() => router.push('/dashboard/HeavyCommercialVehicle')}
+            className="cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <Truck className="w-5 h-5 text-gray-600" />
+              <p className="text-sm text-gray-500">Commercial Vehicles</p>
+            </div>
+            <h2 className="text-3xl font-semibold mt-2">
+              {stats.totalCommercialVehicles}
+            </h2>
+          </div>
 
-  {/* Commercial Vehicles */}
-  <div
-    onClick={() => router.push('/dashboard/HeavyCommercialVehicle')}
-    className="cursor-pointer"
-  >
-    <div className="flex items-center gap-3">
-      <Truck className="w-5 h-5 text-gray-600" />
-      <p className="text-sm text-gray-500">Commercial Vehicles</p>
-    </div>
-    <h2 className="text-3xl font-semibold mt-2">
-      {stats.totalCommercialVehicles}
-    </h2>
-  </div>
+          {/* Motorcycles */}
+          <div
+            onClick={() => router.push('/dashboard/Motocycle')}
+            className="cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <Bike className="w-5 h-5 text-gray-600" />
+              <p className="text-sm text-gray-500">Motorcycles</p>
+            </div>
+            <h2 className="text-3xl font-semibold mt-2">
+              {stats.totalMotorcycles}
+            </h2>
+          </div>
 
-  {/* Motorcycles */}
-  <div
-    onClick={() => router.push('/dashboard/Motocycle')}
-    className="cursor-pointer"
-  >
-    <div className="flex items-center gap-3">
-      <Bike className="w-5 h-5 text-gray-600" />
-      <p className="text-sm text-gray-500">Motorcycles</p>
-    </div>
-    <h2 className="text-3xl font-semibold mt-2">
-      {stats.totalMotorcycles}
-    </h2>
-  </div>
+          {/* Users - Admin only */}
+          {user?.roles?.includes("ADMIN") && (
+            <div
+              onClick={() => router.push('/dashboard/Users')}
+              className="cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <Users className="w-5 h-5 text-gray-600" />
+                <p className="text-sm text-gray-500">Total Users</p>
+              </div>
+              <h2 className="text-3xl font-semibold mt-2">
+                {stats.totalUsers}
+              </h2>
+            </div>
+          )}
+        </div>
 
-  
-  {user?.roles?.includes("ADMIN") && (
-  <div
-    onClick={() => router.push('/dashboard/Users')}
-    className="cursor-pointer"
-  >
-    <div className="flex items-center gap-3">
-      <Users className="w-5 h-5 text-gray-600" />
-      <p className="text-sm text-gray-500">Total Users</p>
-    </div>
-
-    <h2 className="text-3xl font-semibold mt-2">
-      {stats.totalUsers}
-    </h2>
-  </div>
-)}
-</div>
         {/* Recent Items Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Cars */}
@@ -351,7 +417,7 @@ const { user } = useCurrentUser();
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - Only show for SELLER and ADMIN */}
         <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -376,7 +442,6 @@ const { user } = useCurrentUser();
               <Bike className="w-8 h-8 text-purple-600 mx-auto mb-2" />
               <span className="text-sm font-medium">Add Motorcycle</span>
             </button>
-           
           </div>
         </div>
       </div>
