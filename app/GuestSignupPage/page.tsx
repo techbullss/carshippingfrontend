@@ -38,7 +38,7 @@ export default function GuestSignupPage() {
       }
 
       const response = await fetch(
-        "https://api.f-carshipping.com/api/auth/register-guest",
+        "https://api.f-carshipping.com/api/auth/signup-guest",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
