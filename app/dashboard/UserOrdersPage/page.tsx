@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { 
-  Search, Filter, Package, Clock, Eye, 
+  Search, Package, Clock, Eye, 
   Edit, Trash2, CheckCircle, XCircle, 
   ChevronLeft, ChevronRight, AlertCircle, 
-  Loader2, TrendingUp, Truck, RefreshCw,
-  MessageSquare, Download, BarChart3
+  Loader2, Truck, RefreshCw,
+  MessageSquare, BarChart3
 } from "lucide-react";
 import Link from "next/link";
 
@@ -26,6 +26,16 @@ interface Order {
   imageUrls: string[];
   createdAt: string;
   updatedAt: string;
+  clientName: string;
+  clientEmail: string;
+}
+
+interface ApiResponse {
+  content: Order[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
 }
 
 const API_BASE_URL = "https://api.f-carshipping.com/api/auxiliary";
@@ -35,6 +45,7 @@ export default function UserOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -51,45 +62,68 @@ export default function UserOrdersPage() {
     cancelled: 0
   });
 
-  // Fetch user orders
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(0);
+  }, [filter, debouncedSearch]);
+
+  // Fetch user orders with filters
   const fetchUserOrders = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const statusMap: Record<string, string> = {
-        "all": "",
-        "pending": "PENDING",
-        "sourcing": "SOURCING",
-        "in_transit": "IN_TRANSIT",
-        "delivered": "DELIVERED",
-        "cancelled": "CANCELLED"
-      };
+      // Build URL with query parameters
+      const url = new URL(`${API_BASE_URL}/my-requests`);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('size', pageSize.toString());
       
-      const status = statusMap[filter] || "";
+      // Add status filter if not "all"
+      if (filter !== 'all') {
+        url.searchParams.append('status', filter.toUpperCase());
+      }
       
-      let url = `${API_BASE_URL}/my-requests?page=${page}&size=${pageSize}`;
-      if (search) url += `&search=${search}`;
+      // Add search if present
+      if (debouncedSearch) {
+        url.searchParams.append('search', debouncedSearch);
+      }
       
-      const response = await fetch(url, {
+      const response = await fetch(url.toString(), {
         method: 'GET',
         credentials: 'include',
-        headers: { 'Accept': 'application/json' }
+        headers: { 
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
       });
       
-      if (!response.ok) throw new Error('Failed to fetch orders');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to fetch orders: ${response.status}`);
+      }
       
-      const data = await response.json();
-      setOrders(data.content);
-      setTotalPages(data.totalPages);
-      setTotalElements(data.totalElements);
+      const data: ApiResponse = await response.json();
+      setOrders(data.content || []);
+      setTotalPages(data.totalPages || 0);
+      setTotalElements(data.totalElements || 0);
       
-      // Calculate stats
-      calculateStats(data.content);
+      // Calculate stats from current page data
+      if (data.content) {
+        calculateStats(data.content);
+      }
       
     } catch (err) {
       console.error('Error fetching orders:', err);
-      setError('Failed to load your orders. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to load your orders. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -126,6 +160,11 @@ export default function UserOrdersPage() {
     setStats(stats);
   };
 
+  // Fetch orders when dependencies change
+  useEffect(() => {
+    fetchUserOrders();
+  }, [page, filter, debouncedSearch]);
+
   // Cancel order
   const cancelOrder = async (orderId: number) => {
     try {
@@ -139,7 +178,10 @@ export default function UserOrdersPage() {
         }
       });
       
-      if (!response.ok) throw new Error('Failed to cancel order');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to cancel order');
+      }
       
       // Update local state
       setOrders(prev => prev.map(order => 
@@ -158,11 +200,12 @@ export default function UserOrdersPage() {
       setShowCancelModal(false);
       setSelectedOrder(null);
       
+      // Show success message (you might want to use a toast notification instead)
       alert('Order cancelled successfully. Admin has been notified.');
       
     } catch (err) {
       console.error('Error cancelling order:', err);
-      alert('Failed to cancel order. Please try again.');
+      alert(err instanceof Error ? err.message : 'Failed to cancel order. Please try again.');
     } finally {
       setCancellingOrder(null);
     }
@@ -170,15 +213,21 @@ export default function UserOrdersPage() {
 
   // Format date
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return 'Invalid Date';
+    }
   };
 
   // Format currency
   const formatCurrency = (amount: number) => {
+    if (!amount && amount !== 0) return 'N/A';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -189,7 +238,7 @@ export default function UserOrdersPage() {
 
   // Get status color and text
   const getStatusInfo = (status: string) => {
-    const statusLower = status.toLowerCase();
+    const statusLower = status?.toLowerCase() || '';
     
     switch (statusLower) {
       case 'pending':
@@ -225,7 +274,7 @@ export default function UserOrdersPage() {
       default:
         return {
           color: 'bg-gray-100 text-gray-800',
-          text: status,
+          text: status || 'Unknown',
           icon: <Package size={14} />
         };
     }
@@ -233,27 +282,21 @@ export default function UserOrdersPage() {
 
   // Check if order can be edited/cancelled
   const canEditOrder = (order: Order) => {
-    const status = order.status.toLowerCase();
+    const status = order.status?.toLowerCase() || '';
     return status === 'pending' || status === 'sourcing';
   };
 
-  // Initialize
-  useEffect(() => {
-    fetchUserOrders();
-  }, [page, filter]);
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  // Search with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (page === 0) {
-        fetchUserOrders();
-      } else {
-        setPage(0);
-      }
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, [search]);
+  // Handle filter change
+  const handleFilterChange = (newFilter: string) => {
+    setFilter(newFilter);
+    setPage(0);
+  };
 
   return (
     <div className="p-6">
@@ -375,7 +418,7 @@ export default function UserOrdersPage() {
             {["all", "pending", "sourcing", "in_transit", "delivered", "cancelled"].map((status) => (
               <button
                 key={status}
-                onClick={() => setFilter(status)}
+                onClick={() => handleFilterChange(status)}
                 disabled={loading}
                 className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
                   filter === status
@@ -473,32 +516,32 @@ export default function UserOrdersPage() {
                   return (
                     <tr key={order.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">{order.requestId}</div>
+                        <div className="text-sm font-medium text-gray-900">{order.requestId || 'N/A'}</div>
                         <div className="text-sm text-gray-500">{formatDate(order.createdAt)}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <div className="font-medium text-gray-900 truncate max-w-xs">{order.itemName}</div>
-                          <div className="text-sm text-gray-600">{order.category}</div>
-                          <div className="text-sm text-gray-500">Qty: {order.quantity}</div>
+                          <div className="font-medium text-gray-900 truncate max-w-xs">{order.itemName || 'N/A'}</div>
+                          <div className="text-sm text-gray-600">{order.category || 'N/A'}</div>
+                          <div className="text-sm text-gray-500">Qty: {order.quantity || 1}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900">
                           <div className="flex items-center">
-                            <span className="font-medium">{order.originCountry}</span>
+                            <span className="font-medium">{order.originCountry || 'N/A'}</span>
                             <span className="mx-2">→</span>
-                            <span>{order.destination}</span>
+                            <span>{order.destination || 'N/A'}</span>
                           </div>
                           <div className="text-gray-500 text-xs mt-1">
-                            Urgency: {order.urgency}
+                            Urgency: {order.urgency || 'normal'}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm">
                           <div className="font-medium text-gray-900">
-                            {formatCurrency(order.budget || 0)}
+                            {formatCurrency(order.budget)}
                           </div>
                           <div className="text-gray-500">
                             Updated: {formatDate(order.updatedAt)}
@@ -546,7 +589,7 @@ export default function UserOrdersPage() {
                             </button>
                           )}
                           
-                          {order.status === 'DELIVERED' && (
+                          {order.status?.toLowerCase() === 'delivered' && (
                             <Link
                               href="/dashboard/add-review"
                               className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded transition-colors"
@@ -572,7 +615,7 @@ export default function UserOrdersPage() {
                           : "You haven't placed any orders yet."}
                       </p>
                       <Link
-                        href="/dashboard/request-item"
+                        href="/dashboard/RequestItemPage"
                         className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition"
                       >
                         <Package size={20} />
@@ -587,7 +630,7 @@ export default function UserOrdersPage() {
         </div>
 
         {/* Pagination */}
-        {orders.length > 0 && (
+        {orders.length > 0 && totalPages > 1 && (
           <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
             <div className="text-sm text-gray-700">
               Showing <span className="font-medium">{(page * pageSize) + 1}</span> to{" "}
@@ -596,7 +639,7 @@ export default function UserOrdersPage() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => setPage(prev => prev - 1)}
+                onClick={() => handlePageChange(page - 1)}
                 disabled={page === 0 || loading}
                 className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
               >
@@ -604,10 +647,10 @@ export default function UserOrdersPage() {
                 Prev
               </button>
               <span className="px-3 py-1 text-sm">
-                Page {page + 1} of {totalPages || 1}
+                Page {page + 1} of {totalPages}
               </span>
               <button
-                onClick={() => setPage(prev => prev + 1)}
+                onClick={() => handlePageChange(page + 1)}
                 disabled={page >= totalPages - 1 || loading}
                 className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
               >
@@ -655,7 +698,7 @@ export default function UserOrdersPage() {
                   <div>
                     <h3 className="text-sm font-medium text-gray-500 mb-2">Budget & Timeline</h3>
                     <div className="space-y-2">
-                      <p><span className="font-medium">Budget:</span> {formatCurrency(selectedOrder.budget || 0)}</p>
+                      <p><span className="font-medium">Budget:</span> {formatCurrency(selectedOrder.budget)}</p>
                       <p><span className="font-medium">Created:</span> {formatDate(selectedOrder.createdAt)}</p>
                       <p><span className="font-medium">Last Updated:</span> {formatDate(selectedOrder.updatedAt)}</p>
                     </div>
