@@ -4,13 +4,33 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { 
   ArrowLeft, Package, MapPin, DollarSign, 
-  Upload, Image as ImageIcon, X, Loader2,
-  AlertCircle, CheckCircle, Save, RefreshCw,
+  Image as ImageIcon, X, Loader2,
+  AlertCircle, CheckCircle, Save,
   XCircle
 } from "lucide-react";
 import Link from "next/link";
 
 // Types
+interface Order {
+  id: number;
+  requestId: string;
+  itemName: string;
+  category: string;
+  description: string;
+  originCountry: string;
+  destination: string;
+  budget: number;
+  quantity: number;
+  urgency: string;
+  status: string;
+  notes: string;
+  imageUrls: string[];
+  createdAt: string;
+  updatedAt: string;
+  clientName: string;
+  clientEmail: string;
+}
+
 interface OrderFormData {
   itemName: string;
   category: string;
@@ -22,6 +42,7 @@ interface OrderFormData {
   urgency: string;
   notes: string;
   existingImages: string[];
+  removedImages: string[]; // Track images to remove
   newImages: File[];
 }
 
@@ -36,6 +57,7 @@ export default function EditOrderPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [order, setOrder] = useState<Order | null>(null);
   
   const [formData, setFormData] = useState<OrderFormData>({
     itemName: "",
@@ -48,10 +70,10 @@ export default function EditOrderPage() {
     urgency: "normal",
     notes: "",
     existingImages: [],
+    removedImages: [],
     newImages: []
   });
 
-  const [originalData, setOriginalData] = useState<any>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const categories = [
@@ -61,9 +83,9 @@ export default function EditOrderPage() {
   ];
 
   const urgencyOptions = [
-    { value: "urgent", label: "Urgent (1-2 weeks)", price: "+15%" },
-    { value: "normal", label: "Normal (3-4 weeks)", price: "Standard" },
-    { value: "flexible", label: "Flexible (1-2 months)", price: "-10%" },
+    { value: "urgent", label: "Urgent (1-2 weeks)" },
+    { value: "normal", label: "Normal (3-4 weeks)" },
+    { value: "flexible", label: "Flexible (1-2 months)" },
   ];
 
   // Fetch order details
@@ -81,31 +103,32 @@ export default function EditOrderPage() {
         
         if (!response.ok) throw new Error('Failed to fetch order details');
         
-        const order = await response.json();
-        setOriginalData(order);
+        const orderData = await response.json();
+        setOrder(orderData);
         
         // Check if order can be edited
-        if (!['PENDING', 'SOURCING'].includes(order.status)) {
+        if (!['PENDING', 'SOURCING'].includes(orderData.status)) {
           setError('This order cannot be edited as it has already progressed beyond the editing stage.');
           return;
         }
         
         // Populate form with existing data
         setFormData({
-          itemName: order.itemName || "",
-          category: order.category || "",
-          description: order.description || "",
-          originCountry: order.originCountry || "",
-          destination: order.destination || "",
-          budget: order.budget?.toString() || "",
-          quantity: order.quantity || 1,
-          urgency: order.urgency || "normal",
-          notes: order.notes || "",
-          existingImages: order.imageUrls || [],
+          itemName: orderData.itemName || "",
+          category: orderData.category || "",
+          description: orderData.description || "",
+          originCountry: orderData.originCountry || "",
+          destination: orderData.destination || "",
+          budget: orderData.budget?.toString() || "",
+          quantity: orderData.quantity || 1,
+          urgency: orderData.urgency || "normal",
+          notes: orderData.notes || "",
+          existingImages: orderData.imageUrls || [],
+          removedImages: [],
           newImages: []
         });
         
-        setImagePreviews(order.imageUrls || []);
+        setImagePreviews(orderData.imageUrls || []);
         
       } catch (err) {
         console.error('Error fetching order:', err);
@@ -120,7 +143,8 @@ export default function EditOrderPage() {
 
   // Handle image upload
   const handleImageUpload = (files: FileList) => {
-    const newImages = Array.from(files).slice(0, 5 - (formData.existingImages.length + formData.newImages.length));
+    const remainingSlots = 5 - (formData.existingImages.length - formData.removedImages.length + formData.newImages.length);
+    const newImages = Array.from(files).slice(0, remainingSlots);
     
     newImages.forEach(file => {
       if (!file.type.startsWith('image/')) {
@@ -148,8 +172,10 @@ export default function EditOrderPage() {
 
   // Remove existing image
   const removeExistingImage = (index: number) => {
+    const imageUrl = formData.existingImages[index];
     setFormData(prev => ({
       ...prev,
+      removedImages: [...prev.removedImages, imageUrl],
       existingImages: prev.existingImages.filter((_, i) => i !== index)
     }));
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
@@ -165,7 +191,7 @@ export default function EditOrderPage() {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Handle form submission
+  // Handle form submission - FIXED for JSON only (no FormData)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -195,10 +221,7 @@ export default function EditOrderPage() {
     setError(null);
 
     try {
-      // Create FormData for multipart upload
-      const formDataToSend = new FormData();
-      
-      // Add updated fields
+      // Prepare update data - send as JSON only (no images in this request)
       const updateData = {
         itemName: formData.itemName,
         category: formData.category,
@@ -209,21 +232,18 @@ export default function EditOrderPage() {
         quantity: formData.quantity,
         urgency: formData.urgency,
         notes: formData.notes,
-        imageUrls: formData.existingImages // Send only remaining existing images
+        // Keep only images that weren't removed
+        imageUrls: formData.existingImages
       };
-      
-      // Convert object to JSON string
-      formDataToSend.append('request', JSON.stringify(updateData));
-      
-      // Add new images
-      formData.newImages.forEach((image, index) => {
-        formDataToSend.append('images', image);
-      });
 
+      // First update the order data (JSON only)
       const response = await fetch(`${API_BASE_URL}/requests/${orderId}`, {
         method: 'PUT',
         credentials: 'include',
-        body: formDataToSend,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
       });
 
       if (!response.ok) {
@@ -231,11 +251,29 @@ export default function EditOrderPage() {
         throw new Error(errorData.message || `Failed to update order: ${response.status}`);
       }
 
+      // If there are new images to upload, use the separate images endpoint
+      if (formData.newImages.length > 0) {
+        const imageFormData = new FormData();
+        formData.newImages.forEach((image) => {
+          imageFormData.append('images', image);
+        });
+
+        const imageResponse = await fetch(`${API_BASE_URL}/requests/${orderId}/images`, {
+          method: 'PUT',
+          credentials: 'include',
+          body: imageFormData,
+        });
+
+        if (!imageResponse.ok) {
+          console.warn('Order data updated but images failed to upload');
+        }
+      }
+
       setSuccess(true);
       
       // Show success message and redirect
       setTimeout(() => {
-        router.push('/dashboard/my-orders');
+        router.push('/dashboard/UserOrdersPage');
       }, 2000);
       
     } catch (err) {
@@ -265,12 +303,12 @@ export default function EditOrderPage() {
     );
   }
 
-  if (error && !['PENDING', 'SOURCING'].includes(originalData?.status)) {
+  if (error && order && !['PENDING', 'SOURCING'].includes(order.status)) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
           <Link 
-            href="/dashboard/RequestItemPage" 
+            href="/dashboard/UserOrdersPage" 
             className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-6"
           >
             <ArrowLeft size={20} className="mr-2" />
@@ -282,7 +320,7 @@ export default function EditOrderPage() {
             <h1 className="text-2xl font-bold text-gray-800 mb-4">Cannot Edit Order</h1>
             <p className="text-gray-600 mb-6">{error}</p>
             <Link
-              href="/dashboard/RequestItemPage"
+              href="/dashboard/UserOrdersPage"
               className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition"
             >
               Return to Orders
@@ -299,7 +337,7 @@ export default function EditOrderPage() {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            href="/dashboard/my-orders" 
+            href="/dashboard/UserOrdersPage" 
             className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-6"
           >
             <ArrowLeft size={20} className="mr-2" />
@@ -312,15 +350,18 @@ export default function EditOrderPage() {
               <p className="text-gray-600">Update your shipping request details</p>
             </div>
             
-            {originalData && (
+            {order && (
               <div className="text-sm">
-                <span className="text-gray-600">Current Status: </span>
+                <span className="text-gray-600">Request ID: </span>
+                <span className="font-medium">{order.requestId}</span>
+                <span className="mx-2 text-gray-400">|</span>
+                <span className="text-gray-600">Status: </span>
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  originalData.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                  originalData.status === 'SOURCING' ? 'bg-blue-100 text-blue-800' :
+                  order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                  order.status === 'SOURCING' ? 'bg-blue-100 text-blue-800' :
                   'bg-gray-100 text-gray-800'
                 }`}>
-                  {originalData.status}
+                  {order.status}
                 </span>
               </div>
             )}
@@ -392,7 +433,7 @@ export default function EditOrderPage() {
                       min="1"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       value={formData.quantity}
-                      onChange={(e) => updateFormData('quantity', parseInt(e.target.value))}
+                      onChange={(e) => updateFormData('quantity', parseInt(e.target.value) || 1)}
                       disabled={saving}
                     />
                   </div>
@@ -530,7 +571,7 @@ export default function EditOrderPage() {
                           className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
                           disabled={saving}
                         >
-                          ×
+                          <X size={14} />
                         </button>
                       </div>
                     ))}
@@ -565,7 +606,7 @@ export default function EditOrderPage() {
               )}
               
               <p className="text-sm text-gray-500 mt-2">
-                {imagePreviews.length} of 5 images selected
+                {imagePreviews.length - formData.newImages.length} existing + {formData.newImages.length} new = {imagePreviews.length} of 5 images
               </p>
             </div>
 
@@ -587,7 +628,7 @@ export default function EditOrderPage() {
             {/* Form Actions */}
             <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
               <Link
-                href="/dashboard/my-orders"
+                href="/dashboard/UserOrdersPage"
                 className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-center"
               >
                 Cancel
@@ -624,7 +665,7 @@ export default function EditOrderPage() {
                 <li>• All changes will be reviewed by our admin team</li>
                 <li>• You will receive an email confirmation of your changes</li>
                 <li>• Major changes may require additional approval</li>
-                <li>• Images can only be removed, not replaced (upload new ones if needed)</li>
+                <li>• Images are updated separately from order details</li>
                 <li>• Orders can only be edited while in "Pending" or "Sourcing" status</li>
               </ul>
             </div>

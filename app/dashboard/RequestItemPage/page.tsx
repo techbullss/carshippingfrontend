@@ -41,33 +41,33 @@ export default function RequestItemPage() {
   const [error, setError] = useState<string | null>(null);
   
   const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
-  const { user } = useCurrentUser(); // returns User | null
-const fullName = user ? `${user.firstName} ${user.lastName}` : "";
-const email = user?.email || "";
+  const { user } = useCurrentUser();
 
   const [formData, setFormData] = useState<FormData>({
-  clientName: fullName || "",
-  clientEmail: email || "",  // final, pre-filled
-  clientPhone: "",
-  itemName: "",
-  category: "",
-  description: "",
-  originCountry: "",
-  destination: "",
-  budget: "",
-  quantity: 1,
-  urgency: "normal",
-  notes: "",
-});
-useEffect(() => {
-  if (user) {
-    setFormData(prev => ({
-      ...prev,
-      clientName: `${user.firstName} ${user.lastName}`,
-      clientEmail: user.email
-    }));
-  }
-}, [user]);
+    clientName: "",
+    clientEmail: "",
+    clientPhone: "",
+    itemName: "",
+    category: "",
+    description: "",
+    originCountry: "",
+    destination: "",
+    budget: "",
+    quantity: 1,
+    urgency: "normal",
+    notes: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        clientName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+        clientEmail: user.email || ''
+      }));
+    }
+  }, [user]);
+
   const categories = [
     "Electronics", "Clothing & Fashion", "Home & Kitchen",
     "Automotive Parts", "Books & Media", "Medical Equipment",
@@ -82,7 +82,7 @@ useEffect(() => {
 
   // Handle image upload with preview
   const handleImageUpload = (files: FileList) => {
-    const newImages = Array.from(files).slice(0, 5 - imagePreviews.length); // Limit to 5 images
+    const newImages = Array.from(files).slice(0, 5 - imagePreviews.length);
     
     newImages.forEach(file => {
       if (!file.type.startsWith('image/')) {
@@ -90,7 +90,7 @@ useEffect(() => {
         return;
       }
       
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         setError("File size should be less than 5MB");
         return;
       }
@@ -187,26 +187,22 @@ useEffect(() => {
       // Create FormData for multipart upload
       const formDataToSend = new FormData();
       
-      // Add all form fields
+      // Add all form fields - use @ModelAttribute format
       Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
+        if (value !== null && value !== undefined && value !== '') {
           formDataToSend.append(key, value.toString());
         }
       });
 
       // Add images
-      imagePreviews.forEach((image, index) => {
+      imagePreviews.forEach((image) => {
         formDataToSend.append('images', image.file);
       });
 
-      // Get authentication token (adjust based on your auth setup)
-      const token = localStorage.getItem('token');
-      
       const response = await fetch(`${API_BASE_URL}/request-item`, {
         method: 'POST',
-      
         body: formDataToSend,
-        credentials: 'include', // If using cookies/sessions
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -418,16 +414,8 @@ useEffect(() => {
                 type="button"
                 onClick={handleNext}
                 className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={loading}
               >
-                {loading ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <Loader2 className="animate-spin" size={20} />
-                    Processing...
-                  </div>
-                ) : (
-                  "Continue to Shipping Details"
-                )}
+                Continue to Shipping Details
               </button>
             </div>
           )}
@@ -507,7 +495,7 @@ useEffect(() => {
                     min="1"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     value={formData.quantity}
-                    onChange={(e) => updateFormData('quantity', parseInt(e.target.value))}
+                    onChange={(e) => updateFormData('quantity', parseInt(e.target.value) || 1)}
                   />
                 </div>
               </div>
@@ -556,7 +544,6 @@ useEffect(() => {
                   type="button"
                   onClick={handleBack}
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition disabled:opacity-50"
-                  disabled={loading}
                 >
                   Back
                 </button>
@@ -564,16 +551,8 @@ useEffect(() => {
                   type="button"
                   onClick={handleNext}
                   className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={loading}
                 >
-                  {loading ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <Loader2 className="animate-spin" size={20} />
-                      Processing...
-                    </div>
-                  ) : (
-                    "Continue to Review"
-                  )}
+                  Continue to Review
                 </button>
               </div>
             </div>
@@ -627,38 +606,37 @@ useEffect(() => {
                 <h3 className="font-bold text-lg">Contact Information</h3>
                 
                 <div>
-  <label className="block text-sm font-medium text-gray-700">Email</label>
-  <input
-    type="email"
-    value={formData.clientEmail}
-    disabled // cannot be changed
-    className="mt-1 block w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed"
-  />
-</div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.clientEmail}
+                    disabled
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+                  />
+                </div>
 
-<div>
-  <label className="block text-sm font-medium text-gray-700">Full Name</label>
-  <input
-    type="text"
-    value={formData.clientName}
-    onChange={(e) =>
-      setFormData({ ...formData, clientName: e.target.value })
-    }
-    className="mt-1 block w-full px-3 py-2 border rounded-md"
-  />
-</div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.clientName}
+                    onChange={(e) => updateFormData('clientName', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
 
-<div>
-  <label className="block text-sm font-medium text-gray-700">Phone</label>
-  <input
-    type="text"
-    value={formData.clientPhone}
-    onChange={(e) =>
-      setFormData({ ...formData, clientPhone: e.target.value })
-    }
-    className="mt-1 block w-full px-3 py-2 border rounded-md"
-  />
-</div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <input
+                    type="text"
+                    value={formData.clientPhone}
+                    onChange={(e) => updateFormData('clientPhone', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="+1234567890"
+                  />
+                </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
