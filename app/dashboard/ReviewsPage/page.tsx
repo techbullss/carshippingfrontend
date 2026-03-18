@@ -7,6 +7,7 @@ import {
   ChevronLeft, ChevronRight, User, Package,
   Shield, CheckCircle
 } from "lucide-react";
+import { useSearchParams } from "next/navigation"; // Add this
 
 // Types
 interface Review {
@@ -34,6 +35,8 @@ interface ReviewStats {
 const API_BASE_URL = "https://api.f-carshipping.com/api/auxiliary";
 
 export default function ReviewsPage() {
+  const searchParams = useSearchParams(); // Get URL parameters
+  
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState({
@@ -45,6 +48,8 @@ export default function ReviewsPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize] = useState(10);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [formMessage, setFormMessage] = useState<string | null>(null);
   
   const [newReview, setNewReview] = useState({
     clientName: "",
@@ -52,7 +57,41 @@ export default function ReviewsPage() {
     itemName: "",
     rating: 5,
     comment: "",
+    orderId: "", // Add orderId to track which order
+    token: "", // Security token
   });
+
+  // Check for URL parameters on load
+  useEffect(() => {
+    const orderId = searchParams.get('orderId');
+    const token = searchParams.get('token');
+    const itemName = searchParams.get('item');
+    const clientName = searchParams.get('client');
+    const email = searchParams.get('email');
+
+    if (orderId && token) {
+      // Pre-fill the form with data from URL
+      setNewReview(prev => ({
+        ...prev,
+        orderId: orderId,
+        token: token,
+        itemName: itemName || '',
+        clientName: clientName || '',
+        clientEmail: email || '',
+      }));
+      
+      // Show form and scroll to it
+      setShowReviewForm(true);
+      setFormMessage("Please review your recent order");
+      
+      // Smooth scroll to form
+      setTimeout(() => {
+        document.getElementById('review-form')?.scrollIntoView({ 
+          behavior: 'smooth' 
+        });
+      }, 500);
+    }
+  }, [searchParams]);
 
   // Fetch reviews
   const fetchReviews = async () => {
@@ -96,7 +135,6 @@ export default function ReviewsPage() {
       setStats(data);
     } catch (err) {
       console.error('Error fetching stats:', err);
-      // Don't set error for stats - it's not critical
     } finally {
       setLoading(prev => ({ ...prev, stats: false }));
     }
@@ -132,7 +170,14 @@ export default function ReviewsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newReview),
+        body: JSON.stringify({
+          clientName: newReview.clientName,
+          clientEmail: newReview.clientEmail,
+          itemName: newReview.itemName,
+          rating: newReview.rating,
+          comment: newReview.comment,
+          orderId: newReview.orderId || undefined, // Include if from email
+        }),
       });
 
       if (!response.ok) {
@@ -152,7 +197,13 @@ export default function ReviewsPage() {
         itemName: "",
         rating: 5,
         comment: "",
+        orderId: "",
+        token: "",
       });
+      
+      // Hide form if it was shown from email
+      setShowReviewForm(false);
+      setFormMessage(null);
       
       // Refresh stats
       fetchReviewStats();
@@ -171,22 +222,20 @@ export default function ReviewsPage() {
   // Mark review as helpful
   const markAsHelpful = async (reviewId: number) => {
     try {
-      // Update local state first for instant feedback
       setReviews(prev => prev.map(review => 
         review.id === reviewId 
           ? { ...review, helpfulCount: review.helpfulCount + 1 }
           : review
       ));
 
-      // Optional: Send API request to update helpful count
-      // const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/helpful`, {
+      // Uncomment if you have this endpoint
+      // await fetch(`${API_BASE_URL}/reviews/${reviewId}/helpful`, {
       //   method: 'POST',
       //   credentials: 'include',
       // });
       
     } catch (err) {
       console.error('Error marking as helpful:', err);
-      // Revert local state on error
       setReviews(prev => prev.map(review => 
         review.id === reviewId 
           ? { ...review, helpfulCount: review.helpfulCount - 1 }
@@ -240,9 +289,17 @@ export default function ReviewsPage() {
         </div>
       )}
 
-      {/* Stats Section */}
+      {/* Form Message (from email) */}
+      {formMessage && (
+        <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          <CheckCircle className="inline mr-2" size={20} />
+          {formMessage}
+        </div>
+      )}
+
+      {/* Stats Section - Same as before */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Overall Rating Card */}
+        {/* ... keep your existing stats JSX ... */}
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -334,147 +391,164 @@ export default function ReviewsPage() {
         </div>
       </div>
 
-      {/* Add Review Form */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-green-100">
-        <h2 className="text-xl font-bold text-gray-800 mb-6">Share Your Experience</h2>
-        <p className="text-gray-600 mb-6">Your review will be posted immediately for others to see.</p>
-        
-        <div className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+      {/* Add Review Form - MODIFIED to show when coming from email */}
+      {(showReviewForm || !searchParams.get('orderId')) && (
+        <div id="review-form" className={`bg-white rounded-xl shadow-sm p-6 mb-8 border ${showReviewForm ? 'border-green-500 ring-2 ring-green-200' : 'border-green-100'}`}>
+          <h2 className="text-xl font-bold text-gray-800 mb-6">
+            {showReviewForm ? 'Review Your Recent Order' : 'Share Your Experience'}
+          </h2>
+          {showReviewForm && (
+            <p className="text-green-600 mb-4">
+              We noticed you were asked to review <strong>{newReview.itemName}</strong>. 
+              Thank you for taking the time to share your feedback!
+            </p>
+          )}
+          
+          <div className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Your Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  placeholder="Enter your full name"
+                  value={newReview.clientName}
+                  onChange={(e) => setNewReview({...newReview, clientName: e.target.value})}
+                  disabled={loading.submitting}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Your Email *
+                </label>
+                <input
+                  type="email"
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  placeholder="your.email@example.com"
+                  value={newReview.clientEmail}
+                  onChange={(e) => setNewReview({...newReview, clientEmail: e.target.value})}
+                  disabled={loading.submitting || !!searchParams.get('email')} // Disable if from email
+                />
+                {searchParams.get('email') && (
+                  <p className="text-xs text-gray-500 mt-1">Email is pre-filled from your request</p>
+                )}
+              </div>
+            </div>
+            
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your Name *
+                Item Name *
               </label>
               <input
                 type="text"
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Enter your full name"
-                value={newReview.clientName}
-                onChange={(e) => setNewReview({...newReview, clientName: e.target.value})}
-                disabled={loading.submitting}
+                placeholder="What item did you receive?"
+                value={newReview.itemName}
+                onChange={(e) => setNewReview({...newReview, itemName: e.target.value})}
+                disabled={loading.submitting || !!searchParams.get('item')} // Disable if from email
               />
+              {searchParams.get('item') && (
+                <p className="text-xs text-gray-500 mt-1">Item is pre-filled from your order</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Your Rating *
+              </label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setNewReview({...newReview, rating: star})}
+                    disabled={loading.submitting}
+                    className="hover:opacity-80 transition-opacity disabled:opacity-50"
+                  >
+                    <Star 
+                      size={36}
+                      className={star <= newReview.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
+                    />
+                  </button>
+                ))}
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                {newReview.rating === 5 && "Excellent - Loved it!"}
+                {newReview.rating === 4 && "Good - Very satisfied"}
+                {newReview.rating === 3 && "Average - It was okay"}
+                {newReview.rating === 2 && "Poor - Not satisfied"}
+                {newReview.rating === 1 && "Terrible - Very disappointed"}
+              </p>
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your Email *
+                Your Review *
               </label>
-              <input
-                type="email"
+              <textarea
+                rows={4}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="your.email@example.com"
-                value={newReview.clientEmail}
-                onChange={(e) => setNewReview({...newReview, clientEmail: e.target.value})}
+                placeholder="Tell others about your experience... What did you like? What could be improved?"
+                value={newReview.comment}
+                onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
                 disabled={loading.submitting}
               />
+              <p className="text-sm text-gray-500 mt-2">
+                Be honest and specific about your experience. Your review helps others make better decisions.
+              </p>
             </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Item Name *
-            </label>
-            <input
-              type="text"
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              placeholder="What item did you receive?"
-              value={newReview.itemName}
-              onChange={(e) => setNewReview({...newReview, itemName: e.target.value})}
-              disabled={loading.submitting}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Your Rating *
-            </label>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setNewReview({...newReview, rating: star})}
-                  disabled={loading.submitting}
-                  className="hover:opacity-80 transition-opacity disabled:opacity-50"
-                >
-                  <Star 
-                    size={36}
-                    className={star <= newReview.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
-                  />
-                </button>
-              ))}
-            </div>
-            <p className="text-sm text-gray-500 mt-2">
-              {newReview.rating === 5 && "Excellent - Loved it!"}
-              {newReview.rating === 4 && "Good - Very satisfied"}
-              {newReview.rating === 3 && "Average - It was okay"}
-              {newReview.rating === 2 && "Poor - Not satisfied"}
-              {newReview.rating === 1 && "Terrible - Very disappointed"}
-            </p>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Your Review *
-            </label>
-            <textarea
-              rows={4}
-              required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              placeholder="Tell others about your experience... What did you like? What could be improved?"
-              value={newReview.comment}
-              onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
-              disabled={loading.submitting}
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Be honest and specific about your experience. Your review helps others make better decisions.
-            </p>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <button 
-              onClick={submitReview}
-              disabled={loading.submitting}
-              className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading.submitting ? (
-                <>
-                  <Loader2 className="animate-spin" size={20} />
-                  Posting Review...
-                </>
-              ) : (
-                <>
-                  <MessageSquare size={20} />
-                  Post Review Now
-                </>
-              )}
-            </button>
             
-            <p className="text-sm text-gray-500">
-              Your review will appear immediately on this page
-            </p>
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <button 
+                onClick={submitReview}
+                disabled={loading.submitting}
+                className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading.submitting ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    Posting Review...
+                  </>
+                ) : (
+                  <>
+                    <MessageSquare size={20} />
+                    {showReviewForm ? 'Submit Review' : 'Post Review Now'}
+                  </>
+                )}
+              </button>
+              
+              {showReviewForm && (
+                <button 
+                  onClick={() => {
+                    setShowReviewForm(false);
+                    setNewReview({
+                      clientName: "",
+                      clientEmail: "",
+                      itemName: "",
+                      rating: 5,
+                      comment: "",
+                      orderId: "",
+                      token: "",
+                    });
+                  }}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  Not now
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Reviews Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h2 className="text-xl font-bold text-gray-800">Recent Reviews</h2>
-          <p className="text-gray-600">
-            {loading.reviews ? (
-              <span className="inline-block h-4 bg-gray-200 rounded w-32 animate-pulse"></span>
-            ) : (
-              `${stats?.totalReviews || 0} total ${stats?.totalReviews === 1 ? 'review' : 'reviews'}`
-            )}
-          </p>
-        </div>
-      </div>
-
-      {/* Reviews List */}
+      {/* Reviews List - Same as before */}
       <div className="space-y-6">
         {loading.reviews ? (
           // Skeleton Loaders
