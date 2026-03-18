@@ -5,8 +5,9 @@ import {
   Star, ThumbsUp, MessageSquare, Calendar, 
   Loader2, AlertCircle, TrendingUp,
   ChevronLeft, ChevronRight, User, Package,
-  Shield, CheckCircle
+  Shield, CheckCircle, Lock
 } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 // Types
 interface Review {
@@ -31,20 +32,35 @@ interface ReviewStats {
   };
 }
 
+interface TokenValidationResponse {
+  valid: boolean;
+  clientName?: string;
+  clientEmail?: string;
+  itemName?: string;
+  orderId?: number;
+  message?: string;
+}
+
 const API_BASE_URL = "https://api.f-carshipping.com/api/auxiliary";
 
 export default function ReviewsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loading, setLoading] = useState({
     reviews: true,
     stats: true,
-    submitting: false
+    submitting: false,
+    validating: true
   });
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [pageSize] = useState(10);
+  const [isValidAccess, setIsValidAccess] = useState(false);
+  const [autoFilled, setAutoFilled] = useState(false);
   
   const [newReview, setNewReview] = useState({
     clientName: "",
@@ -54,7 +70,71 @@ export default function ReviewsPage() {
     comment: "",
   });
 
-  // Fetch reviews
+  // Validate token/parameters on load
+  useEffect(() => {
+    const validateAccess = async () => {
+      const orderId = searchParams.get('orderId');
+      const token = searchParams.get('token');
+      const itemName = searchParams.get('item');
+      const clientName = searchParams.get('client');
+      const email = searchParams.get('email');
+
+      // Check if we have the required parameters
+      if (!orderId || !token) {
+        // No token - redirect to home or show access denied
+        router.push('/');
+        return;
+      }
+
+      try {
+        setLoading(prev => ({ ...prev, validating: true }));
+
+        // Validate token with backend
+        const response = await fetch(
+          `${API_BASE_URL}/reviews/validate?orderId=${orderId}&token=${token}`,
+          {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Invalid or expired review link');
+        }
+
+        const data: TokenValidationResponse = await response.json();
+        
+        if (data.valid) {
+          setIsValidAccess(true);
+          
+          // Auto-populate form from URL parameters
+          setNewReview({
+            clientName: clientName ? decodeURIComponent(clientName) : (data.clientName || ''),
+            clientEmail: email ? decodeURIComponent(email) : (data.clientEmail || ''),
+            itemName: itemName ? decodeURIComponent(itemName) : (data.itemName || ''),
+            rating: 5,
+            comment: "",
+          });
+          setAutoFilled(true);
+          
+          // Fetch public reviews only after validation
+          fetchReviews();
+          fetchReviewStats();
+        } else {
+          setError(data.message || 'Invalid review link');
+        }
+      } catch (err) {
+        console.error('Validation error:', err);
+        setError('This review link is invalid or has expired');
+      } finally {
+        setLoading(prev => ({ ...prev, validating: false }));
+      }
+    };
+
+    validateAccess();
+  }, [searchParams, router]);
+
+  // Fetch reviews (only called after validation)
   const fetchReviews = async () => {
     try {
       setLoading(prev => ({ ...prev, reviews: true }));
@@ -96,7 +176,6 @@ export default function ReviewsPage() {
       setStats(data);
     } catch (err) {
       console.error('Error fetching stats:', err);
-      // Don't set error for stats - it's not critical
     } finally {
       setLoading(prev => ({ ...prev, stats: false }));
     }
@@ -132,7 +211,10 @@ export default function ReviewsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newReview),
+        body: JSON.stringify({
+          ...newReview,
+          orderId: searchParams.get('orderId') // Include orderId from URL
+        }),
       });
 
       if (!response.ok) {
@@ -145,14 +227,12 @@ export default function ReviewsPage() {
       // Add to local state immediately
       setReviews(prev => [savedReview, ...prev]);
       
-      // Reset form
-      setNewReview({
-        clientName: "",
-        clientEmail: "",
-        itemName: "",
-        rating: 5,
+      // Reset form but keep auto-filled fields
+      setNewReview(prev => ({
+        ...prev,
         comment: "",
-      });
+        rating: 5
+      }));
       
       // Refresh stats
       fetchReviewStats();
@@ -171,22 +251,20 @@ export default function ReviewsPage() {
   // Mark review as helpful
   const markAsHelpful = async (reviewId: number) => {
     try {
-      // Update local state first for instant feedback
       setReviews(prev => prev.map(review => 
         review.id === reviewId 
           ? { ...review, helpfulCount: review.helpfulCount + 1 }
           : review
       ));
 
-      // Optional: Send API request to update helpful count
-      // const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}/helpful`, {
-      //   method: 'POST',
-      //   credentials: 'include',
-      // });
+      // Call API to update helpful count
+      await fetch(`${API_BASE_URL}/reviews/${reviewId}/helpful`, {
+        method: 'POST',
+        credentials: 'include',
+      });
       
     } catch (err) {
       console.error('Error marking as helpful:', err);
-      // Revert local state on error
       setReviews(prev => prev.map(review => 
         review.id === reviewId 
           ? { ...review, helpfulCount: review.helpfulCount - 1 }
@@ -206,18 +284,43 @@ export default function ReviewsPage() {
     });
   };
 
-  // Initialize
-  useEffect(() => {
-    fetchReviews();
-    fetchReviewStats();
-  }, [page]);
+  // Show loading while validating
+  if (loading.validating) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-green-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Validating your access...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // Auto-refresh stats when reviews change
-  useEffect(() => {
-    if (reviews.length > 0) {
-      fetchReviewStats();
-    }
-  }, [reviews.length]);
+  // Show error if not valid
+  if (!isValidAccess) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md text-center">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-10 h-10 text-red-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">Access Denied</h1>
+          <p className="text-gray-600 mb-6">
+            {error || "This page can only be accessed through a valid email link."}
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            If you received an email asking for a review, please click the link in that email.
+          </p>
+          <button
+            onClick={() => router.push('https://f-carshipping.com')}
+            className="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition"
+          >
+            Go to Homepage
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -225,6 +328,14 @@ export default function ReviewsPage() {
         <h1 className="text-2xl font-bold text-gray-800">Ratings & Reviews</h1>
         <p className="text-gray-600">See what clients are saying about our service</p>
       </div>
+
+      {/* Auto-filled notification */}
+      {autoFilled && (
+        <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+          <CheckCircle className="inline mr-2" size={20} />
+          Your information has been pre-filled from your order. Thank you for taking the time to review!
+        </div>
+      )}
 
       {/* Error Alert */}
       {error && (
@@ -334,7 +445,7 @@ export default function ReviewsPage() {
         </div>
       </div>
 
-      {/* Add Review Form */}
+      {/* Add Review Form - Auto-populated from URL */}
       <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-green-100">
         <h2 className="text-xl font-bold text-gray-800 mb-6">Share Your Experience</h2>
         <p className="text-gray-600 mb-6">Your review will be posted immediately for others to see.</p>
@@ -348,12 +459,16 @@ export default function ReviewsPage() {
               <input
                 type="text"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50"
                 placeholder="Enter your full name"
                 value={newReview.clientName}
                 onChange={(e) => setNewReview({...newReview, clientName: e.target.value})}
                 disabled={loading.submitting}
+                readOnly={autoFilled} // Make read-only if auto-filled
               />
+              {autoFilled && (
+                <p className="text-xs text-gray-500 mt-1">Auto-filled from your order</p>
+              )}
             </div>
             
             <div>
@@ -363,12 +478,16 @@ export default function ReviewsPage() {
               <input
                 type="email"
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50"
                 placeholder="your.email@example.com"
                 value={newReview.clientEmail}
                 onChange={(e) => setNewReview({...newReview, clientEmail: e.target.value})}
                 disabled={loading.submitting}
+                readOnly={autoFilled} // Make read-only if auto-filled
               />
+              {autoFilled && (
+                <p className="text-xs text-gray-500 mt-1">Auto-filled from your order</p>
+              )}
             </div>
           </div>
           
@@ -379,12 +498,16 @@ export default function ReviewsPage() {
             <input
               type="text"
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50"
               placeholder="What item did you receive?"
               value={newReview.itemName}
               onChange={(e) => setNewReview({...newReview, itemName: e.target.value})}
               disabled={loading.submitting}
+              readOnly={autoFilled} // Make read-only if auto-filled
             />
+            {autoFilled && (
+              <p className="text-xs text-gray-500 mt-1">Auto-filled from your order</p>
+            )}
           </div>
           
           <div>
@@ -477,7 +600,6 @@ export default function ReviewsPage() {
       {/* Reviews List */}
       <div className="space-y-6">
         {loading.reviews ? (
-          // Skeleton Loaders
           Array.from({ length: 3 }).map((_, index) => (
             <div key={index} className="bg-white rounded-xl shadow-sm p-6 animate-pulse">
               <div className="flex justify-between items-start mb-4">
