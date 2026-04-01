@@ -73,11 +73,8 @@ export default function ReviewsClient() {
   // Validate token/parameters on load
   useEffect(() => {
     const validateAccess = async () => {
-      const orderId = searchParams.get('orderId');
-      const token = searchParams.get('token');
-      const itemName = searchParams.get('item');
-      const clientName = searchParams.get('client');
-      const email = searchParams.get('email');
+     const orderId = searchParams.get('orderId');
+const token = searchParams.get('token');
 
       // Check if we have the required parameters
       if (!orderId || !token) {
@@ -109,11 +106,11 @@ export default function ReviewsClient() {
           
           // Auto-populate form from URL parameters
           setNewReview({
-            clientName: clientName ? decodeURIComponent(clientName) : (data.clientName || ''),
-            clientEmail: email ? decodeURIComponent(email) : (data.clientEmail || ''),
-            itemName: itemName ? decodeURIComponent(itemName) : (data.itemName || ''),
-            rating: 5,
-            comment: "",
+             clientName: data.clientName || '',
+  clientEmail: data.clientEmail || '',
+  itemName: data.itemName || '',
+  rating: 5,
+  comment: "",
           });
           setAutoFilled(true);
           
