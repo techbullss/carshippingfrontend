@@ -81,7 +81,7 @@ export default function ReviewsClient({ token: propToken }: ReviewsClientProps) 
     } else {
       // For backward compatibility with old links
       const path = window.location.pathname;
-      const tokenFromUrl = path.split('/reviews/')[1];
+      const tokenFromUrl = path.split('/Reviews/')[1];
       if (tokenFromUrl) {
         setToken(tokenFromUrl);
       } else {
