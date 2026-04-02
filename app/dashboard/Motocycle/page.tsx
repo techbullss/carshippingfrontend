@@ -23,6 +23,16 @@ export default function MotorcyclePage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
   
+  // Sold form states
+  const [soldFormOpen, setSoldFormOpen] = useState(false);
+  const [selectedMotorcycle, setSelectedMotorcycle] = useState<any | null>(null);
+  const [buyerInfo, setBuyerInfo] = useState({
+    buyerName: '',
+    buyerEmail: '',
+    buyerPhoneNumber: ''
+  });
+  const [submittingSold, setSubmittingSold] = useState(false);
+  
   // Pagination state
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -207,17 +217,66 @@ export default function MotorcyclePage() {
     }
   };
 
-  const handleMarkAsSold = async (m: any) => {
-    if (!confirm("Mark this motorcycle as sold?")) return;
+  const openSoldForm = (motorcycle: any) => {
+    setSelectedMotorcycle(motorcycle);
+    setBuyerInfo({
+      buyerName: '',
+      buyerEmail: '',
+      buyerPhoneNumber: ''
+    });
+    setSoldFormOpen(true);
+  };
+
+  const handleSoldSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedMotorcycle) return;
+    
+    // Validate form
+    if (!buyerInfo.buyerName.trim()) {
+      alert("Please enter buyer's name");
+      return;
+    }
+    if (!buyerInfo.buyerEmail.trim()) {
+      alert("Please enter buyer's email");
+      return;
+    }
+    if (!buyerInfo.buyerPhoneNumber.trim()) {
+      alert("Please enter buyer's phone number");
+      return;
+    }
+    
+    setSubmittingSold(true);
     try {
-      await fetch(`https://api.f-carshipping.com/api/motorcycles/${m.id}/sold`, { 
+      // First mark as sold with buyer information
+      const response = await fetch(`https://api.f-carshipping.com/api/motorcycles/${selectedMotorcycle.id}/sold`, { 
         method: "PUT", 
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          buyerName: buyerInfo.buyerName,
+          buyerEmail: buyerInfo.buyerEmail,
+          buyerPhoneNumber: buyerInfo.buyerPhoneNumber,
+          soldBy: email,
+          soldDate: new Date().toISOString()
+        })
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to mark as sold');
+      }
+      
+      setSoldFormOpen(false);
+      setSelectedMotorcycle(null);
+      setBuyerInfo({ buyerName: '', buyerEmail: '', buyerPhoneNumber: '' });
       fetchList(page);
+      alert("Motorcycle marked as sold successfully!");
     } catch (error) {
       console.error("Mark as sold error:", error);
       alert("Failed to mark motorcycle as sold");
+    } finally {
+      setSubmittingSold(false);
     }
   };
 
@@ -423,12 +482,12 @@ export default function MotorcyclePage() {
               <MotorcycleCard
                 key={m.id}
                 m={m}
-                onEdit={(isSeller || isAdmin) ? ((x) => { setEditing(x); setFormOpen(true); }) : undefined}
-                onDelete={(isSeller || isAdmin) ? ((x) => handleDelete(x)) : undefined}
-                onDetails={(x) => { setSelected(x); setDrawerOpen(true); }}
-                onApprove={isAdmin ? ((x) => handleApprove(x)) : undefined}
-                onReject={isAdmin ? ((x) => handleReject(x)) : undefined}
-                onMarkAsSold={(isSeller || isAdmin) ? ((x) => handleMarkAsSold(x)) : undefined}
+                onEdit={(isSeller || isAdmin) ? ((x: any) => { setEditing(x); setFormOpen(true); }) : undefined}
+                onDelete={(isSeller || isAdmin) ? ((x: any) => handleDelete(x)) : undefined}
+                onDetails={(x: any) => { setSelected(x); setDrawerOpen(true); }}
+                onApprove={isAdmin ? ((x: any) => handleApprove(x)) : undefined}
+                onReject={isAdmin ? ((x: any) => handleReject(x)) : undefined}
+                onMarkAsSold={(isSeller || isAdmin) ? ((x: any) => openSoldForm(x)) : undefined}
                 showAdminControls={isAdmin}
               />
             ))}
@@ -484,6 +543,96 @@ export default function MotorcyclePage() {
             </div>
           )}
         </>
+      )}
+
+      {/* Sold Form Modal */}
+      {soldFormOpen && selectedMotorcycle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSoldFormOpen(false)} />
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="relative bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Mark as Sold</h2>
+              <button
+                onClick={() => setSoldFormOpen(false)}
+                className="p-2 rounded-full hover:bg-gray-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Motorcycle Details:</p>
+              <p className="font-semibold">{selectedMotorcycle.brand} {selectedMotorcycle.model}</p>
+              <p className="text-sm text-gray-500">KES {selectedMotorcycle.price?.toLocaleString()}</p>
+            </div>
+            
+            <form onSubmit={handleSoldSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Buyer's Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={buyerInfo.buyerName}
+                  onChange={(e) => setBuyerInfo({ ...buyerInfo, buyerName: e.target.value })}
+                  placeholder="Enter buyer's full name"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Buyer's Email *
+                </label>
+                <input
+                  type="email"
+                  required
+                  className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={buyerInfo.buyerEmail}
+                  onChange={(e) => setBuyerInfo({ ...buyerInfo, buyerEmail: e.target.value })}
+                  placeholder="buyer@example.com"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Buyer's Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={buyerInfo.buyerPhoneNumber}
+                  onChange={(e) => setBuyerInfo({ ...buyerInfo, buyerPhoneNumber: e.target.value })}
+                  placeholder="+254 700 000 000"
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setSoldFormOpen(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingSold}
+                  className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submittingSold ? "Processing..." : "Confirm Sale"}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
       )}
 
       {/* Drawer Details */}
@@ -619,7 +768,7 @@ export default function MotorcyclePage() {
               {(isSeller || isAdmin) && selected.status === "APPROVED" && (
                 <div className="flex gap-3 pt-4 border-t">
                   <button 
-                    onClick={() => { handleMarkAsSold(selected); setDrawerOpen(false); }}
+                    onClick={() => { openSoldForm(selected); setDrawerOpen(false); }}
                     className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
                   >
                     Mark as Sold
