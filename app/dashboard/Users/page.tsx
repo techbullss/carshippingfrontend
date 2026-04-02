@@ -30,6 +30,21 @@ interface User {
   estimatedShippingDate: string;
   verificationCode: string;
   preferredCommunication: string[];
+  profilePicture?: string;
+  
+  // New seller fields
+  sellerType?: string; // "individual" or "company"
+  
+  // Company fields
+  companyName?: string;
+  companyRegistrationNumber?: string;
+  kraPin?: string;
+  businessPermitNumber?: string;
+  companyAddress?: string;
+  certificateOfIncorporation?: string;
+  kraPinCertificate?: string;
+  businessPermit?: string;
+  trademarkImage?: string;
 }
 
 export default function UserManagement() {
@@ -62,13 +77,13 @@ export default function UserManagement() {
         ...(searchTerm && { search: searchTerm })
       });
 
-    const response = await fetch(
-  `https://api.f-carshipping.com/api/admin/users?${params.toString()}`,
-  {
-    method: "GET",
-    credentials: "include"
-  }
-);
+      const response = await fetch(
+        `https://api.f-carshipping.com/api/admin/users?${params.toString()}`,
+        {
+          method: "GET",
+          credentials: "include"
+        }
+      );
       
       if (!response.ok) throw new Error("Failed to fetch users");
       
@@ -203,6 +218,13 @@ export default function UserManagement() {
     }
   };
 
+  const getSellerTypeBadge = (sellerType?: string) => {
+    if (sellerType === "company") {
+      return <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">🏢 Company</span>;
+    }
+    return <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">👤 Individual</span>;
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
@@ -334,9 +356,12 @@ export default function UserManagement() {
                           {user.firstName} {user.lastName}
                         </h3>
                         <p className="text-blue-100 text-sm">{user.email}</p>
-                        <p className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                          {user.status || "Pending"}
-                        </p>
+                        <div className="flex gap-2 mt-1">
+                          <p className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
+                            {user.status || "Pending"}
+                          </p>
+                          {getSellerTypeBadge(user.sellerType)}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -358,6 +383,14 @@ export default function UserManagement() {
                         {new Date(user.createdAt).toLocaleDateString()}
                       </span>
                     </div>
+                    
+                    {/* Company info preview if company seller */}
+                    {user.sellerType === "company" && user.companyName && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Company:</span>
+                        <span className="font-medium truncate max-w-[150px]">{user.companyName}</span>
+                      </div>
+                    )}
                     
                     <div>
                       <span className="text-gray-500 text-sm">Roles:</span>
@@ -576,6 +609,19 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
             </div>
           </div>
 
+          {/* Seller Type Banner */}
+          <div className={`mb-6 p-4 rounded-lg ${user.sellerType === 'company' ? 'bg-purple-50 border border-purple-200' : 'bg-blue-50 border border-blue-200'}`}>
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">{user.sellerType === 'company' ? '🏢' : '👤'}</span>
+              <div>
+                <p className="font-semibold">{user.sellerType === 'company' ? 'Company Seller' : 'Individual Seller'}</p>
+                {user.sellerType === 'company' && user.companyName && (
+                  <p className="text-sm text-gray-600">{user.companyName}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Personal Information</h3>
@@ -586,7 +632,10 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
               <InfoField label="Phone" value={user.phone} />
               <InfoField label="Date of Birth" value={user.dateOfBirth} />
               <InfoField label="Gender" value={user.gender} />
-              <InfoField label="ID Number" value={user.idNumber} />
+              
+              {user.sellerType !== "company" && (
+                <InfoField label="ID Number" value={user.idNumber} />
+              )}
               
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium text-gray-500">Email Verified:</span>
@@ -597,6 +646,19 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
                 </span>
               </div>
             </div>
+
+            {/* Company Information Section */}
+            {user.sellerType === "company" && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Company Information</h3>
+                
+                <InfoField label="Company Name" value={user.companyName} />
+                <InfoField label="Registration Number" value={user.companyRegistrationNumber} />
+                <InfoField label="KRA PIN" value={user.kraPin} />
+                <InfoField label="Business Permit Number" value={user.businessPermitNumber} />
+                <InfoField label="Company Address" value={user.companyAddress} />
+              </div>
+            )}
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Address Information</h3>
@@ -627,29 +689,75 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Documents</h3>
-              
-              {user.passportPhoto && (
-                <DocumentPreview 
-                  label="Passport Photo" 
-                  url={user.passportPhoto} 
-                  type="image"
-                />
-              )}
-              
-              {user.govtId && (
-                <DocumentPreview 
-                  label="Government ID" 
-                  url={user.govtId} 
-                  type={user.govtId.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image'}
-                />
-              )}
-              
-              {!user.passportPhoto && !user.govtId && (
-                <p className="text-sm text-gray-500">No documents uploaded</p>
-              )}
-            </div>
+            {/* Documents Section for Individual Sellers */}
+            {user.sellerType !== "company" && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Documents</h3>
+                
+                {user.passportPhoto && (
+                  <DocumentPreview 
+                    label="Passport Photo" 
+                    url={user.passportPhoto} 
+                    type="image"
+                  />
+                )}
+                
+                {user.govtId && (
+                  <DocumentPreview 
+                    label="Government ID" 
+                    url={user.govtId} 
+                    type={user.govtId.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image'}
+                  />
+                )}
+                
+                {!user.passportPhoto && !user.govtId && (
+                  <p className="text-sm text-gray-500">No documents uploaded</p>
+                )}
+              </div>
+            )}
+
+            {/* Company Documents Section */}
+            {user.sellerType === "company" && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Company Documents</h3>
+                
+                {user.certificateOfIncorporation && (
+                  <DocumentPreview 
+                    label="Certificate of Incorporation" 
+                    url={user.certificateOfIncorporation} 
+                    type={user.certificateOfIncorporation.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image'}
+                  />
+                )}
+                
+                {user.kraPinCertificate && (
+                  <DocumentPreview 
+                    label="KRA PIN Certificate" 
+                    url={user.kraPinCertificate} 
+                    type={user.kraPinCertificate.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image'}
+                  />
+                )}
+                
+                {user.businessPermit && (
+                  <DocumentPreview 
+                    label="Business Permit" 
+                    url={user.businessPermit} 
+                    type={user.businessPermit.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image'}
+                  />
+                )}
+                
+                {user.trademarkImage && (
+                  <DocumentPreview 
+                    label="Trademark/Logo" 
+                    url={user.trademarkImage} 
+                    type="image"
+                  />
+                )}
+                
+                {!user.certificateOfIncorporation && !user.kraPinCertificate && !user.businessPermit && !user.trademarkImage && (
+                  <p className="text-sm text-gray-500">No company documents uploaded</p>
+                )}
+              </div>
+            )}
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Account Information</h3>
@@ -674,7 +782,7 @@ function UserDetailsDrawer({ user, onClose }: UserDetailsDrawerProps) {
 }
 
 // Helper Component for Info Fields
-function InfoField({ label, value }: { label: string; value: string }) {
+function InfoField({ label, value }: { label: string; value?: string }) {
   return (
     <div>
       <span className="text-sm font-medium text-gray-500">{label}:</span>
