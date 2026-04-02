@@ -9,6 +9,7 @@ interface MotorcycleCardProps {
   onDetails: (m: any) => void;
   onApprove?: (m: any) => void;
   onReject?: (m: any) => void;
+   onMarkAsSold?: (motorcycle: any) => void;
   showAdminControls?: boolean;
 }
 
@@ -19,6 +20,7 @@ export default function MotorcycleCard({
   onDetails,
   onApprove,
   onReject,
+    onMarkAsSold,
   showAdminControls = false,
 }: MotorcycleCardProps) {
   // Format price with commas

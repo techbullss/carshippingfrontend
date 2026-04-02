@@ -207,6 +207,20 @@ export default function MotorcyclePage() {
     }
   };
 
+  const handleMarkAsSold = async (m: any) => {
+    if (!confirm("Mark this motorcycle as sold?")) return;
+    try {
+      await fetch(`https://api.f-carshipping.com/api/motorcycles/${m.id}/sold`, { 
+        method: "PUT", 
+        credentials: 'include',
+      });
+      fetchList(page);
+    } catch (error) {
+      console.error("Mark as sold error:", error);
+      alert("Failed to mark motorcycle as sold");
+    }
+  };
+
   const handleResetFilters = () => {
     setSearch("");
     setFilterType("");
@@ -337,6 +351,7 @@ export default function MotorcyclePage() {
             <option>APPROVED</option>
             <option>PENDING</option>
             <option>REJECTED</option>
+            <option>SOLD</option>
           </select>
           
           {/* Add Button */}
@@ -413,6 +428,7 @@ export default function MotorcyclePage() {
                 onDetails={(x) => { setSelected(x); setDrawerOpen(true); }}
                 onApprove={isAdmin ? ((x) => handleApprove(x)) : undefined}
                 onReject={isAdmin ? ((x) => handleReject(x)) : undefined}
+                onMarkAsSold={(isSeller || isAdmin) ? ((x) => handleMarkAsSold(x)) : undefined}
                 showAdminControls={isAdmin}
               />
             ))}
@@ -500,6 +516,7 @@ export default function MotorcyclePage() {
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                   selected.status === "APPROVED" ? "bg-green-100 text-green-800" : 
                   selected.status === "PENDING" ? "bg-yellow-100 text-yellow-800" : 
+                  selected.status === "SOLD" ? "bg-gray-100 text-gray-800" :
                   "bg-red-100 text-red-800"
                 }`}>
                   {selected.status}
@@ -569,7 +586,7 @@ export default function MotorcyclePage() {
               </div>
 
               {/* Admin Actions */}
-              {isAdmin && selected.status !== "APPROVED" && (
+              {isAdmin && selected.status !== "APPROVED" && selected.status !== "SOLD" && (
                 <div className="flex gap-3 pt-4 border-t">
                   {selected.status === "PENDING" && (
                     <>
@@ -595,6 +612,30 @@ export default function MotorcyclePage() {
                       Approve
                     </button>
                   )}
+                </div>
+              )}
+
+              {/* Mark as Sold Button for Seller and Admin */}
+              {(isSeller || isAdmin) && selected.status === "APPROVED" && (
+                <div className="flex gap-3 pt-4 border-t">
+                  <button 
+                    onClick={() => { handleMarkAsSold(selected); setDrawerOpen(false); }}
+                    className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                  >
+                    Mark as Sold
+                  </button>
+                </div>
+              )}
+
+              {/* Edit Button for Admin */}
+              {isAdmin && (
+                <div className="flex gap-3 pt-4 border-t">
+                  <button 
+                    onClick={() => { setEditing(selected); setFormOpen(true); setDrawerOpen(false); }}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Edit Motorcycle
+                  </button>
                 </div>
               )}
             </div>
