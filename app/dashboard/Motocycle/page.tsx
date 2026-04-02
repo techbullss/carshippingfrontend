@@ -38,7 +38,6 @@ export default function MotorcyclePage() {
   
   // UI states
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [isDashboardView, setIsDashboardView] = useState(false);
 
   // Determine if user is authenticated
   const isAuthenticated = !!email;
@@ -77,20 +76,17 @@ export default function MotorcyclePage() {
     }
   }, [user, userLoading, role, router]);
 
-  // Determine endpoint based on authentication and view mode
+  // Determine endpoint - dashboard only
   const getEndpoint = () => {
-    if (isAuthenticated && isDashboardView) {
-      return "/api/motorcycles/dashboard";
-    }
-    return "/api/motorcycles/public";
+    return "/api/motorcycles/dashboard";
   };
 
-  // Determine page size based on endpoint
+  // Determine page size
   const getPageSize = () => {
-    return getEndpoint().includes("dashboard") ? 20 : 9;
+    return 20;
   };
 
-  // Build query parameters based on endpoint
+  // Build query parameters
   const buildQueryParams = (pageNum: number) => {
     const params: string[] = [];
     const endpoint = getEndpoint();
@@ -99,20 +95,11 @@ export default function MotorcyclePage() {
     params.push(`page=${pageNum}`);
     params.push(`size=${getPageSize()}`);
     
-    // Common filters for all endpoints
+    // Common filters
     if (search) params.push(`search=${encodeURIComponent(search)}`);
     if (filterType) params.push(`type=${encodeURIComponent(filterType)}`);
-    
-    if (endpoint.includes("dashboard")) {
-      // Dashboard specific filters
-      if (filterStatus) params.push(`status=${encodeURIComponent(filterStatus)}`);
-      if (selectedBrand) params.push(`brand=${encodeURIComponent(selectedBrand)}`);
-    } else {
-      // Public endpoint filters (only approved vehicles)
-      if (selectedBrand) params.push(`brand=${encodeURIComponent(selectedBrand)}`);
-      if (priceRange) params.push(`priceRange=${encodeURIComponent(priceRange)}`);
-      if (year) params.push(`year=${encodeURIComponent(year)}`);
-    }
+    if (filterStatus) params.push(`status=${encodeURIComponent(filterStatus)}`);
+    if (selectedBrand) params.push(`brand=${encodeURIComponent(selectedBrand)}`);
     
     return params.length ? `?${params.join("&")}` : "";
   };
@@ -165,22 +152,12 @@ export default function MotorcyclePage() {
     }
   };
 
-  // Auto-switch to dashboard view if user is authenticated and looking at status filter
-  useEffect(() => {
-    if (isAuthenticated && filterStatus) {
-      setIsDashboardView(true);
-    }
-  }, [filterStatus, isAuthenticated]);
-
-  // Fetch data when filters or authentication changes
+  // Fetch data when filters change
   useEffect(() => {
     if (isAuthenticated && !userLoading && user) {
       fetchList(0);
-    } else if (!isAuthenticated && !userLoading) {
-      // For public view, fetch even without authentication
-      fetchList(0);
     }
-  }, [search, filterType, filterStatus, selectedBrand, priceRange, year, isDashboardView, isAuthenticated, userLoading, user]);
+  }, [search, filterType, filterStatus, selectedBrand, priceRange, year, isAuthenticated, userLoading, user]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 0 && newPage < totalPages) {
@@ -239,20 +216,6 @@ export default function MotorcyclePage() {
     setYear("");
     setPage(0);
     setShowAdvancedFilters(false);
-    
-    // Reset to public view if not authenticated
-    if (!isAuthenticated) {
-      setIsDashboardView(false);
-    }
-  };
-
-  const toggleViewMode = () => {
-    setIsDashboardView(!isDashboardView);
-    setPage(0);
-    // Reset status filter when switching to public view
-    if (!isDashboardView) {
-      setFilterStatus("");
-    }
   };
 
   // Show loading while user data is being fetched
@@ -335,273 +298,17 @@ export default function MotorcyclePage() {
     );
   }
 
-  // For public/unauthenticated users, show the public view
-  if (!user) {
-    return (
-      <div className="p-6">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Motorcycles</h1>
-            <div className="flex items-center gap-3 mt-1">
-              <span className="text-sm text-gray-500">
-                Public View • Showing Approved Only
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            {/* Search Input */}
-            <input
-              placeholder="Search brand or model..."
-              className="border p-2 rounded-md w-full md:w-64"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            
-            {/* Type Filter */}
-            <select className="border p-2 rounded-md" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-              <option value="">All types</option>
-              <option>Sport</option>
-              <option>Cruiser</option>
-              <option>Dirt</option>
-              <option>Touring</option>
-              <option>Standard</option>
-            </select>
-            
-            {/* Advanced Filters Toggle */}
-            <button
-              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="flex items-center gap-2 px-3 py-2 border rounded-md hover:bg-gray-50"
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-            </button>
-          </div>
-        </div>
-
-        {/* Advanced Filter Section */}
-        {showAdvancedFilters && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-medium mb-3">Advanced Filters</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <input
-                placeholder="Brand"
-                className="border p-2 rounded-md"
-                value={selectedBrand}
-                onChange={(e) => setSelectedBrand(e.target.value)}
-              />
-              
-              <input
-                placeholder="Price Range (e.g., 100000-500000)"
-                className="border p-2 rounded-md"
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-              />
-              <input
-                placeholder="Year"
-                className="border p-2 rounded-md"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-              />
-            </div>
-            <div className="flex justify-between mt-3">
-              <div className="flex gap-3">
-                <button 
-                  onClick={handleResetFilters} 
-                  className="px-4 py-2 text-sm border rounded-md hover:bg-gray-100"
-                >
-                  Reset All Filters
-                </button>
-                <button 
-                  onClick={() => setShowAdvancedFilters(false)}
-                  className="px-4 py-2 text-sm border rounded-md hover:bg-gray-100"
-                >
-                  Hide Filters
-                </button>
-              </div>
-              <div className="text-sm text-gray-600">
-                Showing {motorcycles.length} of {totalElements} motorcycles (Public)
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Results Section */}
-        {loading ? (
-          <div className="text-center py-20">Loading motorcycles...</div>
-        ) : motorcycles.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">
-            No motorcycles found. Try adjusting your search.
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {motorcycles.map((m) => (
-                <MotorcycleCard
-                  key={m.id}
-                  m={m}
-                  onDetails={(x) => { setSelected(x); setDrawerOpen(true); }}
-                />
-              ))}
-            </div>
-            
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 mt-8">
-                <button
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={page === 0}
-                  className={`px-4 py-2 rounded-md ${page === 0 ? 'bg-gray-200 text-gray-500' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
-                >
-                  Previous
-                </button>
-                
-                <div className="flex items-center gap-2">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i;
-                    } else if (page < 3) {
-                      pageNum = i;
-                    } else if (page > totalPages - 4) {
-                      pageNum = totalPages - 5 + i;
-                    } else {
-                      pageNum = page - 2 + i;
-                    }
-                    
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => handlePageChange(pageNum)}
-                        className={`w-10 h-10 rounded-md ${page === pageNum ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
-                      >
-                        {pageNum + 1}
-                      </button>
-                    );
-                  })}
-                </div>
-                
-                <button
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={page >= totalPages - 1}
-                  className={`px-4 py-2 rounded-md ${page >= totalPages - 1 ? 'bg-gray-200 text-gray-500' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
-                >
-                  Next
-                </button>
-                
-                <div className="text-sm text-gray-600 ml-4">
-                  Page {page + 1} of {totalPages}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Drawer Details */}
-        {drawerOpen && selected && (
-          <div className="fixed inset-0 z-50 flex justify-end">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDrawerOpen(false)} />
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 28 }}
-              className="relative w-full sm:w-[420px] md:w-[520px] lg:w-[640px] bg-white shadow-2xl h-full overflow-y-auto"
-            >
-              <div className="sticky top-0 z-20 bg-white border-b p-4 flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold">{selected.brand} {selected.model}</h2>
-                  <div className="text-sm text-gray-500">
-                    {selected.type} • {selected.engineCapacity} cc • {selected.year}
-                  </div>
-                </div>
-                <button className="p-2 rounded-full hover:bg-gray-100" onClick={() => setDrawerOpen(false)}>
-                  <X className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
-
-              <div className="p-6 space-y-4">
-                {/* Price */}
-                <div className="text-2xl font-semibold text-blue-600">KES {selected.price?.toLocaleString()}</div>
-
-                {/* Details Grid */}
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <div className="text-gray-500">Location</div>
-                    <div className="font-medium">{selected.location || "—"}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500">Engine Capacity</div>
-                    <div className="font-medium">{selected.engineCapacity} cc</div>
-                  </div>
-                </div>
-
-                {/* Features */}
-                {selected.features && selected.features.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold mb-2">Features</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selected.features.map((feature: string, idx: number) => (
-                        <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Description */}
-                <div>
-                  <h3 className="font-semibold mb-2">Description</h3>
-                  <p className="text-sm text-gray-700">{selected.description || "No description provided."}</p>
-                </div>
-
-                {/* Images */}
-                <div>
-                  <h3 className="font-semibold mb-3">Images</h3>
-                  {selected.imageUrls?.length ? (
-                    <div className="grid grid-cols-2 gap-3">
-                      {selected.imageUrls.map((img: string, idx: number) => (
-                        <div key={idx} className="relative overflow-hidden rounded-lg border">
-                          <img 
-                            src={img} 
-                            alt={`${selected.brand}-${idx}`} 
-                            className="w-full h-40 object-cover transform hover:scale-105 transition duration-300" 
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-gray-500 italic">No images available.</div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Authorized user view (ADMIN or SELLER)
+  // Authorized user view (ADMIN or SELLER) - Dashboard only
   return (
     <div className="p-6">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Motorcycles</h1>
+          <h1 className="text-2xl font-bold">Motorcycles Dashboard</h1>
           <div className="flex items-center gap-3 mt-1">
             <span className="text-sm text-gray-500">
-              {isDashboardView ? "Dashboard View" : "Public View"} • 
-              Showing {isDashboardView ? "All Statuses" : "Approved Only"}
+              Dashboard View • Showing All Statuses
             </span>
-            <button
-              onClick={toggleViewMode}
-              className="text-sm px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200"
-            >
-              Switch to {isDashboardView ? "Public" : "Dashboard"} View
-            </button>
           </div>
         </div>
 
@@ -624,17 +331,15 @@ export default function MotorcyclePage() {
             <option>Standard</option>
           </select>
           
-          {/* Status Filter (only in dashboard view) */}
-          {isDashboardView && (
-            <select className="border p-2 rounded-md" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-              <option value="">All status</option>
-              <option>APPROVED</option>
-              <option>PENDING</option>
-              <option>REJECTED</option>
-            </select>
-          )}
+          {/* Status Filter */}
+          <select className="border p-2 rounded-md" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+            <option value="">All status</option>
+            <option>APPROVED</option>
+            <option>PENDING</option>
+            <option>REJECTED</option>
+          </select>
           
-          {/* Add Button (only for authenticated sellers/admins) */}
+          {/* Add Button */}
           {(isSeller || isAdmin) && (
             <button 
               onClick={() => { setEditing(null); setFormOpen(true); }} 
@@ -666,23 +371,6 @@ export default function MotorcyclePage() {
               value={selectedBrand}
               onChange={(e) => setSelectedBrand(e.target.value)}
             />
-            
-            {!isDashboardView && (
-              <>
-                <input
-                  placeholder="Price Range (e.g., 100000-500000)"
-                  className="border p-2 rounded-md"
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(e.target.value)}
-                />
-                <input
-                  placeholder="Year"
-                  className="border p-2 rounded-md"
-                  value={year}
-                  onChange={(e) => setYear(e.target.value)}
-                />
-              </>
-            )}
           </div>
           <div className="flex justify-between mt-3">
             <div className="flex gap-3">
@@ -700,36 +388,18 @@ export default function MotorcyclePage() {
               </button>
             </div>
             <div className="text-sm text-gray-600">
-              Showing {motorcycles.length} of {totalElements} motorcycles
-              {isDashboardView ? " (Dashboard)" : " (Public)"}
+              Showing {motorcycles.length} of {totalElements} motorcycles (Dashboard)
             </div>
           </div>
         </div>
       )}
-
-      {/* User Role Indicator */}
-      <div className="mb-4 p-3 bg-blue-50 rounded-md">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-sm">
-              Logged in as: <span className="font-semibold">{email}</span>
-              <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                {role}
-              </span>
-            </div>
-          </div>
-          <div className="text-sm text-gray-600">
-            Viewing: <span className="font-medium">{isDashboardView ? "All Listings" : "Approved Listings Only"}</span>
-          </div>
-        </div>
-      </div>
 
       {/* Results Section */}
       {loading ? (
         <div className="text-center py-20">Loading motorcycles...</div>
       ) : motorcycles.length === 0 ? (
         <div className="text-center py-20 text-gray-500">
-          No motorcycles found. {isDashboardView ? "Try changing status filters." : "Try adjusting your search."}
+          No motorcycles found. Try changing status filters.
         </div>
       ) : (
         <>
@@ -743,7 +413,7 @@ export default function MotorcyclePage() {
                 onDetails={(x) => { setSelected(x); setDrawerOpen(true); }}
                 onApprove={isAdmin ? ((x) => handleApprove(x)) : undefined}
                 onReject={isAdmin ? ((x) => handleReject(x)) : undefined}
-                showAdminControls={isAdmin && isDashboardView}
+                showAdminControls={isAdmin}
               />
             ))}
           </div>
