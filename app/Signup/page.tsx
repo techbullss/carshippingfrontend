@@ -216,10 +216,8 @@ const RegisterPage = () => {
         return !!(formData.firstName && formData.lastName && formData.email && formData.phone && formData.sellerType);
       case 2:
         if (formData.sellerType === 'individual') {
-          // For individual, only validate basic info in step 2 (no idNumber here)
-          return true; // Step 2 for individual just shows a message, no required fields
+          return true;
         } else {
-          // Company validation for step 2
           return !!(
             formData.companyName &&
             formData.companyRegistrationNumber &&
@@ -229,14 +227,11 @@ const RegisterPage = () => {
           );
         }
       case 3:
-        // Address and Documents validation
         const addressValid = !!(formData.streetAddress && formData.city && formData.state && formData.postalCode && formData.country);
         
         if (formData.sellerType === 'individual') {
-          // Individual requires idNumber and files
           return !!(addressValid && formData.idNumber && formData.govtId && formData.passportPhoto);
         } else {
-          // Company requires all documents
           return !!(addressValid && 
             formData.certificateOfIncorporation && 
             formData.kraPinCertificate && 
@@ -274,28 +269,102 @@ const RegisterPage = () => {
     }
   };
 
-  // API call handled directly in component
+  // API call with proper data cleaning
   const handleSignup = async (): Promise<AuthResponse> => {
     const multipartData = new FormData();
 
     // Prepare JSON data (excluding files and confirmPassword)
-    const { govtId, passportPhoto, confirmPassword, termsAccepted, 
-            certificateOfIncorporation, kraPinCertificate, businessPermit, trademarkImage,
-            ...userData } = formData;
+    const { 
+      govtId, 
+      passportPhoto, 
+      confirmPassword, 
+      termsAccepted,
+      certificateOfIncorporation, 
+      kraPinCertificate, 
+      businessPermit, 
+      trademarkImage,
+      status,
+      ...userData 
+    } = formData;
 
-    // Append "data" JSON as Blob
-    multipartData.append("data", new Blob([JSON.stringify(userData)], { type: "application/json" }));
-
-    // Append files if provided (individual)
-    if (govtId) multipartData.append("govtId", govtId);
-    if (passportPhoto) multipartData.append("passportPhoto", passportPhoto);
+    // Clean the data - remove empty strings and ensure proper types
+    const cleanData: any = {};
     
-    // Append company files if provided and seller is company
+    // Required fields for all users
+    cleanData.firstName = userData.firstName;
+    cleanData.lastName = userData.lastName;
+    cleanData.email = userData.email;
+    cleanData.phone = userData.phone;
+    cleanData.password = userData.password;
+    cleanData.sellerType = userData.sellerType;
+    cleanData.role = "SELLER";
+    
+    // Address fields (only include if not empty)
+    if (userData.streetAddress) cleanData.streetAddress = userData.streetAddress;
+    if (userData.city) cleanData.city = userData.city;
+    if (userData.state) cleanData.state = userData.state;
+    if (userData.postalCode) cleanData.postalCode = userData.postalCode;
+    if (userData.country) cleanData.country = userData.country;
+    
+    // Optional preferences (only if they have values)
+    if (userData.preferredCommunication && userData.preferredCommunication.length > 0) {
+      cleanData.preferredCommunication = userData.preferredCommunication;
+    }
+    cleanData.newsletter = userData.newsletter || false;
+    
+    // Vehicle shipping (only if provided)
+    if (userData.shippingFrequency) cleanData.shippingFrequency = userData.shippingFrequency;
+    if (userData.vehicleType) cleanData.vehicleType = userData.vehicleType;
+    if (userData.estimatedShippingDate) cleanData.estimatedShippingDate = userData.estimatedShippingDate;
+    
+    // Company-specific fields
     if (formData.sellerType === 'company') {
-      if (certificateOfIncorporation) multipartData.append("certificateOfIncorporation", certificateOfIncorporation);
-      if (kraPinCertificate) multipartData.append("kraPinCertificate", kraPinCertificate);
-      if (businessPermit) multipartData.append("businessPermit", businessPermit);
-      if (trademarkImage) multipartData.append("trademarkImage", trademarkImage);
+      if (userData.companyName) cleanData.companyName = userData.companyName;
+      if (userData.companyRegistrationNumber) cleanData.companyRegistrationNumber = userData.companyRegistrationNumber;
+      if (userData.kraPin) cleanData.kraPin = userData.kraPin;
+      if (userData.businessPermitNumber) cleanData.businessPermitNumber = userData.businessPermitNumber;
+      if (userData.companyAddress) cleanData.companyAddress = userData.companyAddress;
+    } else {
+      // Individual-specific fields
+      if (userData.idNumber) cleanData.idNumber = userData.idNumber;
+    }
+    
+    console.log('📤 Cleaned data being sent:', cleanData);
+    
+    // Append cleaned data as JSON
+    multipartData.append("data", new Blob([JSON.stringify(cleanData)], { type: "application/json" }));
+    
+    // Append files based on seller type
+    if (formData.sellerType === 'company') {
+      if (certificateOfIncorporation) {
+        console.log('📎 Appending certificateOfIncorporation:', certificateOfIncorporation.name);
+        multipartData.append("certificateOfIncorporation", certificateOfIncorporation);
+      }
+      if (kraPinCertificate) {
+        console.log('📎 Appending kraPinCertificate:', kraPinCertificate.name);
+        multipartData.append("kraPinCertificate", kraPinCertificate);
+      }
+      if (businessPermit) {
+        console.log('📎 Appending businessPermit:', businessPermit.name);
+        multipartData.append("businessPermit", businessPermit);
+      }
+      if (trademarkImage) {
+        console.log('📎 Appending trademarkImage:', trademarkImage.name);
+        multipartData.append("trademarkImage", trademarkImage);
+      }
+    } else {
+      if (govtId) multipartData.append("govtId", govtId);
+      if (passportPhoto) multipartData.append("passportPhoto", passportPhoto);
+    }
+    
+    // Log FormData contents for debugging
+    console.log('📦 FormData entries:');
+    for (let pair of multipartData.entries()) {
+      if (pair[1] instanceof File) {
+        console.log(`   ${pair[0]}: File(${pair[1].name}, ${pair[1].size} bytes)`);
+      } else {
+        console.log(`   ${pair[0]}: ${pair[1]}`);
+      }
     }
 
     // Send multipart request to backend
@@ -305,12 +374,37 @@ const RegisterPage = () => {
       credentials: "include",
     });
 
+    // Log response status
+    console.log('📡 Response status:', response.status);
+    
+    // Try to parse response
+    const responseText = await response.text();
+    console.log('📡 Raw response:', responseText);
+    
     if (!response.ok) {
-      const errorData = await response.text();
-      throw new Error(errorData || 'Registration failed');
+      let errorMessage = responseText;
+      try {
+        const errorJson = JSON.parse(responseText);
+        errorMessage = errorJson.message || errorJson.error || responseText;
+      } catch (e) {
+        // If not JSON, use text as is
+      }
+      throw new Error(errorMessage);
     }
-
-    return await response.json();
+    
+    try {
+      return JSON.parse(responseText);
+    } catch (e) {
+      console.error('Failed to parse JSON response:', e);
+      // Return a default response if backend returns plain text
+      return {
+        message: responseText,
+        userId: '',
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName
+      } as AuthResponse;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -529,7 +623,6 @@ const RegisterPage = () => {
                 {currentStep === 2 && (
                   <div className="space-y-6">
                     {formData.sellerType === 'individual' ? (
-                      // Individual - No fields needed, just a message
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
                         <svg className="mx-auto h-12 w-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -540,7 +633,6 @@ const RegisterPage = () => {
                         </p>
                       </div>
                     ) : (
-                      // Company Fields
                       <>
                         <div>
                           <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
@@ -712,7 +804,6 @@ const RegisterPage = () => {
 
                     {/* Document Uploads based on seller type */}
                     {formData.sellerType === 'individual' ? (
-                      // Individual Documents
                       <>
                         <div>
                           <label htmlFor="idNumber" className="block text-sm font-medium text-gray-700">
@@ -760,7 +851,6 @@ const RegisterPage = () => {
                         </div>
                       </>
                     ) : (
-                      // Company Documents (Kenya-specific)
                       <>
                         <div className="border-t border-gray-200 pt-4">
                           <h3 className="text-lg font-medium text-gray-900 mb-4">Required Company Documents (Kenya)</h3>
