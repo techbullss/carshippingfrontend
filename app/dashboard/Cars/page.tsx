@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { Car } from "@/app/car";
 import { useRouter } from "next/navigation";
 import AddCarForm from "@/app/components/AddCarForm";
@@ -702,55 +702,245 @@ export default function CarsPage() {
       )}
 
       {/* Details Drawer */}
-      {detailCar && (
-        <div className="fixed inset-0 flex justify-end z-50 pointer-events-none">
-          <div className="bg-white w-full sm:w-96 h-full p-6 shadow-xl overflow-y-auto pointer-events-auto">
-            <button
-              onClick={() => setDetailCar(null)}
-              className="mb-4 p-2 hover:bg-gray-100 rounded"
-            >
-              Close
-            </button>
+    {detailCar && (
+  <div className="fixed inset-0 z-50 flex justify-end">
+    {/* Backdrop */}
+    <div 
+      className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+      onClick={() => setDetailCar(null)}
+    />
+    
+    {/* Drawer Panel */}
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ type: "spring", damping: 30, stiffness: 300 }}
+      className="relative w-full sm:w-[480px] lg:w-[560px] h-full bg-white shadow-2xl overflow-y-auto"
+    >
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-800">Vehicle Details</h2>
+        <button
+          onClick={() => setDetailCar(null)}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+        >
+          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
 
-            <img
-              src={detailCar.imageUrls?.[0] || "/placeholder-car.jpg"}
-              alt={`${detailCar.brand} ${detailCar.model}`}
-              className="w-full h-48 object-cover rounded-lg mb-4"
-            />
-
-            <h3 className="text-2xl font-bold mb-2">
-              {detailCar.brand} {detailCar.model}
-            </h3>
-            <p className="text-gray-600 mb-1">
-              Year: {detailCar.yearOfManufacture || "N/A"}
-            </p>
-            <p className="text-gray-600 mb-1">
-              Seller: {detailCar.seller || "N/A"}
-            </p>
-            <p className="text-gray-800 font-semibold mt-2">
-              Price: KES {detailCar.priceKes?.toLocaleString() ?? "-"}
-            </p>
-
-            <p className="mt-4 text-gray-500">
-              {detailCar.description || "No description provided."}
-            </p>
-
-            {/* Mark as Sold Button in Details Drawer */}
-            {(isSeller || isAdmin) && detailCar.status === "APPROVED" && (
-              <div className="flex gap-3 pt-4 border-t mt-4">
-                <button 
-                  onClick={() => { openSoldForm(detailCar); setDetailCar(null); }}
-                  className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-                >
-                  Mark as Sold
-                </button>
-              </div>
-            )}
-
-            {/* Rest of your details drawer content */}
+      {/* Content */}
+      <div className="p-6 space-y-6">
+        {/* Image Gallery */}
+        <div className="relative">
+          <img
+            src={detailCar.imageUrls?.[0] || "/placeholder-car.jpg"}
+            alt={`${detailCar.brand} ${detailCar.model}`}
+            className="w-full h-64 object-cover rounded-xl shadow-lg"
+          />
+          {/* Status Badge */}
+          <div className="absolute top-3 right-3">
+            <span className={`px-3 py-1 rounded-lg text-sm font-semibold shadow-lg ${
+              detailCar.status === "APPROVED"
+                ? "bg-green-500 text-white"
+                : detailCar.status === "REJECTED"
+                ? "bg-red-500 text-white"
+                : detailCar.status === "SOLD"
+                ? "bg-gray-700 text-white"
+                : "bg-yellow-500 text-white"
+            }`}>
+              {detailCar.status === "APPROVED" && "✓ Approved"}
+              {detailCar.status === "REJECTED" && "✗ Rejected"}
+              {detailCar.status === "SOLD" && "Sold"}
+              {detailCar.status !== "APPROVED" && detailCar.status !== "REJECTED" && detailCar.status !== "SOLD" && "Pending"}
+            </span>
           </div>
         </div>
-      )}
+
+        {/* Title Section */}
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            {detailCar.brand} {detailCar.model}
+          </h3>
+          <div className="flex items-center gap-3 text-sm text-gray-600">
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {detailCar.yearOfManufacture || "Year N/A"}
+            </span>
+            {detailCar.refNo && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                  </svg>
+                  Ref: {detailCar.refNo}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Price Card */}
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+          <p className="text-sm text-emerald-700 font-medium mb-1">Price</p>
+          <p className="text-3xl font-bold text-emerald-700">
+            KES {detailCar.priceKes?.toLocaleString() ?? "-"}
+          </p>
+          {detailCar.refLink && (
+            <a
+              href={detailCar.refLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              View on marketplace
+            </a>
+          )}
+        </div>
+
+        {/* Details Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-gray-50 rounded-lg p-3">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Seller</p>
+            <p className="text-sm font-medium text-gray-900">{detailCar.seller || "N/A"}</p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-3">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Posted</p>
+            <p className="text-sm font-medium text-gray-900">
+              {detailCar.createdAt ? new Date(detailCar.createdAt).toLocaleDateString() : "N/A"}
+            </p>
+          </div>
+          {detailCar.location && (
+            <div className="bg-gray-50 rounded-lg p-3 col-span-2">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Location</p>
+              <p className="text-sm font-medium text-gray-900">{detailCar.location}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Description */}
+        {detailCar.description && (
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">
+              Description
+            </h4>
+            <p className="text-gray-600 leading-relaxed">
+              {detailCar.description}
+            </p>
+          </div>
+        )}
+
+        {/* Features */}
+        {detailCar.features && detailCar.features.length > 0 && (
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+              Features
+            </h4>
+            <div className="flex flex-wrap gap-2">
+             {detailCar.features && (
+  <div>
+    <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+      Features
+    </h4>
+    <div className="flex flex-wrap gap-2">
+      {(() => {
+        // Safely convert features to array
+        let featuresList: string[] = [];
+        
+        if (Array.isArray(detailCar.features)) {
+          featuresList = detailCar.features;
+        } else if (typeof detailCar.features === 'string') {
+          // Split by comma and clean up each feature
+          featuresList = detailCar.features
+            .split(',')
+            .map(f => f.trim())
+            .filter(f => f.length > 0);
+        }
+        
+        return featuresList.map((feature, idx) => (
+          <span
+            key={idx}
+            className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium"
+          >
+            {feature}
+          </span>
+        ));
+      })()}
+    </div>
+  </div>
+)}
+            </div>
+          </div>
+        )}
+
+        {/* Additional Images */}
+        {detailCar.imageUrls && detailCar.imageUrls.length > 1 && (
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
+              Additional Images ({detailCar.imageUrls.length - 1})
+            </h4>
+            <div className="grid grid-cols-3 gap-2">
+              {detailCar.imageUrls.slice(1, 4).map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`${detailCar.brand} ${detailCar.model} - ${idx + 2}`}
+                  className="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => window.open(img, '_blank')}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="pt-4 border-t border-gray-200 space-y-3">
+          {(isSeller || isAdmin) && detailCar.status === "APPROVED" && (
+            <button
+              onClick={() => { openSoldForm(detailCar); setDetailCar(null); }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white rounded-xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Mark as Sold
+            </button>
+          )}
+          
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => { setEditCar(detailCar); setShowForm(true); setDetailCar(null); }}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-all duration-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Edit
+            </button>
+            
+            <button
+              onClick={() => { deleteCar(detailCar.id); setDetailCar(null); }}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-all duration-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  </div>
+)}
 
       {/* Reject Modal */}
       <RejectModal
