@@ -522,12 +522,7 @@ const [rating, setRating] = useState(0);
                           {/* Action Buttons */}
                           <div className="flex gap-2 pt-2">
                            
-                            <button
-                              onClick={() => setOpenReview(true)}
-                              className="px-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg text-xs transition duration-200"
-                            >
-                              Review
-                            </button>
+                           
                           </div>
                         </>
                       ) : (
@@ -645,11 +640,7 @@ const [rating, setRating] = useState(0);
               onClick={() => setOpenDrawer("history")}
               className="group flex items-center justify-between border-b cursor-pointer hover:shadow-lg transition p-3"
             >
-              <div>
-                <h2 className="text-xl font-bold text-blue-700">Ownership & History</h2>
-                <p className="text-gray-600 pb-4">Basic history check: 5 checks passed</p>
-              </div>
-              <ArrowRight className="w-8 h-16 text-blue-700 transform transition-transform duration-300 group-hover:translate-x-1" />
+              
             </div>
 
             {/* Buying a car safely */}

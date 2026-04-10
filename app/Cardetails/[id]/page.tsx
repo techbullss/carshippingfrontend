@@ -605,12 +605,7 @@ const VehicleDetails = () => {
                 {/* Action Buttons */}
                 <div className="flex gap-2 pt-2">
                  
-                  <button
-                    onClick={() => setOpenReview(true)}
-                    className="px-4 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg text-xs transition duration-200"
-                  >
-                    Review
-                  </button>
+                 
                 </div>
               </>
             ) : (
@@ -736,11 +731,7 @@ const VehicleDetails = () => {
               onClick={() => setOpenDrawer("history")}
               className="group flex items-center justify-between border-b cursor-pointer hover:shadow-lg transition p-3"
             >
-              <div>
-                <h2 className="text-xl font-bold text-blue-700">Ownership & History</h2>
-                <p className="text-gray-600 pb-4">Basic history check: 5 checks passed</p>
-              </div>
-              <ArrowRight className="w-8 h-16 text-blue-700 transform transition-transform duration-300 group-hover:translate-x-1" />
+             
             </div>
 
             {/* Buying a car safely */}
@@ -867,7 +858,7 @@ const VehicleDetails = () => {
 
             {/* Scrollable content */}
             <div className="flex-1 overflow-y-auto space-y-6 text-gray-700">
-              {/* 🔹 Technical Specs */}
+              {/*  Technical Specs */}
               <div>
                 <h3 className="text-base font-semibold mb-2">Technical Specs</h3>
                 <dl className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 text-sm">
@@ -902,7 +893,7 @@ const VehicleDetails = () => {
                 </dl>
               </div>
 
-              {/* 🔹 Features */}
+              {/*  Features */}
               <div>
                 <h3 className="text-base font-semibold mb-2">Features</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -916,7 +907,7 @@ const VehicleDetails = () => {
                 </ul>
               </div>
 
-              {/* 🔹 Custom Specs */}
+              {/*  Custom Specs */}
               <div>
                 <h3 className="text-base font-semibold mb-2">Custom Specs</h3>
                 <ul className="space-y-1 text-sm">
