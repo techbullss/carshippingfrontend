@@ -451,128 +451,207 @@ export default function CarsPage() {
       {/* Cards Grid */}
       {!loading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cars.map((car) => (
-            <div
-              key={car.id}
-              className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col"
+  {cars.map((car, index) => (
+    <motion.div
+      key={car.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col border border-gray-100 hover:border-gray-200"
+    >
+      {/* Image Container with Overlay */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+        <img
+          src={car.imageUrls?.[0] || "/placeholder-car.jpg"}
+          alt={`${car.brand} ${car.model}`}
+          className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        
+        {/* Status Badge Overlay */}
+        <div className="absolute top-3 right-3">
+          <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-md shadow-sm ${
+            car.status === "APPROVED"
+              ? "bg-green-500/90 text-white"
+              : car.status === "REJECTED"
+              ? "bg-red-500/90 text-white"
+              : car.status === "SOLD"
+              ? "bg-gray-700/90 text-white"
+              : "bg-yellow-500/90 text-white"
+          }`}>
+            {car.status === "APPROVED" && "✓ Approved"}
+            {car.status === "REJECTED" && "✗ Rejected"}
+            {car.status === "SOLD" && "Sold"}
+            {car.status !== "APPROVED" && car.status !== "REJECTED" && car.status !== "SOLD" && "Pending"}
+          </span>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="p-5 flex-1 flex flex-col">
+        {/* Title and Basic Info */}
+        <div className="mb-3">
+          <h2 className="text-xl font-bold text-gray-800 mb-1 line-clamp-1">
+            {car.brand} {car.model}
+          </h2>
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <span className="flex items-center gap-1">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {car.yearOfManufacture || "Year N/A"}
+            </span>
+            {car.refNo && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                  </svg>
+                  {car.refNo}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Price Section */}
+        <div className="mb-4">
+          <div className="text-2xl font-bold text-emerald-600">
+            KES {car.priceKes?.toLocaleString() ?? "-"}
+          </div>
+          {car.refLink && (
+            <a
+              href={car.refLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 mt-1 transition-colors"
             >
-              <img
-                src={car.imageUrls?.[0] || "/placeholder-car.jpg"}
-                alt={`${car.brand} ${car.model}`}
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-4 flex-1 flex flex-col">
-                <h2 className="text-xl font-semibold">
-                  {car.brand} {car.model}
-                </h2>
-                <p className="text-gray-500 text-sm">
-                  {car.yearOfManufacture || "Year N/A"}
-                </p>
-                <p className="text-gray-500 text-sm">
-                  ref: {car.refNo || "Ref No N/A"}
-                </p>
-                <p className="text-lg font-bold text-green-600 mt-2">
-                  KES {car.priceKes?.toLocaleString() ?? "-"}
-                </p>
-
-                <p className="text-lg font-bold text-green-600 mt-2">
-                  {car.refLink ? (
-                    <a
-                      href={car.refLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline text-blue-600"
-                    >
-                      Listed on otherSite
-                    </a>
-                  ) : (
-                    "-"
-                  )}
-                </p>
-
-                {/* Vehicle Status Section */}
-                <div className="mt-3 flex gap-2">
-                  {isAdmin && car.status !== "APPROVED" && car.status !== "REJECTED" && car.status !== "SOLD" ? (
-                    <>
-                      <button
-                        onClick={() => approveCar(car.id)}
-                        className={`px-3 py-1 rounded-lg text-white transition ${
-                          approving === car.id ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
-                        }`}
-                        disabled={approving === car.id}
-                      >
-                        {approving === car.id ? "Approving..." : "Approve"}
-                      </button>
-
-                      <button
-                        onClick={() => openRejectModal(car.id)}
-                        className={`px-3 py-1 rounded-lg text-white transition ${
-                          rejecting === car.id ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
-                        }`}
-                        disabled={rejecting === car.id}
-                      >
-                        {rejecting === car.id ? "Rejecting..." : "Reject"}
-                      </button>
-                    </>
-                  ) : (
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        car.status === "APPROVED"
-                          ? "bg-green-100 text-green-700"
-                          : car.status === "REJECTED"
-                          ? "bg-red-100 text-red-700"
-                          : car.status === "SOLD"
-                          ? "bg-gray-100 text-gray-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {car.status}
-                    </span>
-                  )}
-                </div>
-
-                {/* Actions (Edit/Delete/Details/Mark as Sold) */}
-                <div className="mt-auto flex gap-2 pt-4">
-                  {(isSeller || isAdmin) && car.status === "APPROVED" && (
-                    <button
-                      onClick={() => openSoldForm(car)}
-                      className="flex-1 bg-gray-600 text-white px-3 py-1 rounded-lg hover:bg-gray-700 transition"
-                    >
-                      Mark as Sold
-                    </button>
-                  )}
-                  <button
-                    onClick={() => {
-                      setEditCar(car);
-                      setShowForm(true);
-                    }}
-                    className="flex-1 bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteCar(car.id)}
-                    className="flex-1 bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => setDetailCar(car)}
-                    className="flex-1 bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Details
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {cars.length === 0 && (
-            <p className="col-span-full text-center text-gray-500">
-              No cars found.
-            </p>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              View on marketplace
+            </a>
           )}
         </div>
+
+        {/* Admin Actions Section */}
+        {isAdmin && car.status !== "APPROVED" && car.status !== "REJECTED" && car.status !== "SOLD" && (
+          <div className="mb-4 p-3 bg-gray-50 rounded-xl">
+            <div className="flex gap-2">
+              <button
+                onClick={() => approveCar(car.id)}
+                disabled={approving === car.id}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow"
+              >
+                {approving === car.id ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Approving...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Approve
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => openRejectModal(car.id)}
+                disabled={rejecting === car.id}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow"
+              >
+                {rejecting === car.id ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Rejecting...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Reject
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="mt-auto pt-4 border-t border-gray-100">
+          <div className="grid grid-cols-2 gap-2">
+            {(isSeller || isAdmin) && car.status === "APPROVED" && (
+              <button
+                onClick={() => openSoldForm(car)}
+                className="col-span-2 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Mark as Sold
+              </button>
+            )}
+            
+            <button
+              onClick={() => {
+                setEditCar(car);
+                setShowForm(true);
+              }}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Edit
+            </button>
+            
+            <button
+              onClick={() => deleteCar(car.id)}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Delete
+            </button>
+            
+            <button
+              onClick={() => setDetailCar(car)}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  ))}
+
+  {cars.length === 0 && (
+    <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+      <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-1">No cars found</h3>
+      <p className="text-gray-500">Try adjusting your filters or add a new car</p>
+    </div>
+  )}
+</div>
       )}
 
       {/* Pagination */}
