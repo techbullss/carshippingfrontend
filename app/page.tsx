@@ -329,7 +329,7 @@ export default function Home() {
     router.push(`/CommercialVehicleDetails/${id}`);
   }
 
-   const [backgroundImage, setBackgroundImage] = useState('/used1.jpg'); // fallback
+   const [backgroundImage, setBackgroundImage] = useState(''); // fallback
   const BACKEND_URL = 'https://api.f-carshipping.com/api'; // Spring Boot backend URL
   
   useEffect(() => {
@@ -422,12 +422,12 @@ export default function Home() {
 
         <div className="space-y-6">
 
-          <div>
-            <h3 className="font-semibold text-gray-900">Passenger Vehicles</h3>
-            <p className="text-gray-600 text-sm">
-              Sedans, SUVs, and family vehicles ready for immediate purchase or import.
-            </p>
-          </div>
+        <div>
+  <h3 className="font-semibold text-gray-900">Cars</h3>
+  <p className="text-gray-600 text-sm">
+     SUVs, Hatchbacks, Coupes, Convertibles, Wagons, Crossovers, Minivans, Sports cars, Electric vehicles (EVs), Hybrids, and luxury vehicles ready for immediate purchase or import.
+  </p>
+</div>
 
           <div>
             <h3 className="font-semibold text-gray-900">Commercial Vehicles</h3>

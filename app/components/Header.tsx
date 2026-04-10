@@ -28,7 +28,7 @@ export default function Header() {
 
   const links: MenuItem[] = [
     {
-      href: "/",
+      href: "/Vehicles",
       label: "Cars",
       submenu: [
         { label: "All", href: "/Vehicles" },

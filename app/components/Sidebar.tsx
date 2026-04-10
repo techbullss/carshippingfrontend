@@ -32,7 +32,6 @@ const navItems = [
   { name: "Profile", href: "/dashboard/UserProfile", icon: faUserTie, roles: ["ADMIN","SELLER","GUEST"] },
   { name: "Make Order", href: "/dashboard/RequestItemPage", icon: faTicketSimple, roles: ["SELLER","GUEST"] },
   { name: "User Orders", href: "/dashboard/UserOrdersPage", icon: faBoxOpen, roles: ["SELLER","GUEST"] },
-  { name: "Reviews", href: "/dashboard/ReviewsPage", icon: faBoxOpen, roles: ["ADMIN","SELLER","GUEST"] },
   { name: "Logout", href: "/dashboard/Logout", icon: faRightFromBracket, roles: ["ADMIN","SELLER","GUEST"] }
 ];
 
