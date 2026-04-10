@@ -839,13 +839,7 @@ export default function CarsPage() {
         )}
 
         {/* Features */}
-        {detailCar.features && detailCar.features.length > 0 && (
-          <div>
-            <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
-              Features
-            </h4>
-            <div className="flex flex-wrap gap-2">
-             {detailCar.features && (
+                   {detailCar.features && (
   <div>
     <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">
       Features
@@ -877,9 +871,6 @@ export default function CarsPage() {
     </div>
   </div>
 )}
-            </div>
-          </div>
-        )}
 
         {/* Additional Images */}
         {detailCar.imageUrls && detailCar.imageUrls.length > 1 && (
