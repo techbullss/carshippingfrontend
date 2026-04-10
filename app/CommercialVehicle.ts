@@ -26,6 +26,6 @@ export interface CommercialVehicle {
   customSpecs?: string; // JSON string of additional specs
   description?: string;
   imageUrls?: string[];
-  status?: "PENDING" | "APPROVED" | "REJECTED"; 
+  status?: "PENDING" | "APPROVED" | "REJECTED"| "SOLD"; 
   seller:string;// Cloudinary URLs
 }

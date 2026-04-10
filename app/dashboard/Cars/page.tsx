@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import AddCarForm from "@/app/components/AddCarForm";
 import { useCurrentUser } from "@/app/Hookes/useCurrentUser";
 import RejectModal from "@/app/components/RejectModal";
+import { motion } from "framer-motion";
+import { X } from "lucide-react";
 
 export default function CarsPage() {
   const router = useRouter();
@@ -28,6 +30,16 @@ export default function CarsPage() {
   const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
   const [rejecting, setRejecting] = useState<number | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  
+  // Sold form states
+  const [soldFormOpen, setSoldFormOpen] = useState(false);
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+  const [buyerInfo, setBuyerInfo] = useState({
+    buyerName: '',
+    buyerEmail: '',
+    buyerPhoneNumber: ''
+  });
+  const [submittingSold, setSubmittingSold] = useState(false);
 
   const email = user?.email || '';
   const role = user?.roles?.[0] || '';
@@ -202,6 +214,69 @@ export default function CarsPage() {
     setEditCar(null);
   };
 
+  const openSoldForm = (car: Car) => {
+    setSelectedCar(car);
+    setBuyerInfo({
+      buyerName: '',
+      buyerEmail: '',
+      buyerPhoneNumber: ''
+    });
+    setSoldFormOpen(true);
+  };
+
+  const handleSoldSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCar) return;
+    
+    // Validate form
+    if (!buyerInfo.buyerName.trim()) {
+      alert("Please enter buyer's name");
+      return;
+    }
+    if (!buyerInfo.buyerEmail.trim()) {
+      alert("Please enter buyer's email");
+      return;
+    }
+    if (!buyerInfo.buyerPhoneNumber.trim()) {
+      alert("Please enter buyer's phone number");
+      return;
+    }
+    
+    setSubmittingSold(true);
+    try {
+      const response = await fetch(`https://api.f-carshipping.com/api/cars/${selectedCar.id}/sold`, { 
+        method: "PUT", 
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          buyerName: buyerInfo.buyerName,
+          buyerEmail: buyerInfo.buyerEmail,
+          buyerPhoneNumber: buyerInfo.buyerPhoneNumber,
+          soldBy: email,
+          soldDate: new Date().toISOString()
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to mark as sold');
+      }
+      
+      setSoldFormOpen(false);
+      setSelectedCar(null);
+      setBuyerInfo({ buyerName: '', buyerEmail: '', buyerPhoneNumber: '' });
+      fetchCars();
+      alert("Car marked as sold successfully! A review request has been sent to the buyer.");
+    } catch (error) {
+      console.error("Mark as sold error:", error);
+      alert("Failed to mark car as sold: " + (error as Error).message);
+    } finally {
+      setSubmittingSold(false);
+    }
+  };
+
   // Show loading while user data is being fetched
   if (userLoading) {
     return (
@@ -306,6 +381,9 @@ export default function CarsPage() {
     );
   }
 
+  const isAdmin = role === "ADMIN";
+  const isSeller = role === "SELLER";
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
@@ -321,6 +399,16 @@ export default function CarsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 bg-gray-50 p-4 rounded-xl border shadow-sm">
+        <input
+          type="text"
+          placeholder="Search by brand or model..."
+          value={search}
+          onChange={(e) => {
+            setPage(0);
+            setSearch(e.target.value);
+          }}
+          className="border p-2 rounded w-full sm:w-64"
+        />
         <input
           type="text"
           placeholder="Filter by brand"
@@ -404,7 +492,7 @@ export default function CarsPage() {
 
                 {/* Vehicle Status Section */}
                 <div className="mt-3 flex gap-2">
-                  {role === "ADMIN" && car.status !== "APPROVED" && car.status !== "REJECTED" ? (
+                  {isAdmin && car.status !== "APPROVED" && car.status !== "REJECTED" && car.status !== "SOLD" ? (
                     <>
                       <button
                         onClick={() => approveCar(car.id)}
@@ -433,6 +521,8 @@ export default function CarsPage() {
                           ? "bg-green-100 text-green-700"
                           : car.status === "REJECTED"
                           ? "bg-red-100 text-red-700"
+                          : car.status === "SOLD"
+                          ? "bg-gray-100 text-gray-700"
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
@@ -441,8 +531,16 @@ export default function CarsPage() {
                   )}
                 </div>
 
-                {/* Actions (Edit/Delete/Details) */}
+                {/* Actions (Edit/Delete/Details/Mark as Sold) */}
                 <div className="mt-auto flex gap-2 pt-4">
+                  {(isSeller || isAdmin) && car.status === "APPROVED" && (
+                    <button
+                      onClick={() => openSoldForm(car)}
+                      className="flex-1 bg-gray-600 text-white px-3 py-1 rounded-lg hover:bg-gray-700 transition"
+                    >
+                      Mark as Sold
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setEditCar(car);
@@ -558,6 +656,18 @@ export default function CarsPage() {
               {detailCar.description || "No description provided."}
             </p>
 
+            {/* Mark as Sold Button in Details Drawer */}
+            {(isSeller || isAdmin) && detailCar.status === "APPROVED" && (
+              <div className="flex gap-3 pt-4 border-t mt-4">
+                <button 
+                  onClick={() => { openSoldForm(detailCar); setDetailCar(null); }}
+                  className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                >
+                  Mark as Sold
+                </button>
+              </div>
+            )}
+
             {/* Rest of your details drawer content */}
           </div>
         </div>
@@ -570,6 +680,96 @@ export default function CarsPage() {
         onClose={closeRejectModal}
         onReject={handleRejectWrapper}
       />
+
+      {/* Sold Form Modal */}
+      {soldFormOpen && selectedCar && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSoldFormOpen(false)} />
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="relative bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Mark as Sold</h2>
+              <button
+                onClick={() => setSoldFormOpen(false)}
+                className="p-2 rounded-full hover:bg-gray-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Car Details:</p>
+              <p className="font-semibold">{selectedCar.brand} {selectedCar.model}</p>
+              <p className="text-sm text-gray-500">KES {selectedCar.priceKes?.toLocaleString()}</p>
+            </div>
+            
+            <form onSubmit={handleSoldSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Buyer's Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={buyerInfo.buyerName}
+                  onChange={(e) => setBuyerInfo({ ...buyerInfo, buyerName: e.target.value })}
+                  placeholder="Enter buyer's full name"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Buyer's Email *
+                </label>
+                <input
+                  type="email"
+                  required
+                  className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={buyerInfo.buyerEmail}
+                  onChange={(e) => setBuyerInfo({ ...buyerInfo, buyerEmail: e.target.value })}
+                  placeholder="buyer@example.com"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Buyer's Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  className="w-full border rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={buyerInfo.buyerPhoneNumber}
+                  onChange={(e) => setBuyerInfo({ ...buyerInfo, buyerPhoneNumber: e.target.value })}
+                  placeholder="+254 700 000 000"
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setSoldFormOpen(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingSold}
+                  className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submittingSold ? "Processing..." : "Confirm Sale"}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
