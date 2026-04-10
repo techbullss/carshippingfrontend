@@ -18,7 +18,6 @@ export interface Car {
   description: string;
   location: string;
   ownerType: string;
-  features: string;      // comma-separated string
   customSpecs: string;   // JSON string
   images?: string[];     // optional for image URLs
   imageUrls: string[];   // always present
@@ -28,5 +27,8 @@ export interface Car {
   roles: string[];       // optional
   refLink: string; 
   refNo: string;  
-  status?: string;       // optional
+  status?: string;
+   features?: string;  // Allow both string and array
+  createdAt?: string | Date;      // Add createdAt field
+  updatedAt?: string | Date;       // optional
 }
