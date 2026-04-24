@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-
+import Link from "next/link";
 export default function AboutUs() {
 return (
   <section className="bg-white text-gray-900 overflow-hidden">
@@ -142,7 +142,9 @@ return (
           Excellence is not an option.
           <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-blue-500 to-green-500 font-medium">
-            It is our standard.
+            <Link href="https://assignhelp.org/" className="hover:underline">
+              It is our standard.
+            </Link>
           </span>
         </h3>
 
