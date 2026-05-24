@@ -588,8 +588,8 @@ export default function Home() {
       <div className="text-center mt-14">
         <button
           onClick={() => window.location.href = "/Vehicles"}
-          className="px-8 py-3 text-black border border-green-600 border-b-4 font-semibold rounded-full shadow-md 
-                     hover:bg-yellow-700 hover:shadow-lg transition-all duration-300"
+          className="px-8 py-3 text-black border border-blue-300 border-t-blue-600 font-semibold rounded-full shadow-md 
+                     hover:bg-blue-600 hover:text-white hover:shadow-lg transition-all duration-300"
         >
           Browse All Cars
         </button>
@@ -809,8 +809,9 @@ export default function Home() {
       <div className="text-center mt-14">
       <button
   onClick={() => window.location.href = "/CommercialVehicles"}
-  className="group inline-flex items-center gap-3 text-lg font-medium text-gray-900 hover:text-green-600 transition-all duration-300"
->
+className="px-8 py-3 text-black border bg-green-600 border-b-4 font-semibold rounded-full shadow-md 
+                     hover:bg-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
+        >
   Browse All Commercial Vehicles
 
   <span className="text-3xl transform transition-transform duration-300 group-hover:translate-x-2">
