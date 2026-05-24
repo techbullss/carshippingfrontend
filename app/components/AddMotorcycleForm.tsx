@@ -489,16 +489,22 @@ export default function AddMotorcycleForm({
               </div>
 
               {/* Location */}
-              <div>
-                <label className="block text-sm font-medium mb-1">Location</label>
-                <input
-                  name="location"
-                  value={form.location}
-                  onChange={handleChange}
-                  placeholder="e.g., Nairobi, Mombasa"
-                  className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+            <div>
+  <label className="block text-sm font-medium mb-1">
+    Location
+  </label>
+
+  <select
+    name="location"
+    value={form.location}
+    onChange={handleChange}
+    className="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-white"
+  >
+    <option value="">Select Location Type</option>
+    <option value="Local">Local</option>
+    <option value="Import">Import</option>
+  </select>
+</div>
 
               {/* Owner (Read-only if logged in) */}
               <div>
