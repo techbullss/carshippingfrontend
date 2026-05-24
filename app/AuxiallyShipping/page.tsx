@@ -288,14 +288,7 @@ export default function AuxiliaryShippingPage() {
                 Request Item
               </motion.a>
 
-              <motion.a
-                href="#products"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 border border-blue-500 text-blue-500 text-sm uppercase tracking-wider rounded-lg hover:bg-blue-50 transition"
-              >
-                Track Shipment
-              </motion.a>
+            
             </div>
           </motion.div>
 
@@ -449,89 +442,70 @@ export default function AuxiliaryShippingPage() {
         </div>
       </section>
 
-      {/* Enhanced Features/Benefits */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Why We're The <span className="text-green-600">Preferred Choice</span>
-              </h2>
-              <p className="text-gray-600 text-lg mb-8">
-                We combine technology with personalized service to deliver an unmatched shipping experience.
-              </p>
-              <div className="space-y-6">
-                {[
-                  {
-                    icon: Shield,
-                    title: "End-to-End Security",
-                    desc: "Insurance coverage for all shipments and secure payment processing"
-                  },
-                  {
-                    icon: Truck,
-                    title: "Real-time GPS Tracking",
-                    desc: "Live location updates from pickup to final delivery"
-                  },
-                  {
-                    icon: CheckCircle,
-                    title: "Quality Assurance",
-                    desc: "Physical verification of items before shipping"
-                  },
-                  {
-                    icon: Clock,
-                    title: "24/7 Support",
-                    desc: "Round-the-clock customer service and tracking assistance"
-                  }
-                ].map((feature, i) => {
-                  const Icon = feature.icon;
-                  return (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1 }}
-                      className="flex items-start gap-4 p-4 rounded-xl hover:bg-green-50 transition-colors group"
-                    >
-                      <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Icon className="w-6 h-6 text-green-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-lg mb-1">{feature.title}</h3>
-                        <p className="text-gray-600">{feature.desc}</p>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+     {/* Enhanced Features/Benefits */}
+<section className="py-20 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-4xl mx-auto text-center">
+      <h2 className="text-4xl font-bold text-gray-900 mb-6">
+        Why We're The <span className="text-green-600">Preferred Choice</span>
+      </h2>
+
+      <p className="text-gray-600 text-lg mb-14">
+        We combine technology with personalized service to deliver an unmatched shipping experience.
+      </p>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {[
+          {
+            icon: Shield,
+            title: "End-to-End Security",
+            desc: "Insurance coverage for all shipments and secure payment processing"
+          },
+          {
+            icon: Truck,
+            title: "Real-time GPS Tracking",
+            desc: "Live location updates from pickup to final delivery"
+          },
+          {
+            icon: CheckCircle,
+            title: "Quality Assurance",
+            desc: "Physical verification of items before shipping"
+          },
+          {
+            icon: Clock,
+            title: "24/7 Support",
+            desc: "Round-the-clock customer service and tracking assistance"
+          }
+        ].map((feature, i) => {
+          const Icon = feature.icon;
+
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left"
+            >
+              <div className="w-14 h-14 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mb-5">
+                <Icon className="w-7 h-7 text-green-600" />
               </div>
-            </div>
-            
-            {/* Stats Visualization */}
-            <div className="grid grid-cols-2 gap-6">
-              {[
-                { value: "98%", label: "On-time Delivery", color: "from-green-500 to-emerald-600" },
-                { value: "4.8/5", label: "Customer Rating", color: "from-amber-500 to-orange-600" },
-                { value: "24h", label: "Avg Response Time", color: "from-blue-500 to-cyan-600" },
-                { value: "50+", label: "Countries Served", color: "from-purple-500 to-pink-600" }
-              ].map((stat, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 border border-gray-200 shadow-lg"
-                >
-                  <div className={`text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
-                    {stat.value}
-                  </div>
-                  <div className="text-gray-600 font-medium">{stat.label}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                {feature.title}
+              </h3>
+
+              <p className="text-gray-600 leading-relaxed">
+                {feature.desc}
+              </p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* Product Details Modal */}
       <AnimatePresence>
