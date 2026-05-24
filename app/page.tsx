@@ -809,14 +809,12 @@ export default function Home() {
       <div className="text-center mt-14">
       <button
   onClick={() => window.location.href = "/CommercialVehicles"}
-className="px-8 py-3 text-black border bg-green-600 border-b-4 font-semibold rounded-full shadow-md 
+className="px-8 py-3 text-black border-green-600 bg-white border-b-4 font-semibold rounded-full shadow-md 
                      hover:bg-green-600 hover:text-white hover:shadow-lg transition-all duration-300"
         >
   Browse All Commercial Vehicles
 
-  <span className="text-3xl transform transition-transform duration-300 group-hover:translate-x-2">
-    →
-  </span>
+  
 </button>
       </div>
     )}
